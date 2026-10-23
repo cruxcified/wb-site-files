@@ -78,6 +78,12 @@ html.wbapps-on::-webkit-scrollbar { display: none; }
   background: radial-gradient(75% 70% at 70% 45%, #ffffff 0%, #eef0f2 55%, #e3e5e9 100%); }
 #wbapps .stage { position: absolute; inset: 0; }
 #wbapps .stage canvas { position: absolute; inset: 0; width: 100% !important; height: 100% !important; display: block; touch-action: pan-y; }
+/* Once 3D is running, the canvas covers the window and the icons fly from the landing down into their cards as you scroll.
+   It sits under the hero copy and under the cards' text; it only takes clicks while the landing is on screen. */
+#wbapps.dock .stage canvas { position: fixed; z-index: 1; }
+#wbapps.dock.docked .stage canvas { pointer-events: none; }
+#wbapps.dock .grid .icon, #wbapps.dock .soon .icon { visibility: hidden; }
+#wbapps.dock .section { position: relative; }
 #wbapps .hero > .wrap { position: relative; z-index: 2; height: 100%; display: flex; flex-direction: column; justify-content: center; pointer-events: none;
   padding-block: calc(var(--nav) + env(safe-area-inset-top, 0px) + 24px) calc(72px + env(safe-area-inset-bottom, 0px)); }
 #wbapps .hero-copy { display: grid; gap: 24px; width: min(540px, 44%); min-width: 0; }
@@ -566,6 +572,7 @@ function renderFallbackShelf() {
 
 /* ---------- three.js: app icons floating across the whole landing ---------- */
 async function startShelf() {
+  const root = document.getElementById('wbapps');
   const stage = document.getElementById('wbapps-stage');
   const copy = document.getElementById('wbapps-copy');
   const probe = document.createElement('canvas');
@@ -656,12 +663,13 @@ async function startShelf() {
   }
 
   const items = [...APPS.map((a) => ({ a, ghost: false })), ...SOON.map((s) => ({ a: { ...s, colors: ['#ccc', '#eee'] }, ghost: true }))];
+  const soonEls = () => [...document.querySelectorAll('#wbapps-soon article .icon')];
   const tiles = items.map(({ a, ghost }, i) => {
     const front = faceTexture(a, ghost);
     const side = new THREE.MeshPhysicalMaterial({ color: ghost ? 0xe3e6ea : new THREE.Color(a.colors[0]).lerp(new THREE.Color(a.colors[1]), 0.35), roughness: 0.45, clearcoat: 0.6, transparent: ghost, opacity: ghost ? 0.85 : 1 });
     front.userData.side = side;
     const m = new THREE.Mesh(tileGeo, [front, side]);
-    m.userData = { id: ghost ? null : a.id, ghost, base: new THREE.Vector3(), faceX: 0, faceY: 0, size: 1, phase: i * 1.7, hover: 0, spin: (i % 2 ? 1 : -1) * 0.2 };
+    m.userData = { id: ghost ? null : a.id, ghost, soon: ghost ? i - APPS.length : -1, base: new THREE.Vector3(), faceX: 0, faceY: 0, size: 1, phase: i * 1.7, hover: 0, lift: 0, spin: (i % 2 ? 1 : -1) * 0.2 };
     scene.add(m);
     return m;
   });
@@ -724,7 +732,7 @@ async function startShelf() {
   }
 
   function resize() {
-    const w = stage.clientWidth, h = stage.clientHeight;
+    const w = innerWidth, h = innerHeight;
     if (!w || !h) return;
     renderer.setSize(w, h, false);
     camera.aspect = w / h;
@@ -734,7 +742,19 @@ async function startShelf() {
   }
   new ResizeObserver(resize).observe(stage);
   new ResizeObserver(resize).observe(copy);
-  new IntersectionObserver(([en]) => { visible = en.isIntersecting; if (visible) { last = performance.now(); requestRender(); } }).observe(stage);
+  root.classList.add('dock');
+  addEventListener('resize', resize);
+  addEventListener('scroll', () => { last = performance.now(); requestRender(); }, { passive: true });
+  /* Hovering a card lifts its icon off the page. */
+  const grid = document.getElementById('wbapps-grid');
+  let cardHover = null;
+  grid.addEventListener('pointerover', (e) => { cardHover = e.target.closest('.card')?.dataset.id || null; requestRender(); });
+  grid.addEventListener('pointerleave', () => { cardHover = null; requestRender(); });
+  const dockEl = (u) => u.id ? grid.querySelector(`.card[data-id="${u.id}"] .icon`) : soonEls()[u.soon];
+  const heroEl = document.getElementById('top');
+  const wpp0 = () => 2 * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) * CAM_Z / innerHeight;
+  const ease = (x) => (x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2);
+  const dockP = new THREE.Vector3(), heroP = new THREE.Vector3();
   document.addEventListener('visibilitychange', () => { if (!document.hidden) { last = performance.now(); requestRender(); } });
 
   function requestRender() { if (!raf) raf = requestAnimationFrame(frame); }
@@ -745,18 +765,35 @@ async function startShelf() {
     lookS.lerp(look, 1 - Math.pow(0.03, dt || 0.016));
     orbitS += (orbit - orbitS) * (1 - Math.pow(0.02, dt || 0.016));
     if (!drag) orbit *= Math.pow(0.4, dt);
-    pick();
-    for (const m of tiles) {
+    const h = innerHeight, w = innerWidth, wpp = wpp0(), sy = scrollY;
+    const P = Math.min(1, Math.max(0, sy / Math.max(1, heroEl.offsetHeight * 0.8)));
+    root.classList.toggle('docked', P > 0.12);
+    if (P < 0.12) pick(); else if (hovered) { hovered = null; canvas.style.cursor = ''; }
+    let moving = false;
+    tiles.forEach((m, i) => {
       const u = m.userData;
       u.hover += ((m === hovered && u.id ? 1 : 0) - u.hover) * (1 - Math.pow(0.001, dt || 0.016));
-      m.position.set(u.base.x, u.base.y + Math.sin(t * 0.8 + u.phase) * 0.08 * u.size, u.base.z + u.hover * 0.6);
-      m.rotation.set(
-        u.faceX - 0.14 + Math.sin(t * 0.5 + u.phase) * 0.06 - lookS.y * 0.25 * (1 - u.hover),
-        u.faceY + u.spin + Math.sin(t * 0.4 + u.phase) * 0.12 + lookS.x * 0.35 * (1 - u.hover) + orbitS,
-        Math.sin(t * 0.3 + u.phase) * 0.04);
-    }
+      u.lift += ((u.id && u.id === cardHover ? 1 : 0) - u.lift) * (1 - Math.pow(0.002, dt || 0.016));
+      /* Where it floats on the landing (scrolling up with the page) ... */
+      const depth = (CAM_Z - u.base.z) / CAM_Z;
+      heroP.set(u.base.x, u.base.y + Math.sin(t * 0.8 + u.phase) * 0.08 * u.size + sy * wpp * depth, u.base.z + u.hover * 0.6);
+      /* ... and where its card's icon is. */
+      const el = dockEl(u), r = el && el.offsetParent ? el.getBoundingClientRect() : null;
+      const k = r ? ease(Math.min(1, Math.max(0, P * 1.35 - i * 0.045))) : 0;
+      if (r) dockP.set((r.left + r.width / 2 - w / 2) * wpp, (h / 2 - (r.top + r.height / 2)) * wpp, u.lift * 0.5);
+      m.position.copy(heroP); if (k > 0) m.position.lerp(dockP, k);
+      const dockSize = r ? r.width * wpp / TILE * 1.02 : u.size;
+      m.scale.setScalar((r || P < 0.5 ? u.size + (dockSize - u.size) * k : u.size * Math.max(0, 1 - P * 2)) * (1 + u.lift * 0.08));
+      const fx = Math.atan2(m.position.y, CAM_Z - m.position.z), fy = -Math.atan2(m.position.x, CAM_Z - m.position.z);
+      const heroRx = u.faceX - 0.14 + Math.sin(t * 0.5 + u.phase) * 0.06 - lookS.y * 0.25 * (1 - u.hover);
+      const heroRy = u.faceY + u.spin + Math.sin(t * 0.4 + u.phase) * 0.12 + lookS.x * 0.35 * (1 - u.hover) + orbitS;
+      const dockRx = fx - 0.05 - u.lift * 0.35, dockRy = fy + Math.sin(t * 0.5 + u.phase) * 0.05 + u.lift * 0.4;
+      m.rotation.set(heroRx + (dockRx - heroRx) * k, heroRy + (dockRy - heroRy) * k, Math.sin(t * 0.3 + u.phase) * 0.04 * (1 - k));
+      if (Math.abs(u.lift - (u.id === cardHover ? 1 : 0)) > 0.005) moving = true;
+    });
+    visible = !document.hidden;
     renderer.render(scene, camera);
-    if (visible && !document.hidden && (!reduced || drag || tiles.some((m) => Math.abs(m.userData.hover - (m === hovered ? 1 : 0)) > 0.01) || Math.abs(orbit - orbitS) > 0.001)) requestRender();
+    if (visible && !document.hidden && (moving || (!reduced && (P < 1 || scrollY < heroEl.offsetHeight * 1.6)) || drag || tiles.some((m) => Math.abs(m.userData.hover - (m === hovered ? 1 : 0)) > 0.01) || Math.abs(orbit - orbitS) > 0.001)) requestRender();
   }
   if (reduced) document.getElementById('wbapps-shelf-label').textContent = 'Click an icon for details';
   stacked.addEventListener?.('change', resize);

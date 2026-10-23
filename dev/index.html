@@ -336,6 +336,20 @@ html.wbgames-booting, html.wbgames-booting body { overflow: hidden !important; }
 @media (prefers-reduced-motion: reduce) { #wbgames .cue i, #wbgames .hero .sub i { animation: none; } }
 @media (max-width: 980px) { #wbgames .nav { display: flex; } }
 
+/* Selected Work filmstrip (after shader.se's project carousel) */
+#wbgames .film { grid-column: 1 / -1; display: flex; gap: 10px; width: fit-content; max-width: 100%; overflow-x: auto; scrollbar-width: none; padding: 16px 12px; background:
+  radial-gradient(circle, transparent 3px, #0b090a 3.5px) 0 0 / 16px 12px repeat-x, radial-gradient(circle, transparent 3px, #0b090a 3.5px) 0 100% / 16px 12px repeat-x, #0b090a;
+  background-color: #0b090a; box-shadow: 0 0 0 1px rgba(243, 235, 225, .08), 0 20px 50px rgba(0, 0, 0, .55); transform: rotate(-1.2deg); }
+#wbgames .film::-webkit-scrollbar { display: none; }
+#wbgames .film .frame { flex: none; display: grid; gap: 6px; padding: 0; text-align: left; opacity: .5; transition: opacity .25s, transform .25s; }
+#wbgames .film .frame:hover, #wbgames .film .frame:focus-visible { opacity: .85; }
+#wbgames .film .frame.on { opacity: 1; transform: translateY(-3px); }
+#wbgames .film canvas { width: clamp(84px, 9vw, 132px); aspect-ratio: 4 / 3; height: auto; display: block; background: repeating-linear-gradient(to bottom, #1a1517 0 2px, #141012 2px 4px); image-rendering: pixelated; outline: 1px solid rgba(243, 235, 225, .18); }
+#wbgames .film .frame.on canvas { outline: 2px solid var(--bone); box-shadow: 0 0 18px rgba(255, 220, 190, .35); }
+#wbgames .film span { font-family: var(--vcr); font-size: 15px; letter-spacing: .04em; color: var(--dim); white-space: nowrap; max-width: clamp(84px, 9vw, 132px); overflow: hidden; text-overflow: ellipsis; }
+#wbgames .film .frame.on span { color: var(--bone); }
+@media (prefers-reduced-motion: reduce) { #wbgames .film .frame.on { transform: none; } }
+
 @media (max-width: 980px) {
   #wbgames .nav-links { display: none; }
   #wbgames .nav-right { margin-left: auto; }
@@ -449,6 +463,8 @@ html.wbgames-booting, html.wbgames-booting body { overflow: hidden !important; }
           <a class="u" id="wbgames-view" href="#engine">View Project</a>
           <button type="button" id="wbgames-next" aria-label="Next channel">→</button>
         </div>
+        <!-- The channels as a strip of film. Each frame fills with a still from its channel once you've watched it. -->
+        <div class="film" id="wbgames-film" role="group" aria-label="Channels"></div>
       </div>
     </div>
   </section>
@@ -700,7 +716,7 @@ if (root && !window.__wbgamesEditor) start().catch((err) => { console.warn('[wbg
 async function start() {
   let channel = 0, burst = 0;
   const $ = (id) => document.getElementById(id);
-  const setChannelText = () => {
+  let setChannelText = () => {
     const c = CHANNELS[channel];
     $('wbgames-ch-mode').textContent = c.mode;
     $('wbgames-ch-title').lastChild.textContent = c.title;
@@ -714,6 +730,16 @@ async function start() {
   $('wbgames-prev').addEventListener('click', () => go(-1));
   $('wbgames-next').addEventListener('click', () => go(1));
   document.getElementById('work').addEventListener('keydown', (e) => { if (e.key === 'ArrowLeft') go(-1); if (e.key === 'ArrowRight') go(1); });
+  /* Filmstrip: one frame per channel, clicking a frame tunes the TV to it. */
+  const film = $('wbgames-film'), filmFrames = CHANNELS.map((c, i) => {
+    const b = document.createElement('button'); b.type = 'button'; b.className = 'frame';
+    b.setAttribute('aria-label', `Channel ${i + 1}: ${c.mode}`);
+    b.innerHTML = `<canvas width="160" height="120" aria-hidden="true"></canvas><span>CH ${String(i + 1).padStart(2, '0')} · ${c.mode}</span>`;
+    b.addEventListener('click', () => { if (channel !== i) { channel = i; burst = 1; setChannelText(); requestRender(); } });
+    film.appendChild(b); return b;
+  });
+  const setChannelTextBase = setChannelText;
+  setChannelText = () => { setChannelTextBase(); filmFrames.forEach((f, i) => { f.classList.toggle('on', i === channel); f.setAttribute('aria-pressed', String(i === channel)); }); };
   setChannelText();
 
   /* CRT toggle (remembered per visitor): page scanlines and grain, plus the TV's own tube effect. */
@@ -1228,13 +1254,13 @@ async function start() {
   const cam = new THREE.PerspectiveCamera(32, innerWidth / innerHeight, 0.03, 60);
   const TAN = Math.tan(THREE.MathUtils.degToRad(cam.fov / 2));
 
-  const fogU = { uTime: { value: 0 }, uRes: { value: new THREE.Vector2() }, uShift: { value: new THREE.Vector2() }, uGlow: { value: new THREE.Vector3(0.7, 0.5, 1) } };
+  const fogU = { uTime: { value: 0 }, uRes: { value: new THREE.Vector2() }, uShift: { value: new THREE.Vector2() }, uGlow: { value: new THREE.Vector3(0.7, 0.5, 1) }, uTint: { value: new THREE.Color(1, 1, 1) } };
   const sky = new THREE.Mesh(new THREE.BufferGeometry().setAttribute('position', new THREE.Float32BufferAttribute([-1, -1, 0, 3, -1, 0, -1, 3, 0], 3)), new THREE.ShaderMaterial({
     uniforms: fogU, depthTest: false, depthWrite: false,
     vertexShader: /* glsl */`void main(){ gl_Position = vec4(position.xy, 1.0, 1.0); }`,
     fragmentShader: /* glsl */`
       precision highp float;
-      uniform float uTime; uniform vec2 uRes; uniform vec2 uShift; uniform vec3 uGlow;
+      uniform float uTime; uniform vec2 uRes; uniform vec2 uShift; uniform vec3 uGlow; uniform vec3 uTint;
       float h(vec2 p){ return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
       float n(vec2 p){ vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f);
         return mix(mix(h(i), h(i + vec2(1.0, 0.0)), f.x), mix(h(i + vec2(0.0, 1.0)), h(i + vec2(1.0, 1.0)), f.x), f.y); }
@@ -1252,7 +1278,7 @@ async function start() {
         float glow = uGlow.z * exp(-dot(g, g) * 1.6);
         vec3 base = mix(vec3(0.062, 0.047, 0.052), vec3(0.028, 0.021, 0.025), uv.y);
         vec3 cloud = mix(vec3(0.33, 0.26, 0.33), vec3(0.88, 0.79, 0.86), clamp(glow * 0.9 + c * 0.3, 0.0, 1.0));
-        vec3 col = base + cloud * c * (0.42 + glow * 1.15) + vec3(0.18, 0.13, 0.17) * glow * 0.32;
+        vec3 col = base * mix(vec3(1.0), uTint, 0.7) + (cloud * c * (0.42 + glow * 1.15) + vec3(0.18, 0.13, 0.17) * glow * 0.32) * uTint;
         gl_FragColor = vec4(col, 1.0);
       }`,
   }));
@@ -1442,11 +1468,17 @@ async function start() {
     goals:   { power: 0, osd: 0, dim: 0.45, noise: 0,   halo: 0 },
     contact: { power: 1, osd: 0, dim: 0.28, noise: 0.5, halo: 1 },
   };
+  /* Each section's fog has its own colour: purple in the hero, sodium-lamp amber at the shelf, cold for the bio,
+     phosphor green for the engine, red for goals, and the deep blue shader.se ends on behind Contact. */
+  const MOOD = {
+    hero: [1, 1, 1], work: [1, 1, 1], games: [1.35, 0.95, 0.62], about: [0.72, 0.88, 1.3],
+    engine: [0.66, 1.2, 0.84], goals: [1.4, 0.66, 0.66], contact: [0.55, 0.62, 1.6],
+  };
   const SCREEN = { hero: 'walk', games: 'walk', about: 'walk', engine: 'editor', goals: 'walk', contact: 'nosignal' };
   const KEYS = ['power', 'osd', 'dim', 'noise', 'halo'];
   const sections = [...root.querySelectorAll('section[data-scene]')];
   const shotFor = (scene) => SHOTS[scene];
-  const tg = { pos: V(0, 0, 0), tgt: V(0, 0, 0) }, tmpA = { pos: V(0, 0, 0), tgt: V(0, 0, 0) };
+  const tg = { pos: V(0, 0, 0), tgt: V(0, 0, 0), tint: new THREE.Color(1, 1, 1) }, tmpA = { pos: V(0, 0, 0), tgt: V(0, 0, 0) };
   function target() {
     const mid = innerHeight * 0.5;
     let i = 0, local = 0;
@@ -1464,12 +1496,13 @@ async function start() {
       tmpA.pos.lerpVectors(SHOTS.games.pos, sa.pos, kin); tmpA.tgt.lerpVectors(SHOTS.games.tgt, sa.tgt, kin); sa = tmpA;
     }
     KEYS.forEach((key) => { tg[key] = A[key] + (B[key] - A[key]) * k; });
+    { const ma = MOOD[a === 'about' && i > 0 && sections[i - 1].dataset.scene === 'games' && local < 0.3 ? 'games' : a], mb = MOOD[b]; tg.tint.setRGB(ma[0] + (mb[0] - ma[0]) * k, ma[1] + (mb[1] - ma[1]) * k, ma[2] + (mb[2] - ma[2]) * k); }
     tg.pos.lerpVectors(sa.pos, sb.pos, k); tg.tgt.lerpVectors(sa.tgt, sb.tgt, k);
     tg.scene = k < 0.5 ? a : b;
     tg.zoom = (a === 'work' ? 1 - k : 0) + (b === 'work' ? k : 0);
     return tg;
   }
-  const cur = { power: 1, osd: 0, dim: 0, noise: 0, halo: 1, pos: V(0, 0, 0), tgt: V(0, 0, 0), first: true };
+  const cur = { power: 1, osd: 0, dim: 0, noise: 0, halo: 1, pos: V(0, 0, 0), tgt: V(0, 0, 0), tint: new THREE.Color(1, 1, 1), first: true };
 
   const look = new THREE.Vector2(), lookS = new THREE.Vector2();
   addEventListener('pointermove', (e) => { look.set(e.clientX / innerWidth * 2 - 1, e.clientY / innerHeight * 2 - 1); requestRender(); }, { passive: true });
@@ -1482,6 +1515,36 @@ async function start() {
   addEventListener('scroll', requestRender, { passive: true });
   document.addEventListener('visibilitychange', () => { if (!document.hidden) { last = performance.now(); requestRender(); } });
 
+  const splitRT = new THREE.WebGLRenderTarget(1, 1, { type: THREE.HalfFloatType, samples: 4 });
+  const splitU = { tMap: { value: splitRT.texture }, uAmt: { value: 0 }, uTime: { value: 0 } };
+  const splitScene = new THREE.Scene(), splitCam = new THREE.Camera(), tmp2 = new THREE.Vector2();
+  splitScene.add(new THREE.Mesh(new THREE.PlaneGeometry(2, 2), new THREE.ShaderMaterial({
+    uniforms: splitU, depthTest: false, depthWrite: false,
+    vertexShader: /* glsl */`varying vec2 vUv; void main(){ vUv = uv; gl_Position = vec4(position.xy, 0.0, 1.0); }`,
+    fragmentShader: /* glsl */`
+      uniform sampler2D tMap; uniform float uAmt; uniform float uTime; varying vec2 vUv;
+      void main(){
+        float row = floor(vUv.y * 36.0 + uTime * 23.0);
+        float tear = step(0.93, fract(sin(row * 91.7) * 437.5)) * uAmt * 0.025;
+        vec2 uv = vUv + vec2(tear, 0.0), o = vec2(uAmt * 0.014, uAmt * 0.002);
+        gl_FragColor = vec4(texture2D(tMap, uv + o).r, texture2D(tMap, uv).g, texture2D(tMap, uv - o).b, 1.0);
+        #include <tonemapping_fragment>
+        #include <colorspace_fragment>
+      }`,
+  })));
+  let split = 0, stillT = -1;
+  const stillBuf = new Uint8Array(W * H * 4), stillC = document.createElement('canvas'); stillC.width = W; stillC.height = H;
+  const stillG = stillC.getContext('2d'), stillImg = stillG.createImageData(W, H);
+  function grabStill(view) {
+    const g = filmFrames[channel]?.querySelector('canvas')?.getContext('2d'); if (!g) return;
+    if (view === 'ui') { g.drawImage(uiTex.image, 0, 0, 160, 120); }
+    else {
+      try { renderer.readRenderTargetPixels(rt, 0, 0, W, H, stillBuf); } catch (e) { return; }
+      for (let y = 0; y < H; y++) stillImg.data.set(stillBuf.subarray((H - 1 - y) * W * 4, (H - y) * W * 4), y * W * 4);
+      stillG.putImageData(stillImg, 0, 0); g.drawImage(stillC, 0, 0, 160, 120);
+    }
+    filmFrames[channel].classList.add('has');
+  }
   let last = performance.now(), clock = 0, frames = 0, fpsT = 0, slow = 0, uiT = -1, lastScene = '', lastKind = '', lastView = '', enteredWork = false, chT = 0, filmU = 0;
   const v3 = new THREE.Vector3(), ahead = new THREE.Vector3(), tmpV = new THREE.Vector3(), topV = new THREE.Vector3(), botV = new THREE.Vector3();
 
@@ -1492,13 +1555,13 @@ async function start() {
     const t = target();
     const ease = cur.first || reduced ? 1 : 1 - Math.pow(0.0025, dt);
     KEYS.forEach((k) => { cur[k] += (t[k] - cur[k]) * ease; });
-    cur.pos.lerp(t.pos, ease); cur.tgt.lerp(t.tgt, ease); cur.first = false;
+    cur.pos.lerp(t.pos, ease); cur.tgt.lerp(t.tgt, ease); cur.tint.lerp(t.tint, reduced ? 1 : 1 - Math.pow(0.08, dt)); cur.first = false;
     burst = Math.max(0, burst - dt * 2.6);
     lookS.lerp(look, reduced ? 1 : 1 - Math.pow(0.05, dt));
 
     /* What's on the TV: the carousel picks while you're inside it; other sections have their own channel. */
     const scene = t.scene;
-    if (scene !== lastScene) { if (lastScene) burst = Math.max(burst, 0.6); if (scene === 'work') enteredWork = true; lastScene = scene; }
+    if (scene !== lastScene) { if (lastScene) { burst = Math.max(burst, 0.6); if (!reduced) split = 1; } if (scene === 'work') enteredWork = true; lastScene = scene; }
     const kind = scene === 'work' ? CHANNELS[channel].kind : SCREEN[scene];
     if (scene === 'work' && (lastKind !== kind || enteredWork)) chT = clock;
     lastKind = kind; enteredWork = false;
@@ -1549,6 +1612,7 @@ async function start() {
       screenU.uTex.value = barsTex;
     }
     if (cur.osd > 0.01 || over) drawOsd(clock, cur.osd, over);
+    if (scene === 'work' && clock - stillT > 0.6 && cur.power > 0.5) { stillT = clock; grabStill(view); }
 
     /* Camera, with a little drift toward the pointer (less when you're inside the TV). */
     const drift = (1 - t.zoom) * (reduced ? 0 : 1);
@@ -1569,6 +1633,7 @@ async function start() {
     fogU.uGlow.value.set(tmpV.x * 0.5 + 0.5, tmpV.y * 0.5 + 0.5, 0.55 + 0.75 * cur.power);
     fogU.uShift.value.set(cam.position.x * 0.06, cam.position.y * 0.05);
     fogU.uTime.value = clock;
+    fogU.uTint.value.copy(cur.tint);
 
     screenU.uTime.value = clock;
     screenU.uPower.value = cur.power;
@@ -1579,7 +1644,15 @@ async function start() {
     led.material.color.setHex(cur.power > 0.5 ? 0x7dff9a : 0xff5040);
     dimmer.style.opacity = cur.dim.toFixed(3);
 
-    renderer.render(room, cam);
+    /* Between sections the whole picture splits into red and blue for a moment, like a tape skipping. */
+    split = Math.max(0, split - dt * 2.2);
+    if (split > 0.01) {
+      renderer.getDrawingBufferSize(tmp2);
+      if (splitRT.width !== tmp2.x || splitRT.height !== tmp2.y) splitRT.setSize(tmp2.x, tmp2.y);
+      splitU.uAmt.value = split * split; splitU.uTime.value = clock;
+      renderer.setRenderTarget(splitRT); renderer.render(room, cam); renderer.setRenderTarget(null);
+      renderer.render(splitScene, splitCam);
+    } else renderer.render(room, cam);
 
     frames++; fpsT += dt;
     if (fpsT > 0.5) {
