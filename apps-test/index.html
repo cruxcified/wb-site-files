@@ -1,0 +1,893 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>WB Apps Page</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<!--
+  WBOECHLER.COM/DEV  ·  app dev page  ·  full-page takeover with a full-screen three.js landing  ·  v3
+  Paste this whole file into ONE Code Block on the /dev page (Display Source off).
+  Apps live in the APPS list at the top of the <script type="module">. Other text is in the HTML.
+  App icons: upload a file named icon-<id>.png and it appears by itself (see "App icons" in the script).
+  Anything wrapped in <mark class="ph"> is a placeholder for Will to replace.
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400;500&family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&display=swap">
+
+<style>
+/* Layout: a quiet catalog. Serif headlines echo the WB monogram on the main site; a full-screen field of 3D app icons is the one loud moment. */
+#wbapps {
+  --paper: #f3f4f5;
+  --card: #ffffff;
+  --ink: #121316;
+  --muted: #6a6d74;
+  --line: #e1e3e7;
+  --soft: #e9ebee;
+  --live: #1f9d55;
+  --dev: #d08700;
+  --own: #8a8d94;
+  --serif: "Libre Caslon Text", "Iowan Old Style", Georgia, "Times New Roman", serif;
+  --sans: "Geist", "Helvetica Neue", Arial, sans-serif;
+  --mono: "Geist Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  --gutter: clamp(16px, 4.5vw, 64px);
+  --max: 1200px;
+  --nav: 64px;
+  color-scheme: light;
+}
+
+/* Hide Squarespace chrome only while this page is taken over (class set by the script below). */
+html.wbapps-on #siteWrapper,
+html.wbapps-on #header,
+html.wbapps-on #footer-sections,
+html.wbapps-on .sqs-announcement-bar-dropzone,
+html.wbapps-on .header-announcement-bar-wrapper { display: none !important; }
+html.wbapps-on, html.wbapps-on body { background: #f3f4f5 !important; margin: 0 !important; padding: 0 !important; }
+html.wbapps-on { scroll-behavior: smooth; scrollbar-width: none; }
+html.wbapps-on::-webkit-scrollbar { display: none; }
+@media (prefers-reduced-motion: reduce) { html.wbapps-on { scroll-behavior: auto; } }
+
+/* Scoped reset so Squarespace's site styles can't leak in. */
+#wbapps, #wbapps * { box-sizing: border-box; margin: 0; padding: 0; border: 0; font: inherit; color: inherit; letter-spacing: inherit; text-transform: inherit; text-decoration: none; background: none; }
+#wbapps { position: relative; min-height: 100vh; background: var(--paper); color: var(--ink); font-family: var(--sans); font-size: 16px; line-height: 1.55; -webkit-font-smoothing: antialiased; overflow-x: clip; text-align: left; }
+#wbapps img { display: block; max-width: 100%; }
+#wbapps a, #wbapps button { cursor: pointer; }
+#wbapps :focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; border-radius: 6px; }
+#wbapps mark.ph { background: none; color: inherit; border-bottom: 1.5px dashed #d08700; padding-bottom: 1px; }
+#wbapps .wrap { width: 100%; max-width: calc(var(--max) + 2 * var(--gutter)); margin: 0 auto;
+  padding-left: max(var(--gutter), env(safe-area-inset-left, 0px)); padding-right: max(var(--gutter), env(safe-area-inset-right, 0px)); }
+#wbapps .label { font-family: var(--mono); font-size: 11.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+#wbapps h1, #wbapps h2 { font-family: var(--serif); font-weight: 400; letter-spacing: -.015em; line-height: 1.04; text-wrap: balance; }
+#wbapps h2 { font-size: clamp(30px, 3.6vw, 46px); }
+#wbapps em { font-style: italic; }
+
+/* Nav: clear over the landing, frosted once you scroll past it. */
+#wbapps .nav { position: sticky; top: 0; z-index: 30; padding-top: env(safe-area-inset-top, 0px); border-bottom: 1px solid var(--line);
+  background: rgba(243,244,245,.86); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); transition: background .3s, border-color .3s; }
+#wbapps .nav.over { background: transparent; border-color: transparent; backdrop-filter: none; -webkit-backdrop-filter: none; }
+#wbapps .nav .wrap { display: flex; align-items: center; gap: 22px; height: var(--nav); }
+#wbapps .mark { display: flex; align-items: baseline; gap: 10px; }
+#wbapps .mark b { font-family: var(--serif); font-size: 26px; font-weight: 400; letter-spacing: .01em; }
+#wbapps .mark span { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+#wbapps .nav-links { display: flex; gap: 22px; margin-left: auto; font-size: 13px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+#wbapps .nav-links a:hover, #wbapps .home:hover { color: var(--ink); }
+#wbapps .kbd-search { display: inline-flex; align-items: center; gap: 10px; padding: 8px 10px 8px 14px; border: 1px solid var(--line); border-radius: 10px; background: var(--card); font-size: 13px; color: var(--muted); }
+#wbapps .kbd-search kbd { font-family: var(--mono); font-size: 11px; padding: 2px 6px; border-radius: 5px; background: var(--soft); color: var(--ink); }
+#wbapps .home { font-size: 13px; letter-spacing: .1em; text-transform: uppercase; color: var(--ink); white-space: nowrap; }
+
+/* Landing: the icon field fills the whole screen; the copy sits on top of it. */
+#wbapps .hero { position: relative; height: 100vh; height: 100svh; min-height: 560px; overflow: hidden;
+  margin-top: calc(-1 * (var(--nav) + env(safe-area-inset-top, 0px)));
+  background: radial-gradient(75% 70% at 70% 45%, #ffffff 0%, #eef0f2 55%, #e3e5e9 100%); }
+#wbapps .stage { position: absolute; inset: 0; }
+#wbapps .stage canvas { position: absolute; inset: 0; width: 100% !important; height: 100% !important; display: block; touch-action: pan-y; }
+/* Once 3D is running, the canvas covers the window and the icons fly from the landing down into their cards as you scroll.
+   It sits under the hero copy and under the cards' text; it only takes clicks while the landing is on screen. */
+#wbapps.dock .stage canvas { position: fixed; z-index: 1; }
+#wbapps.dock.docked .stage canvas { pointer-events: none; }
+#wbapps.dock .grid .icon, #wbapps.dock .soon .icon { visibility: hidden; }
+#wbapps.dock .section { position: relative; }
+#wbapps .hero > .wrap { position: relative; z-index: 2; height: 100%; display: flex; flex-direction: column; justify-content: center; pointer-events: none;
+  padding-block: calc(var(--nav) + env(safe-area-inset-top, 0px) + 24px) calc(72px + env(safe-area-inset-bottom, 0px)); }
+#wbapps .hero-copy { display: grid; gap: 24px; width: min(540px, 44%); min-width: 0; }
+#wbapps .hero-copy a { pointer-events: auto; }
+#wbapps .hero h1 { font-size: clamp(40px, 4.8vw, 68px); }
+#wbapps .hero h1 em { color: var(--muted); }
+#wbapps .lede { font-size: clamp(17px, 1.4vw, 19px); max-width: 46ch; color: #2c2e33; }
+#wbapps .ctas { display: flex; flex-wrap: wrap; gap: 10px; }
+#wbapps .btn { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 500; padding: 12px 18px; border-radius: 999px; border: 1px solid var(--line); background: var(--card); transition: background .2s, border-color .2s, color .2s; }
+#wbapps .btn:hover { border-color: var(--ink); }
+#wbapps .btn.solid { background: var(--ink); color: #fff; border-color: var(--ink); }
+#wbapps .btn.solid:hover { background: #2c2e33; }
+#wbapps .hero-foot { position: absolute; z-index: 2; left: 0; right: 0; bottom: 0; pointer-events: none; }
+#wbapps .hero-foot .wrap { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding-bottom: calc(22px + env(safe-area-inset-bottom, 0px)); }
+#wbapps .hero-foot a { pointer-events: auto; display: inline-flex; align-items: center; gap: 10px; }
+#wbapps .hero-foot a i { font-style: normal; display: inline-block; animation: wbapps-nudge 2.4s ease-in-out infinite; }
+@keyframes wbapps-nudge { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(4px); } }
+@media (prefers-reduced-motion: reduce) { #wbapps .hero-foot a i { animation: none; } }
+#wbapps .stage-fallback { position: absolute; top: 0; bottom: 0; right: 0; left: 48%; display: flex; flex-wrap: wrap; gap: 22px; align-content: center; justify-content: center; padding: 96px 32px 72px; }
+#wbapps .stage-fallback .icon { width: 96px; height: 96px; border-radius: 22px; font-size: 32px; }
+
+/* Icons: the real icon image sits over the placeholder tile and hides itself if the file isn't uploaded yet. */
+#wbapps .icon { position: relative; flex: none; width: 64px; height: 64px; border-radius: 15px; display: grid; place-items: center; overflow: hidden; color: #fff;
+  font-family: var(--serif); font-size: 24px; letter-spacing: -.02em; box-shadow: inset 0 1px 0 rgba(255,255,255,.3), 0 1px 2px rgba(0,0,0,.12), 0 8px 20px rgba(0,0,0,.12); }
+#wbapps .icon.has-img { background: none !important; color: transparent; }
+#wbapps .icon img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+#wbapps .icon.ghost { background: repeating-linear-gradient(135deg, #e9ebee 0 8px, #f3f4f5 8px 16px) !important; color: var(--muted); box-shadow: inset 0 0 0 1.5px #cfd2d7; }
+
+/* Apps index */
+#wbapps .section { padding-block: clamp(56px, 9vh, 96px); }
+#wbapps section { scroll-margin-top: 72px; }
+#wbapps .index-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 20px; margin-bottom: 22px; }
+#wbapps .index-head h2 sup { font-family: var(--mono); font-size: 13px; color: var(--muted); vertical-align: top; margin-left: 6px; }
+#wbapps .tools { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+#wbapps .tabs { display: flex; flex-wrap: wrap; gap: 4px; padding: 4px; background: var(--soft); border-radius: 12px; }
+#wbapps .tabs button { font-size: 13.5px; padding: 7px 12px; border-radius: 9px; color: var(--muted); transition: background .15s, color .15s; }
+#wbapps .tabs button:hover { color: var(--ink); }
+#wbapps .tabs button[aria-pressed="true"] { background: var(--card); color: var(--ink); box-shadow: 0 1px 2px rgba(0,0,0,.08); }
+#wbapps .tabs sup { font-family: var(--mono); font-size: 10px; margin-left: 3px; color: var(--muted); }
+#wbapps .search { position: relative; }
+#wbapps .search input { width: min(260px, 100%); font-size: 14px; padding: 10px 14px 10px 36px; border: 1px solid var(--line); border-radius: 12px; background: var(--card); color: var(--ink); }
+#wbapps .search input::placeholder { color: #9a9da3; }
+#wbapps .search svg { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; color: var(--muted); pointer-events: none; }
+#wbapps .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); gap: 14px; }
+#wbapps .card { display: grid; grid-template-rows: auto auto 1fr auto; gap: 14px; padding: 22px; text-align: left; width: 100%; background: var(--card); border: 1px solid var(--line); border-radius: 18px; transition: transform .25s cubic-bezier(.2,.7,.1,1), box-shadow .25s, border-color .25s; min-width: 0; }
+#wbapps .card:hover { transform: translateY(-3px); box-shadow: 0 18px 40px -18px rgba(18,19,22,.25); border-color: #cfd2d7; }
+#wbapps .card[hidden] { display: none !important; }
+#wbapps .card-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+#wbapps .get { font-size: 12.5px; font-weight: 600; padding: 6px 14px; border-radius: 999px; background: var(--soft); color: var(--ink); white-space: nowrap; }
+#wbapps .get.live { background: var(--ink); color: #fff; }
+#wbapps .card h3 { font-size: 19px; font-weight: 600; letter-spacing: -.01em; line-height: 1.2; }
+#wbapps .card h3 + p { margin-top: 4px; color: #3a3c42; font-size: 15px; }
+#wbapps .meta { display: flex; flex-wrap: wrap; gap: 6px 14px; padding-top: 14px; border-top: 1px solid var(--line); font-size: 12.5px; color: var(--muted); }
+#wbapps .dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; margin-right: 6px; background: var(--dev); vertical-align: 1px; }
+#wbapps .dot.live { background: var(--live); }
+#wbapps .dot.own { background: var(--own); }
+#wbapps .empty { padding: 40px 0; color: var(--muted); }
+
+/* Coming soon (hidden while the SOON list is empty) */
+#wbapps .soon { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); gap: 14px; margin-top: 18px; }
+#wbapps .soon article { display: flex; gap: 16px; align-items: flex-start; padding: 18px; border: 1.5px dashed #cfd2d7; border-radius: 18px; min-width: 0; }
+#wbapps .soon h3 { font-size: 17px; font-weight: 600; }
+#wbapps .soon p { font-size: 14.5px; color: var(--muted); margin-top: 2px; }
+#wbapps .soon .tag { font-family: var(--mono); font-size: 10.5px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin-left: 8px; }
+#wbapps .soon .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+#wbapps .soon .chips span { font-size: 12px; padding: 3px 9px; border-radius: 999px; background: var(--soft); color: var(--muted); }
+#wbapps .soon-note { margin-top: 6px; font-family: var(--serif); font-style: italic; font-size: 17px; color: var(--muted); }
+#wbapps .soon .icon.has-img { color: transparent; background: none !important; box-shadow: inset 0 1px 0 rgba(255,255,255,.3), 0 1px 2px rgba(0,0,0,.12), 0 8px 20px rgba(0,0,0,.12); }
+#wbapps .ph-icon { color: #b06f00; }
+#wbapps .soon .icon { width: 52px; height: 52px; border-radius: 12px; font-size: 18px; }
+
+/* About */
+#wbapps .about { display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 7fr); gap: clamp(28px, 5vw, 72px); align-items: start; }
+#wbapps .photo { position: relative; aspect-ratio: 4 / 5; max-width: 100%; border-radius: 18px; overflow: hidden; background: var(--soft); border: 1px solid var(--line); }
+#wbapps .photo img { width: 100%; height: 100%; object-fit: cover; }
+#wbapps .photo .photo-points { position: absolute; inset: 0; width: 100%; height: 100%; display: block; cursor: crosshair; touch-action: pan-y; }
+#wbapps .photo.pointed img { opacity: 0; }
+#wbapps .photo-empty { position: absolute; inset: 0; display: grid; place-items: center; font-family: var(--mono); font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+#wbapps .photo-empty span { border: 1.5px dashed #d08700; padding: 10px 14px; border-radius: 8px; background: var(--paper); }
+#wbapps .about-copy { display: grid; gap: 22px; min-width: 0; }
+#wbapps .about-copy p { max-width: 60ch; }
+#wbapps .links { display: flex; flex-wrap: wrap; gap: 8px; }
+#wbapps .links a { font-size: 14px; padding: 9px 14px; border-radius: 999px; background: var(--card); border: 1px solid var(--line); transition: border-color .2s; }
+#wbapps .links a:hover { border-color: var(--ink); }
+#wbapps .links a.todo { border-style: dashed; color: var(--muted); }
+
+/* Footer */
+#wbapps .foot { border-top: 1px solid var(--line); padding-block: 36px calc(36px + env(safe-area-inset-bottom, 0px)); }
+#wbapps .foot .wrap { display: flex; flex-wrap: wrap; gap: 14px 28px; align-items: center; justify-content: space-between; font-size: 13px; color: var(--muted); }
+#wbapps .foot b { font-family: var(--serif); font-weight: 400; font-size: 22px; color: var(--ink); }
+#wbapps .foot nav { display: flex; flex-wrap: wrap; gap: 8px 22px; letter-spacing: .1em; text-transform: uppercase; }
+#wbapps .foot a:hover { color: var(--ink); }
+
+/* Detail sheet */
+#wbapps dialog { margin: auto; width: min(640px, calc(100vw - 32px)); max-height: calc(100dvh - 48px); border-radius: 22px; background: var(--card); color: var(--ink); box-shadow: 0 30px 80px -20px rgba(0,0,0,.35); padding: 0; overflow: auto; scrollbar-width: none; }
+#wbapps dialog::-webkit-scrollbar { display: none; }
+#wbapps dialog::backdrop { background: rgba(18,19,22,.38); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); }
+#wbapps .sheet { display: grid; gap: 20px; padding: clamp(20px, 4vw, 32px); }
+#wbapps .sheet-head { display: flex; gap: 18px; align-items: center; }
+#wbapps .sheet-head .icon { width: 84px; height: 84px; border-radius: 20px; font-size: 30px; }
+#wbapps .sheet h3 { font-family: var(--serif); font-size: 30px; line-height: 1.1; }
+#wbapps .sheet .sub { color: var(--muted); font-size: 15px; margin-top: 4px; }
+#wbapps .sheet h4 { font-size: 15px; font-weight: 600; letter-spacing: -.005em; margin-bottom: 6px; }
+#wbapps .sheet .why { padding-left: 16px; border-left: 2px solid var(--line); color: #4a4d54; font-size: 15px; line-height: 1.6; }
+#wbapps dialog.wide { width: min(920px, calc(100vw - 32px)); }
+#wbapps .carousel { position: relative; }
+#wbapps .shots { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth; scrollbar-width: none; border-radius: 12px; border: 1px solid var(--line); background: #15161a; }
+#wbapps .shots::-webkit-scrollbar { display: none; }
+#wbapps .shots a { flex: 0 0 100%; scroll-snap-align: center; display: grid; place-items: center; aspect-ratio: 2.3 / 1; }
+#wbapps .shots img { max-width: 100%; max-height: 100%; width: auto; height: auto; object-fit: contain; }
+#wbapps .carousel .arrow { position: absolute; top: 50%; transform: translateY(-50%); width: 38px; height: 38px; border-radius: 50%; background: rgba(255,255,255,.92); color: var(--ink); font-size: 18px; box-shadow: 0 2px 10px rgba(0,0,0,.25); }
+#wbapps .carousel .prev { left: 10px; } #wbapps .carousel .next { right: 10px; }
+#wbapps .carousel .arrow[disabled] { opacity: 0; pointer-events: none; }
+#wbapps .dots { display: flex; justify-content: center; gap: 6px; margin-top: 10px; }
+#wbapps .dots button { width: 7px; height: 7px; border-radius: 50%; background: #cfd2d7; }
+#wbapps .dots button[aria-current="true"] { background: var(--ink); }
+#wbapps .sheet ul { list-style: none; display: grid; gap: 8px; }
+#wbapps .sheet li { padding-left: 18px; position: relative; font-size: 15px; }
+#wbapps .sheet li::before { content: ""; position: absolute; left: 0; top: .62em; width: 6px; height: 6px; border-radius: 2px; background: var(--ink); }
+#wbapps .facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+#wbapps .facts div { background: var(--card); padding: 12px 14px; display: grid; gap: 2px; font-size: 14px; }
+#wbapps .sheet-foot { display: flex; flex-wrap: wrap; gap: 10px; justify-content: space-between; align-items: center; }
+#wbapps .close { position: sticky; top: 12px; float: right; margin: 12px 12px -46px 0; width: 34px; height: 34px; border-radius: 50%; background: var(--soft); font-size: 18px; line-height: 34px; text-align: center; z-index: 2; }
+
+/* Squarespace editor stand-in */
+#wbapps .editor-note { display: none; }
+#wbapps.editor { min-height: 0; padding: 28px; border-radius: 12px; border: 1px solid var(--line); }
+#wbapps.editor > :not(.editor-note) { display: none !important; }
+#wbapps.editor .editor-note { display: grid; gap: 6px; font-size: 14px; }
+#wbapps.editor .editor-note b { font-family: var(--serif); font-size: 24px; font-weight: 400; }
+
+@media (max-width: 900px) {
+  #wbapps .about { grid-template-columns: minmax(0, 1fr); }
+  #wbapps .about figure { max-width: 360px; }
+  #wbapps .nav-links, #wbapps .kbd-search { display: none; }
+  #wbapps .home { margin-left: auto; }
+}
+/* Tall screens (phones, portrait tablets): icons fill the top, the copy sits at the bottom. Keep this query in sync with STACKED in the script. */
+@media (max-aspect-ratio: 1/1), (max-width: 760px) {
+  #wbapps .hero > .wrap { justify-content: flex-end; padding-bottom: calc(64px + env(safe-area-inset-bottom, 0px)); }
+  #wbapps .hero-copy { width: 100%; gap: 18px; }
+  #wbapps .hero h1 { font-size: clamp(34px, 9vw, 52px); }
+  #wbapps .lede { font-size: 16px; }
+  #wbapps .hero-foot .shelf-label { display: none; }
+  #wbapps .hero-foot .wrap { justify-content: flex-start; }
+  #wbapps .stage-fallback { left: 0; bottom: 50%; padding: 80px 16px 8px; gap: 14px; }
+  #wbapps .stage-fallback .icon { width: 64px; height: 64px; border-radius: 15px; font-size: 22px; }
+}
+@media (max-width: 520px) {
+  #wbapps .tools, #wbapps .search, #wbapps .search input { width: 100%; }
+}
+</style>
+
+<div id="wbapps" data-version="3">
+  <header class="nav over" id="wbapps-nav">
+    <div class="wrap">
+      <a class="mark" href="#top"><b>WB</b><span>/ apps</span></a>
+      <nav class="nav-links" aria-label="Apps page">
+        <a href="#apps">Apps</a>
+        <a href="#soon" id="wbapps-soon-link">Envisioned</a>
+        <a href="#about">About</a>
+      </nav>
+      <button class="kbd-search" type="button" id="wbapps-kbd">Search apps <kbd>⌘K</kbd></button>
+      <a class="home" href="https://wboechler.com/">wboechler.com ↗</a>
+    </div>
+  </header>
+
+  <section class="hero" id="top">
+    <div class="stage" id="wbapps-stage" aria-label="App icons floating in 3D. Click one for details.">
+      <div class="stage-fallback" id="wbapps-fallback"></div>
+    </div>
+    <div class="wrap">
+      <div class="hero-copy" id="wbapps-copy">
+        <p class="label">Apps by Will Boechler</p>
+        <h1>Making the computer feel like <em>something specific.</em></h1>
+        <p class="lede"><mark class="ph">I'm Will. I build apps for myself first: a bookshelf that writes back, a tape recorder for my thoughts, a beige desktop from 1998.</mark></p>
+        <div class="ctas">
+          <a class="btn solid" href="#apps">Browse the apps</a>
+          <a class="btn" href="#about">About me</a>
+        </div>
+      </div>
+    </div>
+    <div class="hero-foot">
+      <div class="wrap label">
+        <a href="#apps"><span id="wbapps-hero-count">Apps</span> <i aria-hidden="true">↓</i></a>
+        <span class="shelf-label" id="wbapps-shelf-label">Drag to turn them · click an icon</span>
+      </div>
+    </div>
+  </section>
+  <div id="wbapps-sentinel" aria-hidden="true"></div>
+
+  <section class="section" id="apps">
+    <div class="wrap">
+      <div class="index-head">
+        <h2>Apps<sup id="wbapps-count"></sup></h2>
+        <div class="tools">
+          <div class="tabs" role="group" aria-label="Filter by platform" id="wbapps-tabs"></div>
+          <label class="search">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+            <input id="wbapps-search" type="search" placeholder="Search apps" aria-label="Search apps" autocomplete="off">
+          </label>
+        </div>
+      </div>
+      <div class="grid" id="wbapps-grid"></div>
+      <p class="empty" id="wbapps-empty" hidden>No apps match that search.</p>
+
+      <div id="soon" style="margin-top: clamp(56px, 8vh, 88px)">
+        <p class="label">Still being envisioned</p>
+        <p class="soon-note">Ideas on the drafting table. No promises on dates, only on intent.</p>
+        <div class="soon" id="wbapps-soon"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="about" style="padding-top: 0">
+    <div class="wrap about">
+      <figure>
+        <div class="photo">
+          <!-- Put your photo's URL in src="" (upload it to Squarespace, then copy the image address). The placeholder hides itself once it loads. -->
+          <img src="../will-boechler.jpg" alt="Will Boechler" onload="this.nextElementSibling && this.nextElementSibling.remove()" onerror="this.remove()">
+          <div class="photo-empty"><span>Your photo here</span></div>
+        </div>
+      </figure>
+      <div class="about-copy">
+        <p class="label">About</p>
+        <h2>Hi, I'm Will.</h2>
+        <p class="lede"><mark class="ph">Short bio, two or three sentences, in your own voice: who you are, that you write fiction, and why you build your own tools.</mark></p>
+        <p><mark class="ph">Optional second paragraph: how you build, and what you're working toward.</mark></p>
+        <div class="links">
+          <!-- Swap each href="#" for a real link and remove class="todo". Delete any you don't use. -->
+          <a class="todo" href="#">Substack</a>
+          <a class="todo" href="#">Email</a>
+          <a href="https://github.com/cruxcified" target="_blank" rel="noopener">GitHub ↗</a>
+          <a class="todo" href="#">Instagram</a>
+          <a href="https://wboechler.com/">Photography &amp; films ↗</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="foot">
+    <div class="wrap">
+      <b>WB</b>
+      <nav aria-label="Footer">
+        <a href="https://wboechler.com/">wboechler.com</a>
+        <a href="/dev/">Games ↗</a>
+        <a href="#top">Back to top ↑</a>
+      </nav>
+      <span>© <span id="wbapps-year">2026</span> Will Boechler</span>
+    </div>
+  </footer>
+
+  <dialog id="wbapps-sheet" aria-labelledby="wbapps-sheet-title"></dialog>
+
+  <div class="editor-note">
+    <b>WB / apps</b>
+    <span>The full apps page only runs on the live site, not inside the Squarespace editor.</span>
+    <span>Edit the code in this block, save, then view the page in a new tab.</span>
+  </div>
+</div>
+
+<script>
+/* Runs immediately: lift the page out of Squarespace's layout so it can go full-bleed. */
+(function () {
+  var root = document.getElementById('wbapps');
+  if (!root) return;
+  var inEditor = false;
+  try { inEditor = window.top !== window.self && /^\/config/.test(window.top.location.pathname); } catch (e) { inEditor = false; }
+  if (inEditor || document.body.classList.contains('sqs-edit-mode-active')) { root.classList.add('editor'); window.__wbappsEditor = true; return; }
+  document.body.appendChild(root);
+  document.documentElement.classList.add('wbapps-on');
+  var y = document.getElementById('wbapps-year'); if (y) y.textContent = new Date().getFullYear();
+})();
+</script>
+
+<script type="module">
+/* ---------- App icons ----------
+   1. In Figma, export each icon as a square PNG, 1024 × 1024, full bleed: no rounded corners and no shadow
+      (the page rounds and lights them itself).
+   2. Name the file icon-<id>.png, using the app's id below: icon-scriptorium.png, icon-newsstand.png, icon-subscan.png,
+      icon-socha.png, icon-penpals.png, icon-posterfetch.png, icon-charactermessenger.png, icon-99script.png
+   3. Upload it to Squarespace as a file link, without renaming it. That's all: it shows up on the 3D landing,
+      the card and the detail sheet. Until the file exists, the app keeps its placeholder tile (initials on its colors).
+   Coming-soon apps use the same naming. A different name or format (.svg, .webp)? Put the full path in that app's icon: field, e.g. icon: '/s/socha-v2.webp'. */
+const ICON_PATH = (id) => `../icon-${id}.png`;
+
+/* ---------- Edit your apps here ----------
+   state:     'live' (green), 'dev' (amber, in development) or 'own' (grey, made for myself). status is the words shown.
+   platforms: shown on cards and used by the filter tabs. Leave [] until you know.
+   url:       link for the "Get" button (App Store, TestFlight, download page). Leave '' until it's public.
+   stack, requires: leave '' to hide them.
+   shots:     optional screenshots shown in the detail sheet, e.g. ['/s/socha-1.webp']. Upload them as File links.
+   colors, glyph: the placeholder tile until the real icon is uploaded.                                        */
+const APPS = [
+  { id: 'scriptorium', name: 'Scriptorium', tagline: 'A bookshelf that writes back.',
+    shots: ['../scriptorium-1.webp', '../scriptorium-2.webp'],
+    category: 'Writing', platforms: ['Mac', 'Windows', 'Linux'], state: 'live', status: 'Live, in use',
+    stack: 'Three.js', requires: '', url: '', icon: '',
+    about: 'Scriptorium is a writing app that treats your projects like real books. Every manuscript sits on a 3D bookshelf with its own cover, so opening a project feels like pulling a volume off the shelf rather than clicking through a file list. It combines the drafting depth of Scrivener with the book-building tools of Atticus, and it does it without AI: your words stay yours, and your data stays private.',
+    why: 'I built it because I needed it: a place to draft, structure, and see my novels as physical objects. It’s already live and in use, and the next questions (academic citations, paid sharing) are open on purpose.',
+    features: ['Every manuscript on a 3D bookshelf, each with its own cover', 'The drafting depth of Scrivener', 'The book-building tools of Atticus', 'No AI: your words stay yours, and your data stays private'],
+    colors: ['#3a2716', '#c4924a'], glyph: 'Sc' },
+  { id: 'subscan', placeholderIcon: true, shots: ['../subscan-1.webp', '../subscan-2.webp'], name: 'Subscan', tagline: 'Find the subscriptions you forgot you’re paying for.',
+    category: 'Money', platforms: ['Mac'], state: 'dev', status: 'In development',
+    stack: '', requires: '', url: '', icon: '',
+    about: 'Subscan scans your bank and PayPal statements as plain files (no bank login, ever) and finds the recurring charges hiding in them. It maps where your money goes each month, flags the subscriptions you forgot about, and links you straight to each one’s cancellation page so you can actually reclaim the money.',
+    why: 'This one comes straight from my own tight budget. I needed to know what was quietly billing me across my bank and PayPal, and no existing tool did it without asking for my credentials. Subscan only ever sees the statement files you hand it.',
+    features: ['Reads bank and PayPal statements as plain files', 'Never asks for a bank login', 'Finds recurring charges and maps where your money goes each month', 'Flags the subscriptions you forgot about', 'Links straight to each cancellation page'],
+    colors: ['#14532d', '#3fa36b'], glyph: 'Ss' },
+  { id: 'socha', shots: ['../socha-1.webp', '../socha-2.webp'], name: 'Socha', tagline: 'A voice journal that never leaves your phone.',
+    category: 'Journaling', platforms: ['iPhone'], state: 'dev', status: 'In development',
+    stack: 'On-device, no network calls in v1', requires: 'iOS', url: '', icon: '',
+    about: 'Socha is a private, on-device voice journal for iOS. You capture thoughts with the Action Button, and they’re transcribed and reflected on entirely on your device. It wears a tactile, Twin Peaks mood: a grayscale Teenage Engineering palette, Powell type, and the spirit of Dale Cooper’s tape recorder.',
+    why: 'The name comes from a dictionary of sorrows: the hidden vulnerability of others. That’s what it’s for, saying the things you’d only say into a recorder, knowing they stay yours. I’ll publish it under my own name.',
+    features: ['Capture a thought with the Action Button', 'Transcribed and reflected on entirely on your device', 'No network calls in v1', 'A grayscale palette, Powell type and Dale Cooper’s tape recorder'],
+    colors: ['#1b1b1d', '#8d8e92'], glyph: 'So' },
+  { id: 'posterfetch', placeholderIcon: true, shots: ['../posterfetch-1.webp', '../posterfetch-2.webp'], name: 'Poster Fetch', tagline: 'The metadata side of my movie brain.',
+    category: 'Home media', platforms: [], state: 'own', status: 'Made for myself',
+    stack: 'The Movie Database (TMDB) API', requires: '', url: '', icon: '',
+    about: 'Poster Fetch fetches poster thumbnails and labels for my movie files using The Movie Database (TMDB) API, turning a folder of files into a real browsable library.',
+    why: 'I originally built a simple ripper for my own discs; Poster Fetch is the part that turned it into a real library. It’s the unglamorous half of a home-media setup that makes the whole thing feel like a shelf instead of a directory listing.',
+    features: ['Fetches posters and labels for movie files from TMDB', 'Turns a folder of files into a browsable library'],
+    colors: ['#4a0d12', '#b3262f'], glyph: 'Pf' },
+  { id: 'charactermessenger', placeholderIcon: true, shots: ['../charactermessenger-1.webp', '../charactermessenger-2.webp'], name: 'Character Messenger', tagline: 'A Windows 98 reskin for Character.ai.',
+    category: 'Chat', platforms: [], state: 'own', status: 'Made for myself',
+    stack: '', requires: '', url: '', icon: '',
+    about: 'Character Messenger is a personal Windows 98-style skin I wrote for my own Character.ai chats, so they feel like a specific place instead of a generic app. It\u2019s a private mod, not affiliated with Character.ai, and I don\u2019t distribute it.',
+    why: 'Built for myself, then kept refining. It’s part of my through-line of making the computer feel like something specific, whether that’s a bookshelf, a tape recorder, or a beige desktop from 1998.',
+    features: ['A Windows 98-style skin for my own chats', 'Personal use only: never distributed'],
+    colors: ['#000080', '#1084d0'], glyph: 'Cm' },
+  { id: '99script', shots: ['../99script-1.webp', '../99script-2.webp'], name: '99Script', tagline: 'Write screenplays and branching game scripts on iPhone, iPad and Mac.',
+    category: 'Screenwriting', platforms: ['iPhone', 'iPad', 'Mac'], state: 'dev', status: 'In development',
+    stack: 'SwiftUI', requires: 'iOS / iPadOS 16+, macOS 13+', url: '', icon: '',
+    about: 'A screenplay editor for film and games, with a touch of Windows 95. It grew out of two earlier apps of mine, 99Writer and CCC Writer.',
+    why: '',
+    features: ['Final Draft-style page with smart Return and Tab', 'Dual dialogue and notes', 'Game writing: nodes, choices, jumps, conditions and barks', 'A navigator that flags broken branches', 'iCloud sync, plus Fountain, Final Draft (.fdx) and PDF import and export'],
+    colors: ['#005f5f', '#13a3a0'], glyph: '99' },
+];
+/* Apps you want to tease without a card. The "Coming soon" row hides itself while this is empty.
+   e.g. { name: 'Next thing', tag: 'Working title', glyph: 'Nt', blurb: 'One line on what it does.', chips: ['A feature'] } */
+const SOON = [
+  { id: 'newsstand', name: 'Newsstand', tag: 'Sketchbook', glyph: 'Ns',
+    blurb: 'Only good news. That\u2019s the whole rule. A small reader that surfaces positive stories and nothing else.',
+    chips: ['Positive news only', 'A seal mascot of its own'] },
+  { id: 'penpals', placeholderIcon: true, name: 'Bottle Post', tag: 'Working title', glyph: 'Bp',
+    blurb: 'Anonymous letters to strangers, each sent off with a flick. A bottle in the ocean, not a dating app.',
+    chips: ['Inspired by a 2010 iPhone app I loved', '18+, safety first'] },
+];
+const THREE_URL = 'https://cdn.jsdelivr.net/npm/three@0.186.1/build/three.module.js';
+const STACKED = '(max-aspect-ratio: 1/1), (max-width: 760px)';
+/* ----------------------------------------- */
+
+const root = document.getElementById('wbapps');
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const iconSrc = (a) => a.icon || ICON_PATH(a.id);
+const tileBg = (a) => `linear-gradient(150deg, ${a.colors[1]}, ${a.colors[0]})`;
+const iconHTML = (a) => `<div class="icon" style="background:${tileBg(a)}">${esc(a.glyph)}<img src="${esc(iconSrc(a))}" alt="" onload="this.parentNode.classList.add('has-img')" onerror="this.remove()"></div>`;
+
+if (root && !window.__wbappsEditor) {
+  renderIndex();
+  renderSoon();
+  wireSheet();
+  wireNav();
+  renderFallbackShelf();
+  startPhotoPoints().catch((err) => console.warn('[wbapps] photo points off:', err));
+  startShelf().catch((err) => { console.warn('[wbapps] 3D landing disabled:', err); document.getElementById('wbapps-shelf-label').textContent = 'Click an icon for details'; });
+}
+
+function renderIndex() {
+  const grid = document.getElementById('wbapps-grid');
+  const tabs = document.getElementById('wbapps-tabs');
+  const search = document.getElementById('wbapps-search');
+  const empty = document.getElementById('wbapps-empty');
+  document.getElementById('wbapps-count').textContent = APPS.length;
+  document.getElementById('wbapps-hero-count').textContent = `${APPS.length} apps`;
+
+  grid.innerHTML = APPS.map((a) => `
+    <button class="card" type="button" data-id="${a.id}" data-platforms="${a.platforms.join('|')}"
+      data-text="${esc([a.name, a.tagline, a.category, a.about, a.why, a.platforms.join(' ')].join(' ').toLowerCase())}">
+      <div class="card-top">${iconHTML(a)}<span class="get${a.url ? ' live' : ''}">${a.url ? 'Get' : 'More'}</span></div>
+      <div><h3>${esc(a.name)}</h3><p>${esc(a.tagline)}</p></div>
+      <div></div>
+      <div class="meta"><span><span class="dot ${a.state}"></span>${esc(a.status)}</span><span>${esc(a.category)}</span>${a.placeholderIcon ? '<span class="ph-icon">Placeholder icon</span>' : ''}${a.platforms.length ? `<span>${esc(a.platforms.join(' · '))}</span>` : ''}</div>
+    </button>`).join('');
+
+  const order = ['Mac', 'iPhone', 'iPad', 'Windows', 'Linux', 'Web'];
+  const plats = order.filter((p) => APPS.some((a) => a.platforms.includes(p)));
+  tabs.innerHTML = [['all', 'All', APPS.length], ...plats.map((p) => [p, p, APPS.filter((a) => a.platforms.includes(p)).length])]
+    .map(([k, l, n], i) => `<button type="button" data-p="${k}" aria-pressed="${i === 0}">${l}<sup>${n}</sup></button>`).join('');
+
+  let plat = 'all', q = '';
+  const apply = () => {
+    let shown = 0;
+    grid.querySelectorAll('.card').forEach((c) => {
+      const ok = (plat === 'all' || c.dataset.platforms.split('|').includes(plat)) && (!q || c.dataset.text.includes(q));
+      c.hidden = !ok; if (ok) shown++;
+    });
+    empty.hidden = shown > 0;
+  };
+  tabs.addEventListener('click', (e) => {
+    const b = e.target.closest('button'); if (!b) return;
+    plat = b.dataset.p;
+    tabs.querySelectorAll('button').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+    apply();
+  });
+  search.addEventListener('input', () => { q = search.value.trim().toLowerCase(); apply(); });
+  const focusSearch = () => { document.getElementById('apps').scrollIntoView({ behavior: 'smooth' }); setTimeout(() => search.focus({ preventScroll: true }), 350); };
+  document.getElementById('wbapps-kbd').addEventListener('click', focusSearch);
+  addEventListener('keydown', (e) => {
+    if ((e.key === 'k' && (e.metaKey || e.ctrlKey)) || (e.key === '/' && !/input|textarea/i.test(document.activeElement?.tagName))) { e.preventDefault(); focusSearch(); }
+  });
+  grid.addEventListener('click', (e) => { const c = e.target.closest('.card'); if (c) openSheet(c.dataset.id); });
+}
+
+function renderSoon() {
+  if (!SOON.length) { document.getElementById('soon').hidden = true; document.getElementById('wbapps-soon-link').hidden = true; return; }
+  document.getElementById('wbapps-soon').innerHTML = SOON.map((s) => `
+    <article>
+      <div class="icon ghost">${esc(s.glyph)}<img src="${esc(s.icon || ICON_PATH(s.id))}" alt="" onload="this.parentNode.classList.add('has-img')" onerror="this.remove()"></div>
+      <div><h3>${esc(s.name)}${s.tag ? `<span class="tag">${esc(s.tag)}</span>` : ''}</h3>
+      <p>${s.blurb ? esc(s.blurb) : '<mark class="ph">One line on what it does.</mark>'}</p>
+      ${s.placeholderIcon ? '<p class="ph-icon" style="font-size:12.5px">Placeholder icon</p>' : ''}${s.chips ? `<div class="chips">${s.chips.map((c) => `<span>${esc(c)}</span>`).join('')}</div>` : ''}</div>
+    </article>`).join('');
+}
+
+/* The nav is see-through over the landing and frosts once you scroll past it. */
+function wireNav() {
+  const nav = document.getElementById('wbapps-nav');
+  const end = document.getElementById('wbapps-sentinel');
+  const update = () => nav.classList.toggle('over', end.getBoundingClientRect().top > nav.offsetHeight);
+  addEventListener('scroll', update, { passive: true });
+  addEventListener('resize', update);
+  update();
+}
+
+function wireSheet() {
+  const dlg = document.getElementById('wbapps-sheet');
+  dlg.addEventListener('click', (e) => { if (e.target === dlg || e.target.closest('.close')) dlg.close(); });
+}
+function openSheet(id) {
+  const a = APPS.find((x) => x.id === id); if (!a) return;
+  const dlg = document.getElementById('wbapps-sheet');
+  const facts = [['Status', `<span class="dot ${a.state}"></span>${esc(a.status)}`], ['Runs on', esc(a.requires || a.platforms.join(', '))], ['Built with', esc(a.stack)], ['Icon', a.placeholderIcon ? '<span class="ph-icon">Placeholder</span>' : '']]
+    .filter(([, v]) => v && !/^<span[^>]*><\/span>$/.test(v));
+  dlg.innerHTML = `
+    <button class="close" type="button" aria-label="Close">×</button>
+    <div class="sheet">
+      <div class="sheet-head">${iconHTML(a)}<div><h3 id="wbapps-sheet-title">${esc(a.name)}</h3><p class="sub">${esc(a.tagline)}</p></div></div>
+      <div><h4>What it is</h4><p>${esc(a.about)}</p></div>
+      ${a.why ? `<div><h4>Why I built it</h4><p class="why">${esc(a.why)}</p></div>` : ''}
+      ${a.shots?.length ? `<div class="carousel"><div class="shots">${a.shots.map((u) => `<a href="${esc(u)}" target="_blank" rel="noopener"><img src="${esc(u)}" alt="${esc(a.name)} screenshot" onerror="window.__wbappsShotGone(this)"></a>`).join('')}</div>${a.shots.length > 1 ? `<button class="arrow prev" type="button" aria-label="Previous screenshot">‹</button><button class="arrow next" type="button" aria-label="Next screenshot">›</button>` : ''}</div>${a.shots.length > 1 ? `<div class="dots">${a.shots.map((_, i) => `<button type="button" aria-label="Screenshot ${i + 1}"></button>`).join('')}</div>` : ''}` : ''}
+      <div><h4 style="margin-bottom:10px">What it does</h4><ul>${a.features.map((f) => `<li>${esc(f)}</li>`).join('')}</ul></div>
+      <div class="facts">${facts.map(([k, v]) => `<div><span class="label">${k}</span><span>${v}</span></div>`).join('')}</div>
+      <div class="sheet-foot">
+        <span class="label">${esc(a.category)}</span>
+        ${a.url ? `<a class="btn solid" href="${esc(a.url)}" target="_blank" rel="noopener">Get ${esc(a.name)} ↗</a>` : '<span class="btn" aria-disabled="true">Not public yet</span>'}
+      </div>
+    </div>`;
+  dlg.classList.toggle('wide', !!a.shots?.length);
+  wireCarousel(dlg);
+  if (!dlg.open) dlg.showModal();
+}
+window.__wbappsShotGone = (img) => {
+  const track = img.closest('.shots'); img.parentNode.remove();
+  if (track && !track.children.length) { const dlg = track.closest('dialog'); track.closest('.carousel').nextElementSibling?.classList.contains('dots') && track.closest('.carousel').nextElementSibling.remove(); track.closest('.carousel').remove(); dlg?.classList.remove('wide'); }
+  else if (track) { const dots = track.closest('.carousel').nextElementSibling; if (dots?.classList.contains('dots')) dots.lastElementChild?.remove(); }
+};
+/* Screenshot carousel: arrows, dots, swipe. The scrollbar is hidden. */
+function wireCarousel(dlg) {
+  const track = dlg.querySelector('.shots'); if (!track) return;
+  const dots = [...dlg.querySelectorAll('.dots button')], prev = dlg.querySelector('.prev'), next = dlg.querySelector('.next');
+  const at = () => Math.round(track.scrollLeft / track.clientWidth);
+  const go = (i) => track.scrollTo({ left: i * track.clientWidth });
+  const sync = () => { const i = at(), n = track.children.length;
+    dots.forEach((d, k) => d.setAttribute('aria-current', String(k === i)));
+    if (prev) prev.disabled = i <= 0; if (next) next.disabled = i >= n - 1; };
+  prev?.addEventListener('click', () => go(at() - 1));
+  next?.addEventListener('click', () => go(at() + 1));
+  dots.forEach((d, k) => d.addEventListener('click', () => go(k)));
+  track.addEventListener('scroll', sync, { passive: true });
+  requestAnimationFrame(sync);
+}
+
+function renderFallbackShelf() {
+  const fb = document.getElementById('wbapps-fallback');
+  fb.innerHTML = APPS.map((a) => `<button type="button" data-id="${a.id}" aria-label="${esc(a.name)}">${iconHTML(a)}</button>`).join('');
+  fb.addEventListener('click', (e) => { const b = e.target.closest('button'); if (b) openSheet(b.dataset.id); });
+}
+
+/* ---------- three.js: app icons floating across the whole landing ---------- */
+async function startShelf() {
+  const root = document.getElementById('wbapps');
+  const stage = document.getElementById('wbapps-stage');
+  const copy = document.getElementById('wbapps-copy');
+  const probe = document.createElement('canvas');
+  if (!(probe.getContext('webgl2') || probe.getContext('webgl'))) throw new Error('WebGL unavailable');
+  const THREE = await import(THREE_URL);
+  await document.fonts.load('190px "Libre Caslon Text"').catch(() => {});
+
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const small = matchMedia('(max-width: 680px), (pointer: coarse)').matches;
+  const stacked = matchMedia(STACKED);
+  const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+  renderer.setPixelRatio(Math.min(devicePixelRatio || 1, small ? 1.5 : 2));
+  renderer.outputColorSpace = THREE.SRGBColorSpace;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.05;
+  stage.appendChild(renderer.domElement);
+  document.getElementById('wbapps-fallback').remove();
+
+  const scene = new THREE.Scene();
+  const CAM_Z = 9;
+  const camera = new THREE.PerspectiveCamera(30, 1, 0.1, 50);
+  camera.position.set(0, 0, CAM_Z);
+
+  scene.add(new THREE.HemisphereLight(0xffffff, 0xcfd3d9, 1.6));
+  const key = new THREE.DirectionalLight(0xffffff, 2.2); key.position.set(-3, 5, 6); scene.add(key);
+  const rim = new THREE.DirectionalLight(0xffffff, 1.2); rim.position.set(4, -2, -3); scene.add(rim);
+
+  /* A rounded-square tile with a bevel, like an app icon you could pick up. */
+  const R = 0.22, S = 0.5;
+  const shape = new THREE.Shape();
+  shape.moveTo(-S + R, -S); shape.lineTo(S - R, -S); shape.quadraticCurveTo(S, -S, S, -S + R);
+  shape.lineTo(S, S - R); shape.quadraticCurveTo(S, S, S - R, S); shape.lineTo(-S + R, S);
+  shape.quadraticCurveTo(-S, S, -S, S - R); shape.lineTo(-S, -S + R); shape.quadraticCurveTo(-S, -S, -S + R, -S);
+  const tileGeo = new THREE.ExtrudeGeometry(shape, { depth: 0.14, bevelEnabled: true, bevelThickness: 0.05, bevelSize: 0.045, bevelSegments: 5, curveSegments: 14 });
+  tileGeo.center();
+  const TILE = 1.09; // tile width including the bevel
+
+  function faceTexture(item, ghost) {
+    const c = document.createElement('canvas'); c.width = c.height = 512;
+    const g = c.getContext('2d');
+    if (ghost) {
+      g.fillStyle = '#eef0f2'; g.fillRect(0, 0, 512, 512);
+      g.strokeStyle = '#d6d9de'; g.lineWidth = 22;
+      for (let i = -512; i < 1024; i += 64) { g.beginPath(); g.moveTo(i, 0); g.lineTo(i + 512, 512); g.stroke(); }
+      g.fillStyle = '#7d8087';
+    } else {
+      const grad = g.createLinearGradient(0, 0, 512, 512);
+      grad.addColorStop(0, item.colors[1]); grad.addColorStop(1, item.colors[0]);
+      g.fillStyle = grad; g.fillRect(0, 0, 512, 512);
+      const shine = g.createLinearGradient(0, 0, 0, 512);
+      shine.addColorStop(0, 'rgba(255,255,255,.22)'); shine.addColorStop(.5, 'rgba(255,255,255,0)');
+      g.fillStyle = shine; g.fillRect(0, 0, 512, 512);
+      g.fillStyle = '#ffffff';
+    }
+    g.font = `400 ${item.glyph.length > 2 ? 150 : 190}px "Libre Caslon Text", Georgia, serif`;
+    g.textAlign = 'center'; g.textBaseline = 'middle';
+    g.fillText(item.glyph, 256, 272);
+    const tex = new THREE.CanvasTexture(c);
+    tex.colorSpace = THREE.SRGBColorSpace;
+    tex.anisotropy = renderer.capabilities.getMaxAnisotropy();
+    tex.offset.set(0.5, 0.5); // cap UVs run -0.5..0.5 in shape space
+    const mat = new THREE.MeshPhysicalMaterial({ map: tex, roughness: 0.32, clearcoat: 1, clearcoatRoughness: 0.18, transparent: ghost, opacity: ghost ? 0.85 : 1 });
+    if (ghost && item.id) {
+      new THREE.ImageLoader().load(iconSrc(item), (img) => {
+        g.clearRect(0, 0, 512, 512); g.drawImage(img, 0, 0, 512, 512); tex.needsUpdate = true;
+        mat.transparent = false; mat.opacity = 1; mat.needsUpdate = true;
+        const sg = document.createElement('canvas').getContext('2d'); sg.canvas.width = sg.canvas.height = 64; sg.drawImage(img, 0, 0, 64, 64);
+        const [r, gg, b] = sg.getImageData(4, 32, 1, 1).data; const sd = mat.userData.side; if (sd) { sd.color.setRGB(r / 255, gg / 255, b / 255, THREE.SRGBColorSpace); sd.transparent = false; sd.opacity = 1; sd.needsUpdate = true; }
+        requestRender();
+      }, undefined, () => {});
+    }
+    if (!ghost) {
+      // The real icon, once uploaded, replaces the placeholder face. A missing file just leaves the placeholder.
+      // The icon becomes the whole tile: its edge colour fills any transparent corners and paints the tile's sides.
+      new THREE.ImageLoader().load(iconSrc(item), (img) => {
+        const s = document.createElement('canvas'); s.width = s.height = 64;
+        const sg = s.getContext('2d'); sg.drawImage(img, 0, 0, 64, 64);
+        const [r, gg, b] = sg.getImageData(4, 32, 1, 1).data;
+        const edge = `rgb(${r},${gg},${b})`;
+        g.clearRect(0, 0, 512, 512); g.fillStyle = edge; g.fillRect(0, 0, 512, 512);
+        g.drawImage(img, 0, 0, 512, 512);
+        tex.needsUpdate = true;
+        if (mat.userData.side) { mat.userData.side.color.setStyle(edge); }
+        requestRender();
+      }, undefined, () => {});
+    }
+    return mat;
+  }
+
+  const items = [...APPS.map((a) => ({ a, ghost: false })), ...SOON.map((s) => ({ a: { ...s, colors: ['#ccc', '#eee'] }, ghost: true }))];
+  const soonEls = () => [...document.querySelectorAll('#wbapps-soon article .icon')];
+  const tiles = items.map(({ a, ghost }, i) => {
+    const front = faceTexture(a, ghost);
+    const side = new THREE.MeshPhysicalMaterial({ color: ghost ? 0xe3e6ea : new THREE.Color(a.colors[0]).lerp(new THREE.Color(a.colors[1]), 0.35), roughness: 0.45, clearcoat: 0.6, transparent: ghost, opacity: ghost ? 0.85 : 1 });
+    front.userData.side = side;
+    const m = new THREE.Mesh(tileGeo, [front, side]);
+    m.userData = { id: ghost ? null : a.id, ghost, soon: ghost ? i - APPS.length : -1, base: new THREE.Vector3(), faceX: 0, faceY: 0, size: 1, phase: i * 1.7, hover: 0, lift: 0, spin: (i % 2 ? 1 : -1) * 0.2 };
+    scene.add(m);
+    return m;
+  });
+
+  /* Lay the icons out in whatever space the copy leaves free: to its right on wide screens, above it on tall ones.
+     Works for any number of apps: a loose grid with a little jitter and depth, so it reads as scattered, not tiled. */
+  const hash = (n) => { const x = Math.sin(n * 127.1 + 311.7) * 43758.5453; return x - Math.floor(x); };
+  function layout(w, h) {
+    const navH = 64, cr = copy.getBoundingClientRect(), sr = stage.getBoundingClientRect();
+    const pad = Math.max(16, Math.min(64, w * 0.045));
+    let box;
+    if (stacked.matches) box = { x0: pad, x1: w - pad, y0: navH + 12, y1: Math.max(navH + 160, cr.top - sr.top - 20) };
+    else box = { x0: Math.min(cr.right - sr.left + 32, w * 0.62), x1: w - pad, y0: navH + 16, y1: h - 64 };
+    const bw = box.x1 - box.x0, bh = box.y1 - box.y0, n = tiles.length;
+    const cols = Math.max(1, Math.min(n, Math.round(Math.sqrt(n * bw / bh)))), rows = Math.ceil(n / cols);
+    const cw = bw / cols, ch = bh / rows;
+    const worldPerPx = 2 * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) * CAM_Z / h;
+    const sizePx = Math.min(cw, ch) * (stacked.matches ? 0.66 : 0.6);
+    tiles.forEach((m, i) => {
+      const r = Math.floor(i / cols), inRow = r === rows - 1 ? n - r * cols : cols;
+      const c = i - r * cols, rowShift = (cols - inRow) / 2;
+      const px = box.x0 + (c + rowShift + 0.5 + (hash(i) - 0.5) * 0.3) * cw;
+      const py = box.y0 + (r + 0.5 + (hash(i + 9) - 0.5) * 0.24) * ch;
+      const z = -0.7 + hash(i + 31) * 1.1, depth = (CAM_Z - z) / CAM_Z;
+      m.userData.base.set((px - w / 2) * worldPerPx * depth, (h / 2 - py) * worldPerPx * depth, z);
+      // Turn each tile to face the camera, so ones near the edges don't catch the light side-on.
+      m.userData.faceX = Math.atan2(m.userData.base.y, CAM_Z - z) * 0.8;
+      m.userData.faceY = -Math.atan2(m.userData.base.x, CAM_Z - z) * 0.8;
+      m.userData.size = Math.min(1.25, sizePx * worldPerPx * depth / TILE) * (m.userData.ghost ? 0.78 : 1);
+      m.scale.setScalar(m.userData.size);
+    });
+  }
+
+  /* Pointer: parallax, hover lift, click opens the app's detail sheet, drag to turn them a little. */
+  const ray = new THREE.Raycaster(), ndc = new THREE.Vector2(9, 9), look = new THREE.Vector2(), lookS = new THREE.Vector2();
+  let hovered = null, drag = null, orbit = 0, orbitS = 0, visible = true, raf = 0, last = performance.now(), t = 0;
+  const toNdc = (e) => { const r = stage.getBoundingClientRect(); ndc.set((e.clientX - r.left) / r.width * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1); };
+  const canvas = renderer.domElement;
+  canvas.addEventListener('pointermove', (e) => {
+    toNdc(e); look.copy(ndc);
+    if (drag) { orbit = drag.o + (e.clientX - drag.x) / stage.clientWidth * 1.6; }
+    requestRender();
+  });
+  canvas.addEventListener('pointerleave', () => { ndc.set(9, 9); look.set(0, 0); requestRender(); });
+  canvas.addEventListener('pointerdown', (e) => { toNdc(e); drag = { x: e.clientX, o: orbit, t: performance.now() }; });
+  canvas.addEventListener('pointercancel', () => { drag = null; });
+  addEventListener('pointerup', (e) => {
+    if (!drag) return;
+    const click = Math.abs(e.clientX - drag.x) < 6 && performance.now() - drag.t < 450;
+    drag = null;
+    if (click && e.target === canvas) { toNdc(e); pick(); if (hovered?.userData.id) openSheet(hovered.userData.id); }
+    if (e.pointerType !== 'mouse') { ndc.set(9, 9); look.set(0, 0); }
+    requestRender();
+  });
+  function pick() {
+    ray.setFromCamera(ndc, camera);
+    const hit = ray.intersectObjects(tiles, false)[0];
+    hovered = hit ? hit.object : null;
+    canvas.style.cursor = hovered?.userData.id ? 'pointer' : drag ? 'grabbing' : 'grab';
+  }
+
+  function resize() {
+    const w = innerWidth, h = innerHeight;
+    if (!w || !h) return;
+    renderer.setSize(w, h, false);
+    camera.aspect = w / h;
+    camera.updateProjectionMatrix();
+    layout(w, h);
+    requestRender();
+  }
+  new ResizeObserver(resize).observe(stage);
+  new ResizeObserver(resize).observe(copy);
+  root.classList.add('dock');
+  addEventListener('resize', resize);
+  addEventListener('scroll', () => { last = performance.now(); requestRender(); }, { passive: true });
+  /* Hovering a card lifts its icon off the page. */
+  const grid = document.getElementById('wbapps-grid');
+  let cardHover = null;
+  grid.addEventListener('pointerover', (e) => { cardHover = e.target.closest('.card')?.dataset.id || null; requestRender(); });
+  grid.addEventListener('pointerleave', () => { cardHover = null; requestRender(); });
+  const dockEl = (u) => u.id ? grid.querySelector(`.card[data-id="${u.id}"] .icon`) : soonEls()[u.soon];
+  const heroEl = document.getElementById('top');
+  const wpp0 = () => 2 * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) * CAM_Z / innerHeight;
+  const ease = (x) => (x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2);
+  const dockP = new THREE.Vector3(), heroP = new THREE.Vector3();
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) { last = performance.now(); requestRender(); } });
+
+  function requestRender() { if (!raf) raf = requestAnimationFrame(frame); }
+  function frame() {
+    raf = 0;
+    const now = performance.now(); const dt = Math.min((now - last) / 1000, 0.05); last = now;
+    if (!reduced) t += dt;
+    lookS.lerp(look, 1 - Math.pow(0.03, dt || 0.016));
+    orbitS += (orbit - orbitS) * (1 - Math.pow(0.02, dt || 0.016));
+    if (!drag) orbit *= Math.pow(0.4, dt);
+    const h = innerHeight, w = innerWidth, wpp = wpp0(), sy = scrollY;
+    const P = Math.min(1, Math.max(0, sy / Math.max(1, heroEl.offsetHeight * 0.8)));
+    root.classList.toggle('docked', P > 0.12);
+    if (P < 0.12) pick(); else if (hovered) { hovered = null; canvas.style.cursor = ''; }
+    let moving = false;
+    tiles.forEach((m, i) => {
+      const u = m.userData;
+      u.hover += ((m === hovered && u.id ? 1 : 0) - u.hover) * (1 - Math.pow(0.001, dt || 0.016));
+      u.lift += ((u.id && u.id === cardHover ? 1 : 0) - u.lift) * (1 - Math.pow(0.002, dt || 0.016));
+      /* Where it floats on the landing (scrolling up with the page) ... */
+      const depth = (CAM_Z - u.base.z) / CAM_Z;
+      heroP.set(u.base.x, u.base.y + Math.sin(t * 0.8 + u.phase) * 0.08 * u.size + sy * wpp * depth, u.base.z + u.hover * 0.6);
+      /* ... and where its card's icon is. */
+      const el = dockEl(u), r = el && el.offsetParent ? el.getBoundingClientRect() : null;
+      const k = r ? ease(Math.min(1, Math.max(0, P * 1.35 - i * 0.045))) : 0;
+      if (r) dockP.set((r.left + r.width / 2 - w / 2) * wpp, (h / 2 - (r.top + r.height / 2)) * wpp, u.lift * 0.5);
+      m.position.copy(heroP); if (k > 0) m.position.lerp(dockP, k);
+      const dockSize = r ? r.width * wpp / TILE * 1.02 : u.size;
+      m.scale.setScalar((r || P < 0.5 ? u.size + (dockSize - u.size) * k : u.size * Math.max(0, 1 - P * 2)) * (1 + u.lift * 0.08));
+      const fx = Math.atan2(m.position.y, CAM_Z - m.position.z), fy = -Math.atan2(m.position.x, CAM_Z - m.position.z);
+      const heroRx = u.faceX - 0.14 + Math.sin(t * 0.5 + u.phase) * 0.06 - lookS.y * 0.25 * (1 - u.hover);
+      const heroRy = u.faceY + u.spin + Math.sin(t * 0.4 + u.phase) * 0.12 + lookS.x * 0.35 * (1 - u.hover) + orbitS;
+      const dockRx = fx - 0.05 - u.lift * 0.35, dockRy = fy + Math.sin(t * 0.5 + u.phase) * 0.05 + u.lift * 0.4;
+      m.rotation.set(heroRx + (dockRx - heroRx) * k, heroRy + (dockRy - heroRy) * k, Math.sin(t * 0.3 + u.phase) * 0.04 * (1 - k));
+      if (Math.abs(u.lift - (u.id === cardHover ? 1 : 0)) > 0.005) moving = true;
+    });
+    visible = !document.hidden;
+    renderer.render(scene, camera);
+    if (visible && !document.hidden && (moving || (!reduced && (P < 1 || scrollY < heroEl.offsetHeight * 1.6)) || drag || tiles.some((m) => Math.abs(m.userData.hover - (m === hovered ? 1 : 0)) > 0.01) || Math.abs(orbit - orbitS) > 0.001)) requestRender();
+  }
+  if (reduced) document.getElementById('wbapps-shelf-label').textContent = 'Click an icon for details';
+  stacked.addEventListener?.('change', resize);
+  resize();
+}
+
+/* ---------- three.js: the About photo as a field of points (after threejs.org webgl_points_dynamic / interactive_points) ----------
+   The photo is sampled into a grid of coloured points. They drift in when the section comes into view,
+   part around the cursor, and ripple out from a click. The plain <img> stays underneath as the fallback. */
+async function startPhotoPoints() {
+  const box = document.querySelector('#wbapps .photo'), img = box && box.querySelector('img');
+  if (!img) return;
+  if (!img.complete) await new Promise((ok, no) => { img.addEventListener('load', ok, { once: true }); img.addEventListener('error', no, { once: true }); });
+  if (!img.naturalWidth) return;
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const THREE = await import(THREE_URL);
+  const COLS = 84, ROWS = 105;                       /* 4:5, like the frame */
+  const c = document.createElement('canvas'); c.width = COLS; c.height = ROWS;
+  const g = c.getContext('2d', { willReadFrequently: true });
+  const s = Math.min(img.naturalWidth / COLS, img.naturalHeight / ROWS);  /* object-fit: cover */
+  g.drawImage(img, (img.naturalWidth - COLS * s) / 2, (img.naturalHeight - ROWS * s) / 2, COLS * s, ROWS * s, 0, 0, COLS, ROWS);
+  const px = g.getImageData(0, 0, COLS, ROWS).data;
+  const n = COLS * ROWS, pos = new Float32Array(n * 3), col = new Float32Array(n * 3), seed = new Float32Array(n * 3);
+  const W = 4, H = 5;
+  for (let y = 0, i = 0; y < ROWS; y++) for (let x = 0; x < COLS; x++, i++) {
+    pos.set([(x + 0.5) / COLS * W - W / 2, H / 2 - (y + 0.5) / ROWS * H, 0], i * 3);
+    col.set([px[i * 4] / 255, px[i * 4 + 1] / 255, px[i * 4 + 2] / 255], i * 3);
+    seed.set([Math.random() * 2 - 1, Math.random() * 2 - 1, Math.random()], i * 3);
+  }
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+  geo.setAttribute('color', new THREE.BufferAttribute(col, 3));
+  geo.setAttribute('seed', new THREE.BufferAttribute(seed, 3));
+  const u = { uTime: { value: 0 }, uIn: { value: reduced ? 1 : 0 }, uMouse: { value: new THREE.Vector3(9, 9, 0) }, uRip: { value: new THREE.Vector4(0, 0, -9, 0) }, uSize: { value: 1 } };
+  const mat = new THREE.ShaderMaterial({
+    uniforms: u, vertexColors: true, transparent: true, depthWrite: false,
+    vertexShader: `
+      uniform float uTime, uIn, uSize; uniform vec3 uMouse; uniform vec4 uRip;
+      attribute vec3 seed; varying vec3 vC; varying float vA;
+      void main() {
+        vec3 p = position;
+        float k = smoothstep(0.0, 1.0, clamp(uIn * 1.6 - seed.z * 0.6, 0.0, 1.0));
+        p += vec3(seed.xy * vec2(3.0, 3.5), seed.z * 4.0 - 1.0) * (1.0 - k);
+        vec2 d = p.xy - uMouse.xy; float r = length(d);
+        float push = uMouse.z * exp(-r * r * 3.2);
+        p.xy += normalize(d + 1e-4) * push * 0.32; p.z += push * 0.9;
+        float age = uTime - uRip.z;
+        vec2 dr = p.xy - uRip.xy; float ring = length(dr) - age * 2.4;
+        float w = uRip.w * exp(-ring * ring * 14.0) * exp(-age * 1.4) * step(0.0, age);
+        p.z += w * 0.7; p.xy += normalize(dr + 1e-4) * w * 0.06;
+        p.z += sin(uTime * 0.9 + seed.x * 6.0) * 0.015;
+        vec4 mv = modelViewMatrix * vec4(p, 1.0);
+        gl_Position = projectionMatrix * mv;
+        gl_PointSize = uSize * (1.0 + push * 0.6 + w * 0.5) * (6.0 / -mv.z);
+        vC = color * (1.0 + push * 0.25 + w * 0.2); vA = k;
+      }`,
+    fragmentShader: `
+      varying vec3 vC; varying float vA;
+      void main() { vec2 q = gl_PointCoord - 0.5; if (dot(q, q) > 0.25) discard; gl_FragColor = vec4(vC, vA); }`,
+  });
+  const renderer = new THREE.WebGLRenderer({ antialias: false, alpha: true });
+  renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 2));
+  const scene = new THREE.Scene(), camera = new THREE.PerspectiveCamera(30, 0.8, 0.1, 40);
+  camera.position.z = 2.5 / Math.tan(THREE.MathUtils.degToRad(15));   /* the 5-unit-tall photo fills the view */
+  const pts = new THREE.Points(geo, mat); scene.add(pts);
+  const cv = renderer.domElement; cv.className = 'photo-points'; cv.setAttribute('aria-hidden', 'true');
+  box.appendChild(cv); box.classList.add('pointed');
+  const ray = new THREE.Raycaster(), plane = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0), hit = new THREE.Vector3(), ndc = new THREE.Vector2();
+  let w = 0, h = 0, over = 0, overS = 0, tilt = new THREE.Vector2(), tiltS = new THREE.Vector2(), raf = 0, seen = false, t0 = performance.now(), last = t0;
+  const size = () => { w = box.clientWidth; h = box.clientHeight; renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix(); u.uSize.value = (h / ROWS) * renderer.getPixelRatio() * 1.15 * (camera.position.z / 6); kick(); };
+  const toPlane = (e) => { const r = cv.getBoundingClientRect(); ndc.set((e.clientX - r.left) / r.width * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1); ray.setFromCamera(ndc, camera); ray.ray.intersectPlane(plane, hit); tilt.set(ndc.x, ndc.y); return hit; };
+  box.addEventListener('pointermove', (e) => { const p = toPlane(e); u.uMouse.value.x = p.x; u.uMouse.value.y = p.y; over = 1; kick(); });
+  box.addEventListener('pointerleave', () => { over = 0; tilt.set(0, 0); kick(); });
+  box.addEventListener('pointerdown', (e) => { const p = toPlane(e); u.uRip.value.set(p.x, p.y, u.uTime.value, 1); kick(); });
+  function kick() { if (!raf) raf = requestAnimationFrame(frame); }
+  function frame(now) {
+    raf = 0; const dt = Math.min(0.05, (now - last) / 1000); last = now;
+    u.uTime.value = (now - t0) / 1000;
+    if (seen && u.uIn.value < 1) u.uIn.value = Math.min(1, u.uIn.value + dt * 0.55);
+    overS += (over - overS) * (1 - Math.pow(0.004, dt)); u.uMouse.value.z = reduced ? 0 : overS;
+    tiltS.lerp(tilt, 1 - Math.pow(0.01, dt));
+    pts.rotation.set(-tiltS.y * 0.12, tiltS.x * 0.16, 0);
+    renderer.render(scene, camera);
+    const rippling = u.uTime.value - u.uRip.value.z < 3;
+    if (!reduced && onScreen && (u.uIn.value < 1 || Math.abs(over - overS) > 0.002 || over || rippling || tiltS.distanceTo(tilt) > 0.002)) kick();
+  }
+  let onScreen = false;
+  new IntersectionObserver(([en]) => { onScreen = en.isIntersecting; if (onScreen) { seen = true; kick(); } }, { threshold: 0.15 }).observe(box);
+  new ResizeObserver(size).observe(box);
+  size();
+}
+</script>
+
+</body></html>
