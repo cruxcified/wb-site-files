@@ -159,6 +159,8 @@ html.wbapps-on::-webkit-scrollbar { display: none; }
 #wbapps .about { display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 7fr); gap: clamp(28px, 5vw, 72px); align-items: start; }
 #wbapps .photo { position: relative; aspect-ratio: 4 / 5; max-width: 100%; border-radius: 18px; overflow: hidden; background: var(--soft); border: 1px solid var(--line); }
 #wbapps .photo img { width: 100%; height: 100%; object-fit: cover; }
+#wbapps .photo .photo-points { position: absolute; inset: 0; width: 100%; height: 100%; display: block; cursor: crosshair; touch-action: pan-y; }
+#wbapps .photo.pointed img { opacity: 0; }
 #wbapps .photo-empty { position: absolute; inset: 0; display: grid; place-items: center; font-family: var(--mono); font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
 #wbapps .photo-empty span { border: 1.5px dashed #d08700; padding: 10px 14px; border-radius: 8px; background: var(--paper); }
 #wbapps .about-copy { display: grid; gap: 22px; min-width: 0; }
@@ -446,6 +448,7 @@ if (root && !window.__wbappsEditor) {
   wireSheet();
   wireNav();
   renderFallbackShelf();
+  startPhotoPoints().catch((err) => console.warn('[wbapps] photo points off:', err));
   startShelf().catch((err) => { console.warn('[wbapps] 3D landing disabled:', err); document.getElementById('wbapps-shelf-label').textContent = 'Click an icon for details'; });
 }
 
@@ -798,6 +801,92 @@ async function startShelf() {
   if (reduced) document.getElementById('wbapps-shelf-label').textContent = 'Click an icon for details';
   stacked.addEventListener?.('change', resize);
   resize();
+}
+
+/* ---------- three.js: the About photo as a field of points (after threejs.org webgl_points_dynamic / interactive_points) ----------
+   The photo is sampled into a grid of coloured points. They drift in when the section comes into view,
+   part around the cursor, and ripple out from a click. The plain <img> stays underneath as the fallback. */
+async function startPhotoPoints() {
+  const box = document.querySelector('#wbapps .photo'), img = box && box.querySelector('img');
+  if (!img) return;
+  if (!img.complete) await new Promise((ok, no) => { img.addEventListener('load', ok, { once: true }); img.addEventListener('error', no, { once: true }); });
+  if (!img.naturalWidth) return;
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const THREE = await import(THREE_URL);
+  const COLS = 84, ROWS = 105;                       /* 4:5, like the frame */
+  const c = document.createElement('canvas'); c.width = COLS; c.height = ROWS;
+  const g = c.getContext('2d', { willReadFrequently: true });
+  const s = Math.min(img.naturalWidth / COLS, img.naturalHeight / ROWS);  /* object-fit: cover */
+  g.drawImage(img, (img.naturalWidth - COLS * s) / 2, (img.naturalHeight - ROWS * s) / 2, COLS * s, ROWS * s, 0, 0, COLS, ROWS);
+  const px = g.getImageData(0, 0, COLS, ROWS).data;
+  const n = COLS * ROWS, pos = new Float32Array(n * 3), col = new Float32Array(n * 3), seed = new Float32Array(n * 3);
+  const W = 4, H = 5;
+  for (let y = 0, i = 0; y < ROWS; y++) for (let x = 0; x < COLS; x++, i++) {
+    pos.set([(x + 0.5) / COLS * W - W / 2, H / 2 - (y + 0.5) / ROWS * H, 0], i * 3);
+    col.set([px[i * 4] / 255, px[i * 4 + 1] / 255, px[i * 4 + 2] / 255], i * 3);
+    seed.set([Math.random() * 2 - 1, Math.random() * 2 - 1, Math.random()], i * 3);
+  }
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+  geo.setAttribute('color', new THREE.BufferAttribute(col, 3));
+  geo.setAttribute('seed', new THREE.BufferAttribute(seed, 3));
+  const u = { uTime: { value: 0 }, uIn: { value: reduced ? 1 : 0 }, uMouse: { value: new THREE.Vector3(9, 9, 0) }, uRip: { value: new THREE.Vector4(0, 0, -9, 0) }, uSize: { value: 1 } };
+  const mat = new THREE.ShaderMaterial({
+    uniforms: u, vertexColors: true, transparent: true, depthWrite: false,
+    vertexShader: `
+      uniform float uTime, uIn, uSize; uniform vec3 uMouse; uniform vec4 uRip;
+      attribute vec3 seed; varying vec3 vC; varying float vA;
+      void main() {
+        vec3 p = position;
+        float k = smoothstep(0.0, 1.0, clamp(uIn * 1.6 - seed.z * 0.6, 0.0, 1.0));
+        p += vec3(seed.xy * vec2(3.0, 3.5), seed.z * 4.0 - 1.0) * (1.0 - k);
+        vec2 d = p.xy - uMouse.xy; float r = length(d);
+        float push = uMouse.z * exp(-r * r * 7.0);
+        p.xy += normalize(d + 1e-4) * push * 0.16; p.z += push * 0.8;
+        float age = uTime - uRip.z;
+        vec2 dr = p.xy - uRip.xy; float ring = length(dr) - age * 2.4;
+        float w = uRip.w * exp(-ring * ring * 14.0) * exp(-age * 1.4) * step(0.0, age);
+        p.z += w * 0.7; p.xy += normalize(dr + 1e-4) * w * 0.06;
+        p.z += sin(uTime * 0.9 + seed.x * 6.0) * 0.015;
+        vec4 mv = modelViewMatrix * vec4(p, 1.0);
+        gl_Position = projectionMatrix * mv;
+        gl_PointSize = uSize * (1.0 + push * 0.15 + w * 0.3) * (6.0 / -mv.z);
+        vC = color * (1.0 + push * 0.25 + w * 0.2); vA = k;
+      }`,
+    fragmentShader: `
+      varying vec3 vC; varying float vA;
+      void main() { vec2 q = gl_PointCoord - 0.5; if (dot(q, q) > 0.25) discard; gl_FragColor = vec4(vC, vA); }`,
+  });
+  const renderer = new THREE.WebGLRenderer({ antialias: false, alpha: true });
+  renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 2));
+  const scene = new THREE.Scene(), camera = new THREE.PerspectiveCamera(30, 0.8, 0.1, 40);
+  camera.position.z = 2.5 / Math.tan(THREE.MathUtils.degToRad(15));   /* the 5-unit-tall photo fills the view */
+  const pts = new THREE.Points(geo, mat); scene.add(pts);
+  const cv = renderer.domElement; cv.className = 'photo-points'; cv.setAttribute('aria-hidden', 'true');
+  box.appendChild(cv); box.classList.add('pointed');
+  const ray = new THREE.Raycaster(), plane = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0), hit = new THREE.Vector3(), ndc = new THREE.Vector2();
+  let w = 0, h = 0, over = 0, overS = 0, tilt = new THREE.Vector2(), tiltS = new THREE.Vector2(), raf = 0, seen = false, t0 = performance.now(), last = t0;
+  const size = () => { w = box.clientWidth; h = box.clientHeight; renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix(); u.uSize.value = (h / ROWS) * renderer.getPixelRatio() * 1.15 * (camera.position.z / 6); kick(); };
+  const toPlane = (e) => { const r = cv.getBoundingClientRect(); ndc.set((e.clientX - r.left) / r.width * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1); ray.setFromCamera(ndc, camera); ray.ray.intersectPlane(plane, hit); tilt.set(ndc.x, ndc.y); return hit; };
+  box.addEventListener('pointermove', (e) => { const p = toPlane(e); u.uMouse.value.x = p.x; u.uMouse.value.y = p.y; over = 1; kick(); });
+  box.addEventListener('pointerleave', () => { over = 0; tilt.set(0, 0); kick(); });
+  box.addEventListener('pointerdown', (e) => { const p = toPlane(e); u.uRip.value.set(p.x, p.y, u.uTime.value, 1); kick(); });
+  function kick() { if (!raf) raf = requestAnimationFrame(frame); }
+  function frame(now) {
+    raf = 0; const dt = Math.min(0.05, (now - last) / 1000); last = now;
+    u.uTime.value = (now - t0) / 1000;
+    if (seen && u.uIn.value < 1) u.uIn.value = Math.min(1, u.uIn.value + dt * 0.55);
+    overS += (over - overS) * (1 - Math.pow(0.004, dt)); u.uMouse.value.z = reduced ? 0 : overS;
+    tiltS.lerp(tilt, 1 - Math.pow(0.01, dt));
+    pts.rotation.set(-tiltS.y * 0.12, tiltS.x * 0.16, 0);
+    renderer.render(scene, camera);
+    const rippling = u.uTime.value - u.uRip.value.z < 3;
+    if (!reduced && onScreen && (u.uIn.value < 1 || Math.abs(over - overS) > 0.002 || over || rippling || tiltS.distanceTo(tilt) > 0.002)) kick();
+  }
+  let onScreen = false;
+  new IntersectionObserver(([en]) => { onScreen = en.isIntersecting; if (onScreen) { seen = true; kick(); } }, { threshold: 0.15 }).observe(box);
+  new ResizeObserver(size).observe(box);
+  size();
 }
 </script>
 
