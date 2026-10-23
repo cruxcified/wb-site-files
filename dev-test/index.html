@@ -141,7 +141,8 @@ html.wbgames-booting, html.wbgames-booting body { overflow: hidden !important; }
 #wbgames .photo .crt-photo { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
 #wbgames .photo.crt img { opacity: 0; }
 #wbgames .goals ol.taped { position: relative; }
-#wbgames .goals ol.taped .tapes { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
+#wbgames .goals ol.taped { row-gap: 48px; }
+#wbgames .goals ol.taped .tapes { position: absolute; top: -60px; left: 0; width: 100%; height: calc(100% + 120px); pointer-events: none; z-index: 0; }
 #wbgames .goals ol.taped li { position: relative; z-index: 1; }
 #wbgames .goals .tape-slot { justify-self: stretch; height: clamp(150px, 14vw, 200px); cursor: grab; touch-action: pan-y; }
 #wbgames .goals .tape-slot:active { cursor: grabbing; }
@@ -2504,7 +2505,7 @@ async function vhsTapes(ol) {
   });
 
   let raf = 0, last = performance.now(), visible = false, seenAt = 0, w = 0, h = 0;
-  const size = () => { w = ol.clientWidth; h = ol.clientHeight; renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix(); kick(); };
+  const size = () => { w = ol.clientWidth; h = ol.clientHeight + 120; renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix(); kick(); };
   function kick() { if (!raf) raf = requestAnimationFrame(frame); }
   function frame(now) {
     raf = 0; const dt = Math.min(0.05, (now - last) / 1000); last = now; const time = now / 1000;
@@ -2517,7 +2518,7 @@ async function vhsTapes(ol) {
       if (!t.drag) { t.spin += t.vel * dt; t.vel *= Math.pow(0.04, dt); if (Math.abs(t.vel) > 0.01) moving = true;
         if (!reduced && Math.abs(t.vel) < 0.3) { const rest = Math.round(t.spin / Math.PI) * Math.PI; t.spin += (rest + Math.sin(time * 0.5 + t.phase) * 0.35 - t.spin) * (1 - Math.pow(0.3, dt)); } }
       t.hs = (t.hs || 0) + (t.hover - (t.hs || 0)) * (1 - Math.pow(0.003, dt));
-      const scale = Math.min(r.width * 0.78, 300) * wpp / W;
+      const scale = Math.min(r.width * 0.78, r.height * 1.4, 300) * wpp / W;
       t.g.scale.setScalar(scale * (1 + t.hs * 0.05));
       t.g.position.set((r.left + r.width / 2 - cr.left - cr.width / 2) * wpp, (cr.top + cr.height / 2 - r.top - r.height / 2) * wpp + (1 - e) * -2.5 + Math.sin(time * 0.8 + t.phase) * 0.05 * (reduced ? 0 : 1), t.hs * 0.6);
       t.g.rotation.set(-0.12 + (1 - e) * 1.2 - t.hs * 0.12, t.spin + (1 - e) * 2, Math.sin(time * 0.6 + t.phase) * 0.03 * (reduced ? 0 : 1));
