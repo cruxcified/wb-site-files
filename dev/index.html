@@ -470,31 +470,6 @@ html.wbgames-booting, html.wbgames-booting body { overflow: hidden !important; }
             <a class="u" href="https://littlelabgames.itch.io/dog-days" target="_blank" rel="noopener">Play on itch.io ↗</a>
           </div>
         </li>
-        <li class="game" data-case data-look="bone" data-tag="COMING SOON" data-title="All The Brittle Bones" data-cover-lines="All The|Brittle Bones"
-            data-cover="" data-back="" data-disc="" data-booklet="">
-          <div class="shot">
-            <img src="" alt="All The Brittle Bones screenshot" onload="this.nextElementSibling && this.nextElementSibling.remove()" onerror="this.remove()">
-            <div class="shot-empty"><span>No signal yet</span></div>
-          </div>
-          <div>
-            <p class="game-meta"><span>Coming soon</span><span>4 stories</span></p>
-            <h3>All The Brittle Bones</h3>
-            <p class="blurb">Adapting four stories from my collection of short horror fiction into a game.</p>
-          </div>
-        </li>
-        <li class="game" data-case data-look="demo" data-tag="DEMO" data-live-shot data-title="PSX Engine" data-cover-lines="Demo Disc|PSX Engine"
-            data-cover="" data-back="" data-disc="" data-booklet="">
-          <div class="shot">
-            <img src="" alt="PSX Engine screenshot" onload="this.nextElementSibling && this.nextElementSibling.remove()" onerror="this.remove()">
-            <div class="shot-empty"><span>No signal yet</span></div>
-          </div>
-          <div>
-            <p class="game-meta"><span>Demo disc</span><span>In development</span></p>
-            <h3>PSX Engine</h3>
-            <p class="blurb">My PS1-style engine, the one running on the TV up top.</p>
-            <a class="u" href="#engine">More on the engine ↓</a>
-          </div>
-        </li>
       </ul>
     </div>
   </section>
@@ -1657,11 +1632,15 @@ async function buildCase(THREE, host) {
   const reduced = host.reduced;
   const V3 = (x = 0, y = 0, z = 0) => new THREE.Vector3(x, y, z);
 
-  /* Nothing loads until the shelf is close to the screen. */
+  /* Start stocking early: when the shelf is a few screens away, or once the page has sat idle after the intro, whichever comes first. */
   await new Promise((res) => {
-    const io = new IntersectionObserver((es) => { if (es.some((e) => e.isIntersecting)) { io.disconnect(); res(); } }, { rootMargin: '80% 0px' });
+    let done = false; const go = () => { if (!done) { done = true; io.disconnect(); res(); } };
+    const io = new IntersectionObserver((es) => { if (es.some((e) => e.isIntersecting)) go(); }, { rootMargin: '300% 0px' });
     io.observe(stage);
+    const idle = window.requestIdleCallback || ((f) => setTimeout(f, 200));
+    setTimeout(() => idle(go, { timeout: 2000 }), 4500);
   });
+  const breathe = () => new Promise((r) => setTimeout(r, 0));   /* hand the main thread back between heavy steps so the TV keeps playing */
   const load = (src) => new Promise((res) => {
     if (!src) return res(null);
     const i = new Image(); i.crossOrigin = 'anonymous'; i.decoding = 'async';
@@ -1971,7 +1950,8 @@ async function buildCase(THREE, host) {
     return { sp, g, lidG, discG, discSpin, hit, slot: V3(), slotYaw: (i % 2 ? -1 : 1) * (0.1 + (i % 3) * 0.04), pull: 0, pullT: 0, hover: 0,
       st: { yaw: 0, vel: 0, k: 0, pitch: 0, open: 0, openT: 0, hx: 0, hy: 0, hxS: 0, hyS: 0 } };
   };
-  const cases = specs.map(makeCase);
+  const cases = [];
+  for (let i = 0; i < specs.length; i++) { cases.push(makeCase(specs[i], i)); await breathe(); }
 
   /* ---- The shelf: planks with price-tag strips, floating on the page (no wall, no frame) ---- */
   const plankM = psx(new THREE.MeshStandardMaterial({ color: 0x2b2533, roughness: 0.75 }));
@@ -2156,6 +2136,8 @@ async function buildCase(THREE, host) {
   const lerp = THREE.MathUtils.lerp;
 
   size();
+  /* Build the shaders off to the side before the shelf scrolls in, so the first frame doesn't stall. */
+  if (renderer.compileAsync) { await renderer.compileAsync(scene, cam).catch(() => {}); await breathe(); }
   new ResizeObserver(() => { size(); wake(); }).observe(stage);
   let visible = false, raf = 0, last = 0, shown = false, clock = 0;
   new IntersectionObserver((es) => { visible = es[es.length - 1].isIntersecting; wake(); }, { rootMargin: '5% 0px' }).observe(stage);
