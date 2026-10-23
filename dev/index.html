@@ -2138,6 +2138,8 @@ async function buildCase(THREE, host) {
   size();
   /* Build the shaders off to the side before the shelf scrolls in, so the first frame doesn't stall. */
   if (renderer.compileAsync) { await renderer.compileAsync(scene, cam).catch(() => {}); await breathe(); }
+  /* One unseen frame uploads every texture to the GPU now rather than on the first visible frame. */
+  renderer.setRenderTarget(psxOn ? lowRT : cleanRT); renderer.render(scene, cam); renderer.setRenderTarget(null); renderer.render(postScene, postCam); await breathe();
   new ResizeObserver(() => { size(); wake(); }).observe(stage);
   let visible = false, raf = 0, last = 0, shown = false, clock = 0;
   new IntersectionObserver((es) => { visible = es[es.length - 1].isIntersecting; wake(); }, { rootMargin: '5% 0px' }).observe(stage);
