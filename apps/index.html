@@ -133,33 +133,39 @@ html.wbapps-on::-webkit-scrollbar { display: none; }
 #wbapps .search input { width: min(260px, 100%); font-size: 14px; padding: 10px 14px 10px 36px; border: 1px solid var(--line); border-radius: 12px; background: var(--card); color: var(--ink); }
 #wbapps .search input::placeholder { color: #9a9da3; }
 #wbapps .search svg { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; color: var(--muted); pointer-events: none; }
-#wbapps .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); gap: 14px; }
-#wbapps .card { display: grid; grid-template-rows: auto auto 1fr auto; gap: 14px; padding: 22px; text-align: left; width: 100%; background: var(--card); border: 1px solid var(--line); border-radius: 18px; transition: transform .25s cubic-bezier(.2,.7,.1,1), box-shadow .25s, border-color .25s; min-width: 0; }
-#wbapps .card:hover { transform: translateY(-3px); box-shadow: 0 18px 40px -18px rgba(18,19,22,.25); border-color: #cfd2d7; }
+#wbapps .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); gap: 40px 22px; }
+#wbapps .card { display: grid; grid-template-rows: auto 1fr auto; gap: 12px; padding: 0 0 6px; text-align: left; width: 100%; background: none; border: 0; border-radius: 22px; transition: transform .25s cubic-bezier(.2,.7,.1,1), box-shadow .25s, border-color .25s; min-width: 0; }
+#wbapps .card:hover .card-top { transform: translateY(-3px); box-shadow: 0 22px 44px -22px color-mix(in srgb, var(--c0) 55%, transparent); }
+#wbapps .card:focus-visible { outline: 2px solid var(--ink); outline-offset: 4px; }
 #wbapps .card[hidden] { display: none !important; }
-#wbapps .card-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+#wbapps .card-top { position: relative; display: grid; place-items: center; aspect-ratio: 16 / 10; border-radius: 22px; margin-bottom: 4px; background: radial-gradient(120% 90% at 50% 0%, color-mix(in srgb, var(--c1) 26%, #fff), color-mix(in srgb, var(--c0) 14%, #eef0f2)); box-shadow: inset 0 0 0 1px rgba(18,19,22,.05); transition: transform .3s cubic-bezier(.2,.7,.1,1), box-shadow .3s; }
+#wbapps .card-top .icon { width: 112px; height: 112px; border-radius: 26px; font-size: 38px; }
+#wbapps .card-top .get { position: absolute; top: 14px; right: 14px; }
+#wbapps .card > div:not(.card-top) { padding-inline: 4px; }
 #wbapps .get { font-size: 12.5px; font-weight: 600; padding: 6px 14px; border-radius: 999px; background: var(--soft); color: var(--ink); white-space: nowrap; }
 #wbapps .get.live { background: var(--ink); color: #fff; }
-#wbapps .card h3 { font-size: 19px; font-weight: 600; letter-spacing: -.01em; line-height: 1.2; }
-#wbapps .card h3 + p { margin-top: 4px; color: #3a3c42; font-size: 15px; }
-#wbapps .meta { display: flex; flex-wrap: wrap; gap: 6px 14px; padding-top: 14px; border-top: 1px solid var(--line); font-size: 12.5px; color: var(--muted); }
+#wbapps .card h3 { font-family: var(--serif); font-size: 24px; font-weight: 400; letter-spacing: -.01em; line-height: 1.15; }
+#wbapps .card h3 + p { margin-top: 4px; color: var(--muted); font-size: 15px; }
+#wbapps .meta { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 12.5px; color: var(--muted); }
 #wbapps .dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; margin-right: 6px; background: var(--dev); vertical-align: 1px; }
 #wbapps .dot.live { background: var(--live); }
 #wbapps .dot.own { background: var(--own); }
 #wbapps .empty { padding: 40px 0; color: var(--muted); }
 
 /* Coming soon (hidden while the SOON list is empty) */
-#wbapps .soon { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); gap: 14px; margin-top: 18px; }
-#wbapps .soon article { display: flex; gap: 16px; align-items: flex-start; padding: 18px; border: 1.5px dashed #cfd2d7; border-radius: 18px; min-width: 0; }
-#wbapps .soon h3 { font-size: 17px; font-weight: 600; }
-#wbapps .soon p { font-size: 14.5px; color: var(--muted); margin-top: 2px; }
+#wbapps .soon { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); gap: 40px 22px; margin-top: 22px; }
+#wbapps .soon article { display: grid; gap: 12px; align-content: start; min-width: 0; }
+#wbapps .soon .panel { display: grid; place-items: center; aspect-ratio: 16 / 10; border-radius: 22px; border: 1.5px dashed #cfd2d7; margin-bottom: 4px; background: repeating-linear-gradient(135deg, transparent 0 10px, rgba(18,19,22,.025) 10px 20px); }
+#wbapps .soon article > div:not(.panel) { padding-inline: 4px; }
+#wbapps .soon h3 { font-family: var(--serif); font-size: 24px; font-weight: 400; letter-spacing: -.01em; line-height: 1.15; }
+#wbapps .soon p { font-size: 15px; color: var(--muted); margin-top: 4px; }
 #wbapps .soon .tag { font-family: var(--mono); font-size: 10.5px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin-left: 8px; }
 #wbapps .soon .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
 #wbapps .soon .chips span { font-size: 12px; padding: 3px 9px; border-radius: 999px; background: var(--soft); color: var(--muted); }
-#wbapps .soon-note { margin-top: 6px; font-family: var(--serif); font-style: italic; font-size: 17px; color: var(--muted); }
+#wbapps .soon-note { margin-top: -10px; font-family: var(--serif); font-style: italic; font-size: 17px; color: var(--muted); }
 #wbapps .soon .icon.has-img { color: transparent; background: none !important; box-shadow: inset 0 1px 0 rgba(255,255,255,.3), 0 1px 2px rgba(0,0,0,.12), 0 8px 20px rgba(0,0,0,.12); }
 #wbapps .ph-icon { color: #b06f00; }
-#wbapps .soon .icon { width: 52px; height: 52px; border-radius: 12px; font-size: 18px; }
+#wbapps .soon .icon { width: 112px; height: 112px; border-radius: 26px; font-size: 38px; }
 
 /* About */
 #wbapps .about { display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 7fr); gap: clamp(28px, 5vw, 72px); align-items: start; }
@@ -296,7 +302,7 @@ html.wbapps-on::-webkit-scrollbar { display: none; }
       <p class="empty" id="wbapps-empty" hidden>No apps match that search.</p>
 
       <div id="soon" style="margin-top: clamp(56px, 8vh, 88px)">
-        <p class="label">Coming soon</p>
+        <div class="index-head"><h2>Coming soon<sup id="wbapps-soon-count"></sup></h2></div>
         <p class="soon-note">Ideas on the drafting table. No promises on dates, only on intent.</p>
         <div class="soon" id="wbapps-soon"></div>
       </div>
@@ -459,14 +465,14 @@ function renderIndex() {
   const search = document.getElementById('wbapps-search');
   const empty = document.getElementById('wbapps-empty');
   document.getElementById('wbapps-count').textContent = APPS.length;
+  const sc = document.getElementById('wbapps-soon-count'); if (sc) sc.textContent = SOON.length;
   document.getElementById('wbapps-hero-count').textContent = `${APPS.length} apps`;
 
   grid.innerHTML = APPS.map((a) => `
     <button class="card" type="button" data-id="${a.id}" data-platforms="${a.platforms.join('|')}"
       data-text="${esc([a.name, a.tagline, a.category, a.about, a.why, a.platforms.join(' ')].join(' ').toLowerCase())}">
-      <div class="card-top">${iconHTML(a)}<span class="get${a.url ? ' live' : ''}">${a.url ? 'Get' : 'More'}</span></div>
+      <div class="card-top" style="--c0:${a.colors[0]};--c1:${a.colors[1]}">${iconHTML(a)}${a.url ? '<span class="get live">Get</span>' : ''}</div>
       <div><h3>${esc(a.name)}</h3><p>${esc(a.tagline)}</p></div>
-      <div></div>
       <div class="meta"><span><span class="dot ${a.state}"></span>${esc(a.status)}</span><span>${esc(a.category)}</span>${a.placeholderIcon ? '<span class="ph-icon">Placeholder icon</span>' : ''}${a.platforms.length ? `<span>${esc(a.platforms.join(' · '))}</span>` : ''}</div>
     </button>`).join('');
 
@@ -511,7 +517,7 @@ function renderSoon() {
   if (!SOON.length) { document.getElementById('soon').hidden = true; document.getElementById('wbapps-soon-link').hidden = true; return; }
   document.getElementById('wbapps-soon').innerHTML = SOON.map((s) => `
     <article>
-      <div class="icon ghost">${esc(s.glyph)}<img src="${esc(s.icon || ICON_PATH(s.id))}" alt="" onload="this.parentNode.classList.add('has-img')" onerror="this.remove()"></div>
+      <div class="panel"><div class="icon ghost">${esc(s.glyph)}<img src="${esc(s.icon || ICON_PATH(s.id))}" alt="" onload="this.parentNode.classList.add('has-img')" onerror="this.remove()"></div></div>
       <div><h3>${esc(s.name)}${s.tag ? `<span class="tag">${esc(s.tag)}</span>` : ''}</h3>
       <p>${s.blurb ? esc(s.blurb) : '<mark class="ph">One line on what it does.</mark>'}</p>
       ${s.placeholderIcon ? '<p class="ph-icon" style="font-size:12.5px">Placeholder icon</p>' : ''}${s.chips ? `<div class="chips">${s.chips.map((c) => `<span>${esc(c)}</span>`).join('')}</div>` : ''}</div>
