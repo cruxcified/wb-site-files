@@ -269,8 +269,8 @@ html.wbapps-on::-webkit-scrollbar { display: none; }
     <div class="wrap">
       <div class="hero-copy" id="wbapps-copy">
         <p class="label">Apps by Will Boechler</p>
-        <h1>Making the computer feel like <em>something specific.</em></h1>
-        <p class="lede"><mark class="ph">I'm Will. I build apps for myself first: a bookshelf that writes back, a tape recorder for my thoughts, a beige desktop from 1998.</mark></p>
+        <h1>Apps that work for <em>you.</em></h1>
+        <p class="lede">I make apps to fill in gaps within my own workflow for creation. If I have a vision, I architect and build it.</p>
         <div class="ctas">
           <a class="btn solid" href="#apps">Browse the apps</a>
           <a class="btn" href="#about">About me</a>
@@ -321,14 +321,14 @@ html.wbapps-on::-webkit-scrollbar { display: none; }
       <div class="about-copy">
         <p class="label">About</p>
         <h2>Hi, I'm Will.</h2>
-        <p class="lede"><mark class="ph">Short bio, two or three sentences, in your own voice: who you are, that you write fiction, and why you build your own tools.</mark></p>
-        <p><mark class="ph">Optional second paragraph: how you build, and what you're working toward.</mark></p>
+        <p class="lede">I’m a 27-year-old solo game developer and software engineer from Portland, Oregon.</p>
+        <p>I’ve been creating things for many years, being a writer, filmmaker, journalist, and art history researcher. My work is often grand in scale and robust in its execution, a result of me relentlessly pursuing my creative visions until they can be given proper life. I also largely work in the unconventional, offering retro aesthetics, nostalgia, and quiet self reflection in this fast and ever changing world.</p>
         <div class="links">
           <!-- Swap each href="#" for a real link and remove class="todo". Delete any you don't use. -->
-          <a class="todo" href="#">Substack</a>
-          <a class="todo" href="#">Email</a>
+          <a href="https://boechlerbooks.substack.com" target="_blank" rel="noopener">Substack ↗</a>
+          <a href="mailto:conradboechler@gmail.com">Email</a>
           <a href="https://github.com/cruxcified" target="_blank" rel="noopener">GitHub ↗</a>
-          <a class="todo" href="#">Instagram</a>
+          <a href="https://www.instagram.com/conr.d/" target="_blank" rel="noopener">Instagram ↗</a>
           <a href="https://wboechler.com/">Photography &amp; films ↗</a>
         </div>
       </div>
@@ -389,7 +389,7 @@ const ICON_PATH = (id) => `../icon-${id}.png`;
    shots:     optional screenshots shown in the detail sheet, e.g. ['/s/socha-1.webp']. Upload them as File links.
    colors, glyph: the placeholder tile until the real icon is uploaded.                                        */
 const APPS = [
-  { id: 'scriptorium', name: 'Scriptorium', tagline: 'A bookshelf that writes back.',
+  { id: 'scriptorium', name: 'Scriptorium', tagline: 'An all-in-one writing app with zero AI presence. Ever.',
     shots: ['../scriptorium-1.webp', '../scriptorium-2.webp'],
     category: 'Writing', platforms: ['Mac', 'Windows', 'Linux'], state: 'live', status: 'Live, in use',
     stack: 'Three.js', requires: '', url: '', icon: '',
@@ -411,7 +411,7 @@ const APPS = [
     why: 'The name comes from a dictionary of sorrows: the hidden vulnerability of others. That’s what it’s for, saying the things you’d only say into a recorder, knowing they stay yours. I’ll publish it under my own name.',
     features: ['Capture a thought with the Action Button', 'Transcribed and reflected on entirely on your device', 'No network calls in v1', 'A grayscale palette, Powell type and Dale Cooper’s tape recorder'],
     colors: ['#1b1b1d', '#8d8e92'], glyph: 'So' },
-  { id: 'posterfetch', placeholderIcon: true, shots: ['../posterfetch-1.webp', '../posterfetch-2.webp'], name: 'Poster Fetch', tagline: 'The metadata side of my movie brain.',
+  { id: 'posterfetch', placeholderIcon: true, shots: ['../posterfetch-1.webp', '../posterfetch-2.webp'], name: 'Poster Fetch', tagline: 'An app to add metadata to movie files.',
     category: 'Home media', platforms: [], state: 'own', status: 'Made for myself',
     stack: 'The Movie Database (TMDB) API', requires: '', url: '', icon: '',
     about: 'Poster Fetch fetches poster thumbnails and labels for my movie files using The Movie Database (TMDB) API, turning a folder of files into a real browsable library.',
@@ -425,7 +425,7 @@ const APPS = [
     why: '',
     features: ['Positive news only', 'A seal mascot of its own'],
     colors: ['#d9d2c0', '#efe9da'], glyph: 'Ns' },
-  { id: '99script', shots: ['../99script-1.webp', '../99script-2.webp'], name: '99Script', tagline: 'Write screenplays and branching game scripts on iPhone, iPad and Mac.',
+  { id: '99script', shots: ['../99script-1.webp', '../99script-2.webp'], name: '99Script', tagline: 'Software for composing game narratives and screenplays.',
     category: 'Screenwriting', platforms: ['iPhone', 'iPad', 'Mac'], state: 'dev', status: 'In development',
     stack: 'SwiftUI', requires: 'iOS / iPadOS 16+, macOS 13+', url: '', icon: '',
     about: 'A screenplay editor for film and games, with a touch of Windows 95. It grew out of two earlier apps of mine, 99Writer and CCC Writer.',
@@ -436,7 +436,7 @@ const APPS = [
 /* Apps you want to tease without a card. The "Coming soon" row hides itself while this is empty.
    e.g. { name: 'Next thing', tag: 'Working title', glyph: 'Nt', blurb: 'One line on what it does.', chips: ['A feature'] } */
 const SOON = [
-  { id: 'penpals', placeholderIcon: true, name: 'Bottle Post', tag: 'Working title', glyph: 'Bp',
+  { id: 'penpals', placeholderIcon: true, name: 'Klexos', tag: 'From the Dictionary of Obscure Sorrows', glyph: 'Kl',
     blurb: 'Anonymous letters to strangers, each sent off with a flick. A bottle in the ocean, not a dating app.',
     chips: ['Inspired by a 2010 iPhone app I loved', '18+, safety first'] },
 ];
