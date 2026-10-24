@@ -133,16 +133,20 @@ html.wbapps-on::-webkit-scrollbar { display: none; }
 #wbapps .search input { width: min(260px, 100%); font-size: 14px; padding: 10px 14px 10px 36px; border: 1px solid var(--line); border-radius: 12px; background: var(--card); color: var(--ink); }
 #wbapps .search input::placeholder { color: #9a9da3; }
 #wbapps .search svg { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; color: var(--muted); pointer-events: none; }
-#wbapps .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); gap: 14px; }
-#wbapps .card { display: grid; grid-template-rows: auto auto 1fr auto; gap: 14px; padding: 22px; text-align: left; width: 100%; background: var(--card); border: 1px solid var(--line); border-radius: 18px; transition: transform .25s cubic-bezier(.2,.7,.1,1), box-shadow .25s, border-color .25s; min-width: 0; }
-#wbapps .card:hover { transform: translateY(-3px); box-shadow: 0 18px 40px -18px rgba(18,19,22,.25); border-color: #cfd2d7; }
+#wbapps .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); gap: 40px 22px; }
+#wbapps .card { display: grid; grid-template-rows: auto 1fr auto; gap: 12px; padding: 0 0 6px; text-align: left; width: 100%; background: none; border: 0; border-radius: 22px; transition: transform .25s cubic-bezier(.2,.7,.1,1), box-shadow .25s, border-color .25s; min-width: 0; }
+#wbapps .card:hover .card-top { transform: translateY(-3px); box-shadow: 0 22px 44px -22px color-mix(in srgb, var(--c0) 55%, transparent); }
+#wbapps .card:focus-visible { outline: 2px solid var(--ink); outline-offset: 4px; }
 #wbapps .card[hidden] { display: none !important; }
-#wbapps .card-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+#wbapps .card-top { position: relative; display: grid; place-items: center; aspect-ratio: 4 / 3; border-radius: 22px; margin-bottom: 4px; background: radial-gradient(120% 90% at 50% 0%, color-mix(in srgb, var(--c1) 26%, #fff), color-mix(in srgb, var(--c0) 14%, #eef0f2)); box-shadow: inset 0 0 0 1px rgba(18,19,22,.05); transition: transform .3s cubic-bezier(.2,.7,.1,1), box-shadow .3s; }
+#wbapps .card-top .icon { width: 112px; height: 112px; border-radius: 26px; font-size: 38px; }
+#wbapps .card-top .get { position: absolute; top: 14px; right: 14px; }
+#wbapps .card > div:not(.card-top) { padding-inline: 4px; }
 #wbapps .get { font-size: 12.5px; font-weight: 600; padding: 6px 14px; border-radius: 999px; background: var(--soft); color: var(--ink); white-space: nowrap; }
 #wbapps .get.live { background: var(--ink); color: #fff; }
-#wbapps .card h3 { font-size: 19px; font-weight: 600; letter-spacing: -.01em; line-height: 1.2; }
-#wbapps .card h3 + p { margin-top: 4px; color: #3a3c42; font-size: 15px; }
-#wbapps .meta { display: flex; flex-wrap: wrap; gap: 6px 14px; padding-top: 14px; border-top: 1px solid var(--line); font-size: 12.5px; color: var(--muted); }
+#wbapps .card h3 { font-family: var(--serif); font-size: 24px; font-weight: 400; letter-spacing: -.01em; line-height: 1.15; }
+#wbapps .card h3 + p { margin-top: 4px; color: var(--muted); font-size: 15px; }
+#wbapps .meta { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 12.5px; color: var(--muted); }
 #wbapps .dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; margin-right: 6px; background: var(--dev); vertical-align: 1px; }
 #wbapps .dot.live { background: var(--live); }
 #wbapps .dot.own { background: var(--own); }
@@ -465,9 +469,8 @@ function renderIndex() {
   grid.innerHTML = APPS.map((a) => `
     <button class="card" type="button" data-id="${a.id}" data-platforms="${a.platforms.join('|')}"
       data-text="${esc([a.name, a.tagline, a.category, a.about, a.why, a.platforms.join(' ')].join(' ').toLowerCase())}">
-      <div class="card-top">${iconHTML(a)}${a.url ? '<span class="get live">Get</span>' : ''}</div>
+      <div class="card-top" style="--c0:${a.colors[0]};--c1:${a.colors[1]}">${iconHTML(a)}${a.url ? '<span class="get live">Get</span>' : ''}</div>
       <div><h3>${esc(a.name)}</h3><p>${esc(a.tagline)}</p></div>
-      <div></div>
       <div class="meta"><span><span class="dot ${a.state}"></span>${esc(a.status)}</span><span>${esc(a.category)}</span>${a.placeholderIcon ? '<span class="ph-icon">Placeholder icon</span>' : ''}${a.platforms.length ? `<span>${esc(a.platforms.join(' · '))}</span>` : ''}</div>
     </button>`).join('');
 
