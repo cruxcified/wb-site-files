@@ -60,7 +60,7 @@ html.wbapps-on::-webkit-scrollbar { display: none; }
 
 /* Nav: clear over the landing, frosted once you scroll past it. */
 #wbapps .nav { position: sticky; top: 0; z-index: 30; padding-top: env(safe-area-inset-top, 0px); border-bottom: 1px solid var(--line);
-  background: rgba(243,244,245,.86); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); transition: background .3s, border-color .3s; }
+  background: rgba(243,244,245,.97); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); transition: background .3s, border-color .3s; }
 #wbapps .nav.over { background: transparent; border-color: transparent; backdrop-filter: none; -webkit-backdrop-filter: none; }
 #wbapps .nav .wrap { display: flex; align-items: center; gap: 22px; height: var(--nav); }
 #wbapps .mark { display: flex; align-items: baseline; gap: 10px; }
@@ -69,6 +69,10 @@ html.wbapps-on::-webkit-scrollbar { display: none; }
 #wbapps .nav-links { display: flex; gap: 22px; margin-left: auto; font-size: 13px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
 #wbapps .nav-links a:hover, #wbapps .home:hover { color: var(--ink); }
 #wbapps .kbd-search { display: inline-flex; align-items: center; gap: 10px; padding: 8px 10px 8px 14px; border: 1px solid var(--line); border-radius: 10px; background: var(--card); font-size: 13px; color: var(--muted); }
+#wbapps .kbd-search input { width: 104px; border: 0; padding: 0; background: none; font: inherit; color: var(--ink); outline: none; transition: width .25s; }
+#wbapps .kbd-search input::placeholder { color: var(--muted); }
+#wbapps .kbd-search:focus-within { border-color: var(--ink); }
+#wbapps .kbd-search:focus-within input { width: 170px; }
 #wbapps .kbd-search kbd { font-family: var(--mono); font-size: 11px; padding: 2px 6px; border-radius: 5px; background: var(--soft); color: var(--ink); }
 #wbapps .home { font-size: 13px; letter-spacing: .1em; text-transform: uppercase; color: var(--ink); white-space: nowrap; }
 
@@ -244,10 +248,10 @@ html.wbapps-on::-webkit-scrollbar { display: none; }
       <a class="mark" href="#top"><b>WB</b><span>/ apps</span></a>
       <nav class="nav-links" aria-label="Apps page">
         <a href="#apps">Apps</a>
-        <a href="#soon" id="wbapps-soon-link">Envisioned</a>
+        <a href="#soon" id="wbapps-soon-link">Coming soon</a>
         <a href="#about">About</a>
       </nav>
-      <button class="kbd-search" type="button" id="wbapps-kbd">Search apps <kbd>⌘K</kbd></button>
+      <label class="kbd-search"><input id="wbapps-kbd" type="search" placeholder="Search apps" aria-label="Search apps" autocomplete="off"><kbd>⌘K</kbd></label>
       <a class="home" href="https://wboechler.com/">wboechler.com ↗</a>
     </div>
   </header>
@@ -292,7 +296,7 @@ html.wbapps-on::-webkit-scrollbar { display: none; }
       <p class="empty" id="wbapps-empty" hidden>No apps match that search.</p>
 
       <div id="soon" style="margin-top: clamp(56px, 8vh, 88px)">
-        <p class="label">Still being envisioned</p>
+        <p class="label">Coming soon</p>
         <p class="soon-note">Ideas on the drafting table. No promises on dates, only on intent.</p>
         <div class="soon" id="wbapps-soon"></div>
       </div>
@@ -365,7 +369,7 @@ html.wbapps-on::-webkit-scrollbar { display: none; }
    1. In Figma, export each icon as a square PNG, 1024 × 1024, full bleed: no rounded corners and no shadow
       (the page rounds and lights them itself).
    2. Name the file icon-<id>.png, using the app's id below: icon-scriptorium.png, icon-newsstand.png, icon-subscan.png,
-      icon-socha.png, icon-penpals.png, icon-posterfetch.png, icon-charactermessenger.png, icon-99script.png
+      icon-socha.png, icon-penpals.png, icon-posterfetch.png, icon-99script.png
    3. Upload it to Squarespace as a file link, without renaming it. That's all: it shows up on the 3D landing,
       the card and the detail sheet. Until the file exists, the app keeps its placeholder tile (initials on its colors).
    Coming-soon apps use the same naming. A different name or format (.svg, .webp)? Put the full path in that app's icon: field, e.g. icon: '/s/socha-v2.webp'. */
@@ -408,13 +412,13 @@ const APPS = [
     why: 'I originally built a simple ripper for my own discs; Poster Fetch is the part that turned it into a real library. It’s the unglamorous half of a home-media setup that makes the whole thing feel like a shelf instead of a directory listing.',
     features: ['Fetches posters and labels for movie files from TMDB', 'Turns a folder of files into a browsable library'],
     colors: ['#4a0d12', '#b3262f'], glyph: 'Pf' },
-  { id: 'charactermessenger', placeholderIcon: true, shots: ['../charactermessenger-1.webp', '../charactermessenger-2.webp'], name: 'Character Messenger', tagline: 'A Windows 98 reskin for Character.ai.',
-    category: 'Chat', platforms: [], state: 'own', status: 'Made for myself',
+  { id: 'newsstand', name: 'Newsstand', tagline: 'Only good news. That’s the whole rule.',
+    category: 'News', platforms: [], state: 'dev', status: 'Sketchbook',
     stack: '', requires: '', url: '', icon: '',
-    about: 'Character Messenger is a personal Windows 98-style skin I wrote for my own Character.ai chats, so they feel like a specific place instead of a generic app. It\u2019s a private mod, not affiliated with Character.ai, and I don\u2019t distribute it.',
-    why: 'Built for myself, then kept refining. It’s part of my through-line of making the computer feel like something specific, whether that’s a bookshelf, a tape recorder, or a beige desktop from 1998.',
-    features: ['A Windows 98-style skin for my own chats', 'Personal use only: never distributed'],
-    colors: ['#000080', '#1084d0'], glyph: 'Cm' },
+    about: 'A small reader that surfaces positive stories and nothing else.',
+    why: '',
+    features: ['Positive news only', 'A seal mascot of its own'],
+    colors: ['#d9d2c0', '#efe9da'], glyph: 'Ns' },
   { id: '99script', shots: ['../99script-1.webp', '../99script-2.webp'], name: '99Script', tagline: 'Write screenplays and branching game scripts on iPhone, iPad and Mac.',
     category: 'Screenwriting', platforms: ['iPhone', 'iPad', 'Mac'], state: 'dev', status: 'In development',
     stack: 'SwiftUI', requires: 'iOS / iPadOS 16+, macOS 13+', url: '', icon: '',
@@ -426,9 +430,6 @@ const APPS = [
 /* Apps you want to tease without a card. The "Coming soon" row hides itself while this is empty.
    e.g. { name: 'Next thing', tag: 'Working title', glyph: 'Nt', blurb: 'One line on what it does.', chips: ['A feature'] } */
 const SOON = [
-  { id: 'newsstand', name: 'Newsstand', tag: 'Sketchbook', glyph: 'Ns',
-    blurb: 'Only good news. That\u2019s the whole rule. A small reader that surfaces positive stories and nothing else.',
-    chips: ['Positive news only', 'A seal mascot of its own'] },
   { id: 'penpals', placeholderIcon: true, name: 'Bottle Post', tag: 'Working title', glyph: 'Bp',
     blurb: 'Anonymous letters to strangers, each sent off with a flick. A bottle in the ocean, not a dating app.',
     chips: ['Inspired by a 2010 iPhone app I loved', '18+, safety first'] },
@@ -490,8 +491,16 @@ function renderIndex() {
     apply();
   });
   search.addEventListener('input', () => { q = search.value.trim().toLowerCase(); apply(); });
-  const focusSearch = () => { document.getElementById('apps').scrollIntoView({ behavior: 'smooth' }); setTimeout(() => search.focus({ preventScroll: true }), 350); };
-  document.getElementById('wbapps-kbd').addEventListener('click', focusSearch);
+  /* The header field and the field above the grid filter the same list */
+  const top = document.getElementById('wbapps-kbd'), list = document.getElementById('apps');
+  const toList = () => { if (list.getBoundingClientRect().top > innerHeight * 0.4) list.scrollIntoView({ behavior: 'smooth' }); };
+  top.addEventListener('input', () => { search.value = top.value; q = top.value.trim().toLowerCase(); apply(); toList(); });
+  search.addEventListener('input', () => { top.value = search.value; });
+  [top, search].forEach((f) => f.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') { const c = grid.querySelector('.card:not([hidden])'); if (c) { e.preventDefault(); openSheet(c.dataset.id, c.querySelector('.icon')); } }
+    if (e.key === 'Escape') { f.value = ''; f.dispatchEvent(new Event('input')); f.blur(); }
+  }));
+  const focusSearch = () => { const f = getComputedStyle(top.parentNode).display === 'none' ? search : top; if (f === search) list.scrollIntoView({ behavior: 'smooth' }); f.focus({ preventScroll: true }); };
   addEventListener('keydown', (e) => {
     if ((e.key === 'k' && (e.metaKey || e.ctrlKey)) || (e.key === '/' && !/input|textarea/i.test(document.activeElement?.tagName))) { e.preventDefault(); focusSearch(); }
   });
@@ -794,14 +803,14 @@ async function startShelf() {
       /* ... and where its card's icon is. */
       const el = dockEl(u), r = el && el.offsetParent ? el.getBoundingClientRect() : null;
       const k = r ? ease(Math.min(1, Math.max(0, P * 1.35 - i * 0.045))) : 0;
-      if (r) dockP.set((r.left + r.width / 2 - w / 2) * wpp, (h / 2 - (r.top + r.height / 2)) * wpp, u.lift * 0.5);
+      if (r) dockP.set((r.left + r.width / 2 - w / 2) * wpp, (h / 2 - (r.top + r.height / 2)) * wpp, 0);
       m.position.copy(heroP); if (k > 0) m.position.lerp(dockP, k);
       const dockSize = r ? r.width * wpp / TILE * 1.02 : u.size;
-      m.scale.setScalar((r || P < 0.5 ? u.size + (dockSize - u.size) * k : u.size * Math.max(0, 1 - P * 2)) * (1 + u.lift * 0.08));
+      m.scale.setScalar((r || P < 0.5 ? u.size + (dockSize - u.size) * k : u.size * Math.max(0, 1 - P * 2)) * (1 + u.lift * 0.04));
       const fx = Math.atan2(m.position.y, CAM_Z - m.position.z), fy = -Math.atan2(m.position.x, CAM_Z - m.position.z);
       const heroRx = u.faceX - 0.14 + Math.sin(t * 0.5 + u.phase) * 0.06 - lookS.y * 0.25 * (1 - u.hover);
       const heroRy = u.faceY + u.spin + Math.sin(t * 0.4 + u.phase) * 0.12 + lookS.x * 0.35 * (1 - u.hover) + orbitS;
-      const dockRx = fx - 0.05 - u.lift * 0.35, dockRy = fy + u.lift * 0.4;
+      const dockRx = fx - 0.05 - u.lift * 0.08, dockRy = fy + u.lift * 0.22;
       m.rotation.set(heroRx + (dockRx - heroRx) * k, heroRy + (dockRy - heroRy) * k, Math.sin(t * 0.3 + u.phase) * 0.04 * (1 - k));
       if (Math.abs(u.lift - (u.id === cardHover ? 1 : 0)) > 0.005) moving = true;
     });
