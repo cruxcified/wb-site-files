@@ -10,7 +10,7 @@
 -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400;500&family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400;500&family=EB+Garamond:ital,wght@0,400..800;1,400..800&display=swap">
 
 <style>
 /* Layout: a quiet catalog. Serif headlines echo the WB monogram on the main site; a full-screen field of 3D app icons is the one loud moment. */
@@ -24,7 +24,7 @@
   --live: #1f9d55;
   --dev: #d08700;
   --own: #8a8d94;
-  --serif: "Libre Caslon Text", "Iowan Old Style", Georgia, "Times New Roman", serif;
+  --serif: "EB Garamond", Garamond, "Iowan Old Style", Georgia, serif;
   --sans: "Geist", "Helvetica Neue", Arial, sans-serif;
   --mono: "Geist Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
   --gutter: clamp(16px, 4.5vw, 64px);
@@ -54,7 +54,7 @@ html.wbapps-on::-webkit-scrollbar { display: none; }
 #wbapps .wrap { width: 100%; max-width: calc(var(--max) + 2 * var(--gutter)); margin: 0 auto;
   padding-left: max(var(--gutter), env(safe-area-inset-left, 0px)); padding-right: max(var(--gutter), env(safe-area-inset-right, 0px)); }
 #wbapps .label { font-family: var(--mono); font-size: 11.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
-#wbapps h1, #wbapps h2 { font-family: var(--serif); font-weight: 400; letter-spacing: -.015em; line-height: 1.04; text-wrap: balance; }
+#wbapps h1, #wbapps h2 { font-family: var(--serif); font-weight: 500; letter-spacing: -.035em; line-height: 1.04; text-wrap: balance; }
 #wbapps h2 { font-size: clamp(30px, 3.6vw, 46px); }
 #wbapps em { font-style: italic; }
 
@@ -607,7 +607,7 @@ async function startShelf() {
   const probe = document.createElement('canvas');
   if (!(probe.getContext('webgl2') || probe.getContext('webgl'))) throw new Error('WebGL unavailable');
   const THREE = await import(THREE_URL);
-  await document.fonts.load('190px "Libre Caslon Text"').catch(() => {});
+  await document.fonts.load('190px "EB Garamond"').catch(() => {});
 
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const small = matchMedia('(max-width: 680px), (pointer: coarse)').matches;
@@ -656,7 +656,7 @@ async function startShelf() {
       g.fillStyle = shine; g.fillRect(0, 0, 512, 512);
       g.fillStyle = '#ffffff';
     }
-    g.font = `400 ${item.glyph.length > 2 ? 150 : 190}px "Libre Caslon Text", Georgia, serif`;
+    g.font = `400 ${item.glyph.length > 2 ? 150 : 190}px "EB Garamond", Georgia, serif`;
     g.textAlign = 'center'; g.textBaseline = 'middle';
     g.fillText(item.glyph, 256, 272);
     const tex = new THREE.CanvasTexture(c);
