@@ -1981,14 +1981,14 @@ async function buildCase(THREE, host) {
     g.fillStyle = '#f5c518'; g.fill('evenodd');
     g.strokeStyle = NAVY; g.lineWidth = w * 0.006; g.setLineDash([w * 0.012, w * 0.01]);
     g.strokeRect(tx + tw * 0.06, ty + th * 0.1, tw * 0.88, th * 0.8); g.setLineDash([]);
-    const lw = tw * 0.62; drawLogo(g, (w - lw) / 2, ty + (th - lw * 358 / 478) / 2, lw, NAVY);
+    const lw = tw * 0.44; drawLogo(g, (w - lw) / 2, ty + (th - lw * 358 / 478) / 2, lw, NAVY);
     g.restore();
     /* the title, printed plain */
     const name = sp.title.toUpperCase(), max = w * 0.84;
-    let size = w * 0.13, lines;
+    let size = w * 0.12, lines;
     for (;;) { g.font = `900 ${size}px ${SANS}`; lines = wrapLines(g, name, max); if ((lines.length <= 3 && lines.every((l) => g.measureText(l).width <= max)) || size < w * 0.05) break; size *= 0.92; }
     g.fillStyle = '#121014'; g.textAlign = 'center'; g.textBaseline = 'middle';
-    const lh = size * 1.02, top = h * 0.5 - (lines.length - 1) * lh / 2;
+    const lh = size * 1.02, top = h * 0.555 - (lines.length - 1) * lh / 2;
     lines.forEach((l, i) => g.fillText(l, w / 2, top + i * lh, max));
     /* the band and the sticker */
     g.fillStyle = NAVY; g.fillRect(0, h * 0.74, w, h * 0.07);
