@@ -269,7 +269,7 @@ html.wbapps-on::-webkit-scrollbar { display: none; }
     <div class="wrap">
       <div class="hero-copy" id="wbapps-copy">
         <p class="label">Apps by Will Boechler</p>
-        <h1>Apps that work for <em>you.</em></h1>
+        <h1>Apps made for <em>me</em> that work for <em>you.</em></h1>
         <p class="lede">I make apps to fill in gaps within my own workflow for creation. If I have a vision, I architect and build it.</p>
         <div class="ctas">
           <a class="btn solid" href="#apps">Browse the apps</a>
@@ -303,7 +303,7 @@ html.wbapps-on::-webkit-scrollbar { display: none; }
 
       <div id="soon" style="margin-top: clamp(56px, 8vh, 88px)">
         <div class="index-head"><h2>Coming soon<sup id="wbapps-soon-count"></sup></h2></div>
-        <p class="soon-note">Ideas on the drafting table. No promises on dates, only on intent.</p>
+        <p class="soon-note">Ideas I’m still scaffolding and bringing together.</p>
         <div class="soon" id="wbapps-soon"></div>
       </div>
     </div>
@@ -321,8 +321,8 @@ html.wbapps-on::-webkit-scrollbar { display: none; }
       <div class="about-copy">
         <p class="label">About</p>
         <h2>Hi, I'm Will.</h2>
-        <p class="lede">I’m a 27-year-old solo game developer and software engineer from Portland, Oregon.</p>
-        <p>I’ve been creating things for many years, being a writer, filmmaker, journalist, and art history researcher. My work is often grand in scale and robust in its execution, a result of me relentlessly pursuing my creative visions until they can be given proper life. I also largely work in the unconventional, offering retro aesthetics, nostalgia, and quiet self reflection in this fast and ever changing world.</p>
+        <p class="lede">I’m a 27-year-old solo creative technologist and software developer from Portland, Oregon.</p>
+        <p>I’ve been creating <em>things</em> for many years: multi-medium literary experiences as a writer, pixel-styled video games, art history research, and even short films as a director and cinematographer. My work is often grand in scale and robust in its execution, a result of me relentlessly pursuing my creative visions until they can be given proper life. I largely work in the unconventional, specializing in retro aesthetics and personalized app experiences that foster self-reflection in this fast and ever-changing world.</p>
         <div class="links">
           <!-- Swap each href="#" for a real link and remove class="todo". Delete any you don't use. -->
           <a href="https://boechlerbooks.substack.com" target="_blank" rel="noopener">Substack ↗</a>
@@ -389,7 +389,7 @@ const ICON_PATH = (id) => `../icon-${id}.png`;
    shots:     optional screenshots shown in the detail sheet, e.g. ['/s/socha-1.webp']. Upload them as File links.
    colors, glyph: the placeholder tile until the real icon is uploaded.                                        */
 const APPS = [
-  { id: 'scriptorium', name: 'Scriptorium', tagline: 'An all-in-one writing app with zero AI presence. Ever.',
+  { id: 'scriptorium', name: 'Scriptorium', tagline: 'An all-in-one drafting app for writers with zero AI scraping. Ever.',
     shots: ['../scriptorium-1.webp', '../scriptorium-2.webp'],
     category: 'Writing', platforms: ['Mac', 'Windows', 'Linux'], state: 'live', status: 'Live, in use',
     stack: 'Three.js', requires: '', url: '', icon: '',
@@ -397,7 +397,7 @@ const APPS = [
     why: 'I built it because I needed it: a place to draft, structure, and see my novels as physical objects. It’s already live and in use, and the next questions (academic citations, paid sharing) are open on purpose.',
     features: ['Every manuscript on a 3D bookshelf, each with its own cover', 'The drafting depth of Scrivener', 'The book-building tools of Atticus', 'No AI: your words stay yours, and your data stays private'],
     colors: ['#3a2716', '#c4924a'], glyph: 'Sc' },
-  { id: 'subscan', placeholderIcon: true, shots: ['../subscan-1.webp', '../subscan-2.webp'], name: 'Subscan', tagline: 'Find the subscriptions you forgot you’re paying for.',
+  { id: 'subscan', placeholderIcon: true, shots: ['../subscan-1.webp', '../subscan-2.webp'], name: 'Subscan', tagline: 'A user-centric app to show you what subscriptions you’ve been forgetting.',
     category: 'Money', platforms: ['Mac'], state: 'dev', status: 'In development',
     stack: '', requires: '', url: '', icon: '',
     about: 'Subscan scans your bank and PayPal statements as plain files (no bank login, ever) and finds the recurring charges hiding in them. It maps where your money goes each month, flags the subscriptions you forgot about, and links you straight to each one’s cancellation page so you can actually reclaim the money.',
@@ -418,15 +418,15 @@ const APPS = [
     why: 'I originally built a simple ripper for my own discs; Poster Fetch is the part that turned it into a real library. It’s the unglamorous half of a home-media setup that makes the whole thing feel like a shelf instead of a directory listing.',
     features: ['Fetches posters and labels for movie files from TMDB', 'Turns a folder of files into a browsable library'],
     colors: ['#4a0d12', '#b3262f'], glyph: 'Pf' },
-  { id: 'newsstand', name: 'Newsstand', tagline: 'Only good news. That’s the whole rule.',
-    category: 'News', platforms: [], state: 'dev', status: 'Sketchbook',
-    stack: '', requires: '', url: '', icon: '',
-    about: 'A small reader that surfaces positive stories and nothing else.',
-    why: '',
-    features: ['Positive news only', 'A seal mascot of its own'],
+  { id: 'newsstand', name: 'Newsstand', tagline: 'Replacing doomscrolling with hopescrolling.',
+    category: 'News', platforms: ['iPad', 'iPhone', 'Mac'], state: 'dev', status: 'In development',
+    stack: 'Three.js', requires: '', url: '', icon: '',
+    about: 'A news app meant to center positive stories around nature conservation, art, astronomy, and animal rescue, as well as news centered around the topics you enjoy.',
+    why: 'I wanted an app where I could get good news. I was so fatigued and tired of seeing nothing but news and politics.',
+    features: ['Curates news sources from around the world into one rolled-up newspaper', 'Read it as a 1920s-style paper that scrolls and flips, built with Three.js', 'Delivered twice a day, morning and night, as if a delivery boy dropped it at your door', 'Positive stories only, plus the topics you choose'],
     colors: ['#d9d2c0', '#efe9da'], glyph: 'Ns' },
   { id: '99script', shots: ['../99script-1.webp', '../99script-2.webp'], name: '99Script', tagline: 'Software for composing game narratives and screenplays.',
-    category: 'Screenwriting', platforms: ['iPhone', 'iPad', 'Mac'], state: 'dev', status: 'In development',
+    category: 'Screenwriting', platforms: ['iPhone', 'iPad', 'Mac'], state: 'dev', status: 'In alpha',
     stack: 'SwiftUI', requires: 'iOS / iPadOS 16+, macOS 13+', url: '', icon: '',
     about: 'A screenplay editor for film and games, with a touch of Windows 95. It grew out of two earlier apps of mine, 99Writer and CCC Writer.',
     why: '',
@@ -436,7 +436,7 @@ const APPS = [
 /* Apps you want to tease without a card. The "Coming soon" row hides itself while this is empty.
    e.g. { name: 'Next thing', tag: 'Working title', glyph: 'Nt', blurb: 'One line on what it does.', chips: ['A feature'] } */
 const SOON = [
-  { id: 'penpals', placeholderIcon: true, name: 'Klexos', tag: 'From the Dictionary of Obscure Sorrows', glyph: 'Kl',
+  { id: 'penpals', placeholderIcon: true, name: 'klexos', tag: 'From the Dictionary of Obscure Sorrows', glyph: 'Kl',
     blurb: 'Anonymous letters to strangers, each sent off with a flick. A bottle in the ocean, not a dating app.',
     chips: ['Inspired by a 2010 iPhone app I loved', '18+, safety first'] },
 ];
