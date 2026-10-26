@@ -352,6 +352,11 @@ html.wbgames-booting, html.wbgames-booting body { overflow: hidden !important; }
 @keyframes wbgames-nudge { 50% { transform: translateX(6px); } }
 @media (prefers-reduced-motion: reduce) { #wbgames .cue i, #wbgames .hero .sub i { animation: none; } }
 @media (max-width: 980px) { #wbgames .nav { display: flex; } }
+/* 2026-10-26: fewer boxes, the scene carries the page. Nav floats with no bar; About photo has no frame. */
+#wbgames .nav { background: linear-gradient(rgba(8, 6, 7, .55), transparent); border-bottom: 0; }
+#wbgames .photo { border: 0; border-radius: 0; background: none; }
+#wbgames .controls button { border-color: transparent; }
+#wbgames .controls button:hover { border-color: rgba(243, 235, 225, .4); background: none; }
 
 /* Selected Work filmstrip (after shader.se's project carousel) */
 #wbgames .film { grid-column: 1 / -1; display: flex; gap: 10px; width: fit-content; max-width: 100%; overflow-x: auto; scrollbar-width: none; padding: 16px 12px; background:
