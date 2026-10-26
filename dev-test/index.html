@@ -1360,7 +1360,7 @@ async function start() {
   function ceWords(g, w, h, tt, scale = 1) {
     g.textAlign = 'center'; g.textBaseline = 'middle'; g.shadowColor = 'rgba(0,0,0,.9)'; g.shadowOffsetY = 1;
     if (tt < 1.5) { g.globalAlpha = Math.min(1, tt / 0.3, (1.5 - tt) / 0.3); g.font = `${Math.round(30 * scale)}px VT323, monospace`; g.fillStyle = '#e8e2cf'; g.fillText(CE_TITLE, w / 2, h * 0.45); g.globalAlpha = 1; }
-    if (tt >= 2.0 && tt < 4.4) { g.font = `${Math.round(15 * scale)}px VT323, monospace`; g.fillStyle = '#f2ecd8'; g.fillText(CE_SUB, w / 2, h * 0.66); }
+    if (tt >= 2.0 && tt < 4.4) { g.font = `${Math.round(15 * scale)}px VT323, monospace`; g.fillStyle = '#f2ecd8'; g.fillText(CE_SUB, w / 2, h * 0.58); }
     g.shadowColor = 'transparent'; g.textAlign = 'left';
   }
   /* Laid out like the real one (bin, view and inspector on top, the timeline under them), squeezed up so the page's words don't hide the tracks. */
@@ -1454,7 +1454,7 @@ async function start() {
   });
   bloodTex.wrapS = bloodTex.wrapT = THREE.ClampToEdgeWrapping;
   const blood = new THREE.Mesh(new THREE.PlaneGeometry(0.8, 0.8), new THREE.MeshBasicMaterial({ map: bloodTex, transparent: true, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -2 }));
-  blood.position.copy(cell(9, 3.6)).setX(cell(9, 3.6).x - 0.499).setY(0.62); blood.rotation.y = -Math.PI / 2; blood.visible = false;
+  blood.position.copy(cell(7, 3.8)).setX(cell(7, 3.8).x + 0.501).setY(0.62); blood.rotation.y = Math.PI / 2;   /* the wall on your right */ blood.visible = false;
   level.add(blood);
 
   /* Channel 7: Movie Mode. Pick a lens (1 2 3), frame on the thirds grid, R records the camera as it flies, K drops a keyframe.
