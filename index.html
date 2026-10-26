@@ -99,7 +99,7 @@ main.col{margin-top:28px}
 
 <div class="hub">
   <header class="col">
-    <div class="status"><span>Boechler Lab</span><span>Node <b>lab.wboechler.com</b></span><span id="clock">--:--:--</span></div>
+    <div class="status"><span>Boechler Lab</span><span>Node <b>lab.wboechler.com</b></span></div>
     <h1 class="title" id="title"><span class="plain">Will Boechler</span><pre id="ascii" aria-hidden="true"></pre></h1>
   </header>
 
@@ -207,9 +207,6 @@ main.col{margin-top:28px}
   var lastW = 0;
   addEventListener('resize', function(){ var w = title.clientWidth; if (Math.abs(w - lastW) > 20){ lastW = w; render(); } });
 
-  var clock = document.getElementById('clock');
-  function tick(){ var d = new Date(); clock.textContent = d.toTimeString().slice(0, 8); }
-  tick(); setInterval(tick, 1000);
 
   var rows = [].slice.call(document.querySelectorAll('.row'));
   addEventListener('keydown', function(e){
