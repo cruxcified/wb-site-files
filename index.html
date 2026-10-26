@@ -5,92 +5,96 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Will Boechler Lab</title>
 <meta name="claude:viewport-fit-sides" content="cover">
-<meta name="description" content="Things Will Boechler has made: productivity apps, Dolorem Company horror games, the PSX Engine, Dog Days, and more.">
+<meta name="description" content="Things Will Boechler has made: productivity apps, Dolorem Company horror games, the PSX Engine, Dog Days, and his creative portfolio.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Chakra+Petch:wght@700&display=swap">
 <style>
-/* Layout: one quiet column of projects on the left; a single point cloud on the right
-   reshapes into whichever project you point at. On phones the cloud sits above the list. */
+/* Layout: a terminal index. ASCII title across the top, a numbered menu of projects on the left,
+   and one point cloud on the right drawn in ASCII that reshapes for the selected entry.
+   One committed look: green phosphor on black, like a ship's computer terminal. */
 :root{
-  --bg:#e3e6e5;      /* morning fog */
-  --ink:#1a2125;
-  --muted:#5b666b;
-  --line:#c3c9c9;
-  --point:#24323b;
-  --t-apps:#8a5526; --t-dolorem:#2b43c4; --t-engine:#00726f;
-  --t-dog:#9a3a58;  --t-fried:#46647a;  --t-site:#1a2125;
-  --display:"Hanken Grotesk", "Helvetica Neue", Arial, sans-serif;
-  --mono:"DM Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
-  color-scheme:light;
-}
-@media (prefers-color-scheme: dark){
-  :root:not([data-theme="light"]){
-    --bg:#101416; --ink:#e4e9e9; --muted:#8a979b; --line:#253034; --point:#d6e0e2;
-    --t-apps:#e0ae78; --t-dolorem:#8196ff; --t-engine:#4fcfc4;
-    --t-dog:#ee8fae; --t-fried:#a7c0d3; --t-site:#e4e9e9;
-    color-scheme:dark;
-  }
-}
-:root[data-theme="dark"]{
-  --bg:#101416; --ink:#e4e9e9; --muted:#8a979b; --line:#253034; --point:#d6e0e2;
-  --t-apps:#e0ae78; --t-dolorem:#8196ff; --t-engine:#4fcfc4;
-  --t-dog:#ee8fae; --t-fried:#a7c0d3; --t-site:#e4e9e9;
+  --bg:#030705;
+  --phos:#8ff5b9;      /* phosphor */
+  --dim:#4f8a6b;
+  --faint:#1b3326;
+  --amber:#ffb84d;     /* selection keys, status */
+  --mono:"Share Tech Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  --block:"Chakra Petch", "Arial Black", sans-serif;
+  --glow:0 0 6px rgba(143,245,185,.45), 0 0 18px rgba(143,245,185,.12);
   color-scheme:dark;
 }
 *{box-sizing:border-box}
 html,body{height:100%}
-body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--display);font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased}
+body{margin:0;background:var(--bg);color:var(--phos);font-family:var(--mono);font-size:15px;line-height:1.45;-webkit-font-smoothing:antialiased;overflow-x:hidden}
 a{color:inherit}
-#stage{position:fixed;inset:0;width:100%;height:100%;display:block;pointer-events:none;z-index:0}
+::selection{background:var(--phos);color:var(--bg)}
 
-.hub{position:relative;z-index:1;min-height:100%;display:flex;flex-direction:column;justify-content:space-between;gap:40px;
+#stage{position:fixed;left:0;top:0;width:100%;height:100%;display:block;pointer-events:none;z-index:0}
+/* the glass: scanlines and a soft vignette over everything */
+body::after{content:"";position:fixed;inset:0;z-index:5;pointer-events:none;
+  background:
+    repeating-linear-gradient(to bottom, rgba(0,0,0,0) 0 2px, rgba(0,0,0,.22) 2px 3px),
+    radial-gradient(120% 90% at 50% 50%, rgba(0,0,0,0) 60%, rgba(0,0,0,.55) 100%);
+  animation:flick 6s steps(1) infinite}
+@keyframes flick{0%,100%{opacity:1}47%{opacity:.93}48%{opacity:1}83%{opacity:.96}}
+
+.hub{position:relative;z-index:1;min-height:100%;display:flex;flex-direction:column;gap:28px;
   padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));padding-block:28px 24px}
-.col{width:100%;max-width:620px;margin-left:clamp(0px, 6vw, 96px)}
+.col{width:100%;max-width:620px;margin-left:clamp(0px, 5vw, 80px)}
+.wide{max-width:min(980px, 100%)}
 
-.top{display:flex;align-items:baseline;justify-content:space-between;gap:16px}
-.mark{font-weight:600;font-size:15px;letter-spacing:-.01em;text-decoration:none}
-.mark span{color:var(--muted);font-weight:400}
-.addr{font-family:var(--mono);font-size:12px;color:var(--muted)}
+/* header */
+.status{display:flex;flex-wrap:wrap;gap:4px 18px;font-size:12px;letter-spacing:.06em;color:var(--dim);text-transform:uppercase}
+.status b{font-weight:400;color:var(--amber)}
+.title{margin:14px 0 0;font-weight:400}
+.title pre{margin:0;font-family:var(--mono);line-height:1;letter-spacing:0;color:var(--phos);text-shadow:var(--glow);white-space:pre;overflow:hidden}
+.title .plain{font-family:var(--block);font-size:clamp(40px, 7vw, 96px);letter-spacing:.02em;text-shadow:var(--glow);line-height:1}
+.title.ready .plain{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.sub{margin-top:10px;display:flex;flex-wrap:wrap;gap:4px 14px;font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--dim)}
+.sub span:first-child{color:var(--phos)}
+.cursor{display:inline-block;width:.6em;height:1em;background:var(--phos);vertical-align:-2px;margin-left:4px;animation:blink 1.05s steps(1) infinite;box-shadow:var(--glow)}
+@keyframes blink{50%{opacity:0}}
 
-.intro{margin:0 0 24px;max-width:36ch;font-size:clamp(19px, 2vw, 23px);line-height:1.3;letter-spacing:-.015em;text-wrap:balance}
-.intro em{font-style:normal;color:var(--muted)}
+/* menu */
+main.col{margin-top:28px}
+.intro{margin:0 0 22px;max-width:46ch;color:var(--dim);font-size:15px}
+.intro b{font-weight:400;color:var(--phos)}
+.menu-head{display:flex;justify-content:space-between;gap:12px;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);
+  border-bottom:1px solid var(--faint);padding-bottom:6px}
+.list{list-style:none;margin:0;padding:0}
+.list li{border-bottom:1px dashed var(--faint)}
+.row{position:relative;display:grid;grid-template-columns:2.6em 1fr auto;column-gap:10px;align-items:baseline;padding:12px 10px 12px 6px;text-decoration:none;outline:none}
+.key{color:var(--amber);font-size:14px}
+.name{font-size:clamp(22px, 2.5vw, 30px);letter-spacing:.03em;text-transform:uppercase;line-height:1.1;text-shadow:var(--glow)}
+.dest{font-size:12px;color:var(--dim);white-space:nowrap;letter-spacing:.04em}
+.desc{grid-column:2 / -1;margin-top:3px;color:var(--dim);font-size:14px;max-width:56ch;min-width:0}
+.row:hover,.row:focus-visible,.row.is-on{background:var(--phos);color:var(--bg)}
+.row:hover *,.row:focus-visible *,.row.is-on *{color:var(--bg);text-shadow:none}
+.row:hover .key::before,.row:focus-visible .key::before,.row.is-on .key::before{content:"▶";position:absolute;left:-1.3em;color:var(--phos)}
 
-.list{list-style:none;margin:0;padding:0;border-top:1px solid var(--line)}
-.list li{border-bottom:1px solid var(--line)}
-.row{display:grid;grid-template-columns:1fr auto;column-gap:16px;row-gap:2px;align-items:baseline;padding-block:12px;text-decoration:none;
-  transition:opacity .35s ease}
-.kind{grid-column:1 / -1;font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);transition:color .3s ease}
-.name{font-size:clamp(26px, 2.6vw, 34px);font-weight:500;letter-spacing:-.03em;line-height:1.08;transition:transform .45s cubic-bezier(.2,.7,.2,1)}
-.dest{font-family:var(--mono);font-size:12px;color:var(--muted);white-space:nowrap}
-.desc{grid-column:1 / -1;margin-top:2px;color:var(--muted);font-size:14.5px;max-width:58ch;min-width:0}
-.soon{display:inline-block;font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;border:1px solid currentColor;border-radius:3px;padding:1px 5px;vertical-align:4px;margin-left:8px;color:var(--muted)}
-.row[aria-disabled="true"]{cursor:default}
-
-.list:hover .row:not(:hover){opacity:.42}
-.row:hover .name,.row:focus-visible .name,.row.is-on .name{transform:translateX(8px)}
-.row:hover .kind,.row:focus-visible .kind,.row.is-on .kind{color:var(--tint)}
-.row:focus-visible{outline:2px solid var(--tint);outline-offset:4px;border-radius:2px}
-@media (hover:none){ .list .row:not(.is-on){opacity:1} }
-
-.foot{display:flex;flex-wrap:wrap;gap:8px 22px;align-items:baseline;font-family:var(--mono);font-size:12px;color:var(--muted)}
-.foot a{text-decoration:none;border-bottom:1px solid var(--line)}
-.foot a:hover{color:var(--ink);border-color:var(--ink)}
+.foot{margin-top:auto;display:flex;flex-wrap:wrap;gap:8px 22px;align-items:baseline;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--dim)}
+.foot a{text-decoration:none;color:var(--phos)}
+.foot a::before{content:"[";color:var(--dim)} .foot a::after{content:"]";color:var(--dim)}
+.foot a:hover,.foot a:focus-visible{background:var(--phos);color:var(--bg);outline:none}
 .foot .copy{margin-left:auto}
 
-.fig{position:fixed;z-index:1;right:max(20px, calc(env(safe-area-inset-right, 0px) + 20px));bottom:calc(env(safe-area-inset-bottom, 0px) + 24px);
-  font-family:var(--mono);font-size:11px;color:var(--muted);text-align:right;pointer-events:none;transition:opacity .4s ease}
-.fig b{font-weight:500;color:var(--ink)}
+/* render readout */
+.fig{position:fixed;z-index:2;right:max(20px, calc(env(safe-area-inset-right, 0px) + 20px));bottom:calc(env(safe-area-inset-bottom, 0px) + 22px);
+  font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);text-align:right;pointer-events:none;
+  border:1px solid var(--faint);padding:8px 10px;background:rgba(3,7,5,.7);font-variant-numeric:tabular-nums}
+.fig b{font-weight:400;color:var(--phos)}
 
 .spacer{display:none}
 @media (max-width:860px){
   .col{margin-left:0;max-width:none}
-  .spacer{display:block;height:38vh;height:38svh}
-  .hub{gap:28px}
-  .fig{top:calc(env(safe-area-inset-top, 0px) + 64px);bottom:auto;right:max(16px, env(safe-area-inset-right, 0px))}
+  main.col{margin-top:0}
+  .spacer{display:block;height:34vh;height:34svh}
+  .fig{bottom:auto;top:calc(env(safe-area-inset-top, 0px) + 12px);right:max(16px, env(safe-area-inset-right, 0px));display:none}
   .foot .copy{margin-left:0;width:100%}
+  .row:hover .key::before,.row:focus-visible .key::before,.row.is-on .key::before{content:none}
 }
-@media (prefers-reduced-motion:reduce){ .name,.row,.kind{transition:none} }
+@media (prefers-reduced-motion:reduce){ body::after,.cursor{animation:none} }
 .no-gl .fig,.no-gl .spacer{display:none}
 </style>
 </head>
@@ -98,44 +102,36 @@ a{color:inherit}
 <canvas id="stage" aria-hidden="true"></canvas>
 
 <div class="hub">
-  <header class="col top">
-    <a class="mark" href="https://wboechler.com/">Will Boechler <span>/ Lab</span></a>
-    <span class="addr">lab.wboechler.com</span>
+  <header class="col wide">
+    <div class="status"><span>Boechler Lab</span><span>Node <b>lab.wboechler.com</b></span><span id="clock">--:--:--</span></div>
+    <h1 class="title" id="title"><span class="plain">Will Boechler</span><pre id="ascii" aria-hidden="true"></pre></h1>
+    <div class="sub"><span>Index of works</span><span>5 entries</span><span>Select 1–5<i class="cursor"></i></span></div>
   </header>
 
   <div class="spacer" aria-hidden="true"></div>
 
   <main class="col">
-    <p class="intro">Things I've made, and a few I'm still making. <em>Apps, horror games, an engine to build them, and the rest of my work.</em></p>
+    <p class="intro"><b>Things I've made, and a few I'm still making.</b> Apps, horror games, an engine to build them, and the rest of my work.</p>
+    <div class="menu-head" aria-hidden="true"><span>Key / Entry</span><span>Location</span></div>
     <ul class="list" id="list">
-      <li><a class="row" href="/apps/" data-shape="apps" style="--tint:var(--t-apps)">
-        <span class="kind">Apps</span>
-        <span class="name">Productivity Apps</span><span class="dest">/apps</span>
+      <li><a class="row" href="/apps/" data-shape="apps">
+        <span class="key">[1]</span><span class="name">Productivity Apps</span><span class="dest">/apps</span>
         <span class="desc">Scriptorium, Newsstand, Subscan, Socha and the rest of the small apps I build for myself.</span>
       </a></li>
-      <li><a class="row" href="/dev/" data-shape="disc" style="--tint:var(--t-dolorem)">
-        <span class="kind">Game studio</span>
-        <span class="name">Dolorem Company</span><span class="dest">/dev</span>
+      <li><a class="row" href="/dev/" data-shape="disc">
+        <span class="key">[2]</span><span class="name">Dolorem Company</span><span class="dest">/dev</span>
         <span class="desc">Horror games that feel like PS1 discs found in an abandoned video store.</span>
       </a></li>
-      <li><a class="row" href="/dev/#engine" data-shape="lattice" style="--tint:var(--t-engine)">
-        <span class="kind">Engine</span>
-        <span class="name">PSX Engine</span><span class="dest">/dev#engine</span>
+      <li><a class="row" href="/dev/#engine" data-shape="lattice">
+        <span class="key">[3]</span><span class="name">PSX Engine</span><span class="dest">/dev#engine</span>
         <span class="desc">My homemade editor for PS1-style games, with map, cutscene and movie modes.</span>
       </a></li>
-      <li><a class="row" href="https://littlelabgames.itch.io/dog-days" data-shape="dog" style="--tint:var(--t-dog)">
-        <span class="kind">Game</span>
-        <span class="name">Dog Days</span><span class="dest">itch.io</span>
+      <li><a class="row" href="https://littlelabgames.itch.io/dog-days" data-shape="dog">
+        <span class="key">[4]</span><span class="name">Dog Days</span><span class="dest">itch.io</span>
         <span class="desc">A 50-room game made in bipsi, based on my novel.</span>
       </a></li>
-      <li><a class="row" aria-disabled="true" tabindex="0" data-shape="fried" style="--tint:var(--t-fried)">
-        <span class="kind">History piece</span>
-        <span class="name">Caspar David Friedrich<span class="soon">Soon</span></span><span class="dest"></span>
-        <span class="desc">An immersive walk through the painter's work, built in three.js.</span>
-      </a></li>
-      <li><a class="row" href="https://wboechler.com/" data-shape="lens" style="--tint:var(--t-site)">
-        <span class="kind">Main site</span>
-        <span class="name">wboechler.com</span><span class="dest">wboechler.com</span>
+      <li><a class="row" href="https://wboechler.com/" data-shape="lens">
+        <span class="key">[5]</span><span class="name">Creative Portfolio</span><span class="dest">wboechler.com</span>
         <span class="desc">Photography, short films, teaching and writing.</span>
       </a></li>
     </ul>
@@ -149,12 +145,92 @@ a{color:inherit}
   </footer>
 </div>
 
-<p class="fig" id="fig" aria-hidden="true"><b id="fig-name">Idle</b><br><span id="fig-meta">5,000 points</span></p>
+<p class="fig" id="fig" aria-hidden="true"><b id="fig-name">Standby</b><br><span id="fig-meta">Sphere</span><br><span id="fig-rot">5,000 pts · rot +000°</span></p>
+
+<script>
+/* ASCII title, menu keys and clock: plain script so they work even without WebGL */
+(function(){
+  var RAMP = " .:-=+*#%@";
+  var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var title = document.getElementById('title'), pre = document.getElementById('ascii');
+  var target = '', timer = 0;
+
+  function render(){
+    var width = title.clientWidth, narrow = width < 560;
+    var lines = narrow ? ['WILL', 'BOECHLER'] : ['WILL BOECHLER'];
+    var fs = narrow ? 6 : 7;
+    pre.style.fontSize = fs + 'px';
+    var probe = document.createElement('span'); probe.textContent = '0000000000';
+    probe.style.cssText = 'position:absolute;visibility:hidden;font:' + fs + 'px "Share Tech Mono", monospace';
+    document.body.appendChild(probe); var cw = probe.getBoundingClientRect().width / 10; probe.remove();
+    var cols = Math.floor(width / cw);
+
+    var F = 200, big = document.createElement('canvas'), b = big.getContext('2d');
+    b.font = '700 ' + F + 'px "Chakra Petch", "Arial Black", sans-serif';
+    var tw = Math.max.apply(null, lines.map(function(l){ return b.measureText(l).width; }));
+    var lh = F * .82, th = lh * lines.length;
+    big.width = Math.ceil(tw); big.height = Math.ceil(th);
+    b.font = '700 ' + F + 'px "Chakra Petch", "Arial Black", sans-serif';
+    b.fillStyle = '#fff'; b.textBaseline = 'alphabetic';
+    lines.forEach(function(l, i){ b.fillText(l, (tw - b.measureText(l).width) / 2, lh * (i + 1) - F * .1); });
+
+    var rows = Math.max(1, Math.round(th / tw * cols * cw / fs));
+    var small = document.createElement('canvas'); small.width = cols; small.height = rows;
+    var s = small.getContext('2d'); s.imageSmoothingQuality = 'high'; s.drawImage(big, 0, 0, cols, rows);
+    var px = s.getImageData(0, 0, cols, rows).data, out = '';
+    for (var y = 0; y < rows; y++){
+      var line = '';
+      for (var x = 0; x < cols; x++){ var v = px[(y * cols + x) * 4 + 3] / 255; line += RAMP[Math.min(RAMP.length - 1, Math.round(v * (RAMP.length - 1)))]; }
+      out += line.replace(/\s+$/, '') + (y < rows - 1 ? '\n' : '');
+    }
+    target = out; title.classList.add('ready');
+    decode();
+  }
+
+  function decode(){                     // characters settle in from noise, left to right
+    clearInterval(timer);
+    if (reduce){ pre.textContent = target; return; }
+    var t0 = performance.now(), noise = '#%@*+=:';
+    timer = setInterval(function(){
+      var p = (performance.now() - t0) / 900, w = target.indexOf('\n'); if (w < 0) w = target.length;
+      var out = '', col = 0;
+      for (var i = 0; i < target.length; i++){
+        var c = target[i];
+        if (c === '\n'){ out += c; col = 0; continue; }
+        out += (c !== ' ' && col / w > p) ? noise[(Math.random() * noise.length) | 0] : c;
+        col++;
+      }
+      pre.textContent = out;
+      if (p >= 1.05){ clearInterval(timer); pre.textContent = target; }
+    }, 40);
+  }
+
+  var fontsReady = document.fonts ? Promise.all([
+    document.fonts.load('700 200px "Chakra Petch"'), document.fonts.load('7px "Share Tech Mono"')
+  ]).catch(function(){}) : Promise.resolve();
+  fontsReady.then(render);
+  var lastW = 0;
+  addEventListener('resize', function(){ var w = title.clientWidth; if (Math.abs(w - lastW) > 20){ lastW = w; render(); } });
+
+  var clock = document.getElementById('clock');
+  function tick(){ var d = new Date(); clock.textContent = d.toTimeString().slice(0, 8); }
+  tick(); setInterval(tick, 1000);
+
+  var rows = [].slice.call(document.querySelectorAll('.row'));
+  addEventListener('keydown', function(e){
+    if (e.metaKey || e.ctrlKey || e.altKey) return;
+    var n = parseInt(e.key, 10);
+    if (n >= 1 && n <= rows.length){ rows[n - 1].focus(); rows[n - 1].click(); }
+  });
+})();
+</script>
 
 <script type="module">
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.186.1/build/three.module.js';
 
 const N = 5000;
+const CELL = { w: 6, h: 10 };            // one character cell, in CSS pixels
+const RAMP = ' .,:;-=+*#%@';
 const canvas = document.getElementById('stage');
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const touch = matchMedia('(hover: none)').matches;
@@ -164,6 +240,7 @@ try { renderer = new THREE.WebGLRenderer({ canvas, antialias: false, alpha: true
 catch (e) { document.documentElement.classList.add('no-gl'); canvas.remove(); throw e; }
 renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
 renderer.setClearColor(0x000000, 0);
+renderer.autoClear = true;
 
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(35, 1, 0.1, 50);
@@ -257,27 +334,6 @@ S.dog = (() => {                       // a bitsy-sized pixel dog
   }, 5);
 })();
 
-S.fried = (() => {                     // after Wanderer above the Sea of Fog
-  const crag = x => -.05 - .9*Math.pow(Math.max(0, Math.abs(x) - .1), 1.15) + .045*Math.sin(x*17) + .025*Math.sin(x*43);
-  const ridge = x => -.45 + .26*Math.max(0, 1 - Math.abs(x + .8)*1.6) + .16*Math.max(0, 1 - Math.abs(x - .9)*2.2) + .03*Math.sin(x*9);
-  const wide = r => Math.tanh((r()*2 - 1) * 1.6) / Math.tanh(1.6) * 1.1;   // thins out at the edges
-  return build((i, r) => {
-    const u = r();
-    if (u < .4){ const x = wide(r), z = -1.2 + r()*1.9; return [x, -.5 + .04*Math.sin(x*3 + z*2) + .03*Math.sin(x*7 - z*5) + (r() - .5)*.03, z]; }
-    if (u < .56){ const x = wide(r), top = ridge(x); return [x, r() < .6 ? top : -.5 + (top + .5)*r(), -1.2 + (r() - .5)*.05]; }
-    if (u < .94){
-      const x = (r()*2 - 1)*.72, top = crag(x);
-      const y = r() < .42 ? top : -1.1 + (top + 1.1)*Math.pow(r(), .7);
-      return [x, y, .55 + (r() - .5)*.3*(1 - Math.abs(x))];
-    }
-    const t = r(), y0 = crag(0), H = .36;   // the wanderer, seen from behind
-    if (t > .84){ const a = r()*Math.PI*2, h = .034*Math.sqrt(r()); return [Math.cos(a)*h, y0 + H*.93 + Math.sin(a)*h, .6]; }
-    if (t < .3){ const leg = r() < .5 ? -1 : 1; return [leg*.026 + (r() - .5)*.018, y0 + t*H, .6]; }
-    const w = .02 + .05*(1 - (t - .3)/.54);
-    return [(r()*2 - 1)*w, y0 + t*H, .6];
-  }, 6);
-})();
-
 S.lens = rotate(build((i, r) => {      // a six-blade aperture in its barrel
   const u = r(), a = r()*Math.PI*2;
   if (u < .28){ const z = -.75 + r()*.9; return [Math.cos(a)*.95, Math.sin(a)*.95, z]; }
@@ -292,17 +348,16 @@ S.lens = rotate(build((i, r) => {      // a six-blade aperture in its barrel
 }, 7), .22, -.55);
 
 const META = {
-  idle:    ['Idle', 'A sphere'],
-  apps:    ['Productivity Apps', 'Nine icons on a home screen'],
-  disc:    ['Dolorem Company', 'A PS1 disc, tilted'],
-  lattice: ['PSX Engine', 'A 3 × 3 × 3 voxel lattice'],
-  dog:     ['Dog Days', 'A 20 × 12 pixel dog'],
-  fried:   ['Caspar David Friedrich', 'After Wanderer above the Sea of Fog, c. 1818'],
-  lens:    ['wboechler.com', 'A six-blade aperture'],
+  idle:    ['Standby', 'Sphere'],
+  apps:    ['Productivity Apps', 'Nine icons, 3 × 3'],
+  disc:    ['Dolorem Company', 'PS1 disc, tilted'],
+  lattice: ['PSX Engine', 'Voxel lattice, 3 × 3 × 3'],
+  dog:     ['Dog Days', 'Pixel dog, 20 × 12'],
+  lens:    ['Creative Portfolio', 'Six-blade aperture'],
 };
 for (const k in S) S[k] = sortX(S[k]);
 
-/* ---------- points ---------- */
+/* ---------- pass 1: points pile up as density in a small grid, two texels per character ---------- */
 const pos = new Float32Array(S.idle), from = new Float32Array(S.idle);
 let to = S.idle;
 const seed = new Float32Array(N);
@@ -311,54 +366,78 @@ const geo = new THREE.BufferGeometry();
 geo.setAttribute('position', new THREE.BufferAttribute(pos, 3).setUsage(THREE.DynamicDrawUsage));
 geo.setAttribute('seed', new THREE.BufferAttribute(seed, 1));
 
-const mat = new THREE.ShaderMaterial({
-  transparent: true, depthWrite: false,
-  uniforms: { uColor: { value: new THREE.Color() }, uSize: { value: 2.7 }, uPR: { value: renderer.getPixelRatio() }, uTime: { value: 0 }, uFade: { value: 1 } },
+const ptsMat = new THREE.ShaderMaterial({
+  transparent: true, depthWrite: false, depthTest: false, blending: THREE.AdditiveBlending,
+  uniforms: { uTime: { value: 0 } },
   vertexShader: `
-    attribute float seed; uniform float uSize, uPR, uTime; varying float vA;
+    attribute float seed; uniform float uTime; varying float vW;
     void main(){
       vec4 mv = modelViewMatrix * vec4(position, 1.0);
       gl_Position = projectionMatrix * mv;
-      float tw = .75 + .25 * sin(uTime * 1.3 + seed * 40.0);
-      gl_PointSize = uSize * uPR * (5.4 / -mv.z) * (.8 + seed * .5);
-      vA = tw * smoothstep(8.0, 4.2, -mv.z);
+      gl_PointSize = 1.5;
+      vW = (.7 + .3 * sin(uTime * 1.7 + seed * 40.0)) * smoothstep(8.0, 4.0, -mv.z) * (5.4 / -mv.z);
     }`,
+  fragmentShader: `varying float vW; void main(){ gl_FragColor = vec4(vW, vW, vW, 1.0); }`,
+});
+group.add(new THREE.Points(geo, ptsMat));
+
+let density = new THREE.WebGLRenderTarget(2, 2, { type: THREE.HalfFloatType, depthBuffer: false });
+
+/* ---------- pass 2: each character cell picks a glyph from the ramp by density ---------- */
+function glyphAtlas(){
+  const dpr = renderer.getPixelRatio(), w = Math.round(CELL.w * dpr), h = Math.round(CELL.h * dpr);
+  const c = document.createElement('canvas'); c.width = w * RAMP.length; c.height = h;
+  const g = c.getContext('2d');
+  g.fillStyle = '#fff'; g.textAlign = 'center'; g.textBaseline = 'middle';
+  g.font = `${Math.round(h * .95)}px "Share Tech Mono", monospace`;
+  [...RAMP].forEach((ch, i) => g.fillText(ch, i * w + w / 2, h / 2 + dpr * .5));
+  const t = new THREE.CanvasTexture(c);
+  t.minFilter = t.magFilter = THREE.NearestFilter; t.generateMipmaps = false;
+  return t;
+}
+const quadMat = new THREE.ShaderMaterial({
+  transparent: true, depthTest: false, depthWrite: false,
+  uniforms: {
+    tDens: { value: null }, tGlyph: { value: null },
+    uCells: { value: new THREE.Vector2() }, uCellPx: { value: new THREE.Vector2() }, uRes: { value: new THREE.Vector2() },
+    uLevels: { value: RAMP.length }, uColor: { value: new THREE.Color('#8ff5b9') }, uHot: { value: new THREE.Color('#d9ffe9') },
+    uFade: { value: 1 }, uGain: { value: .9 },
+  },
+  vertexShader: `void main(){ gl_Position = vec4(position.xy, 0.0, 1.0); }`,
   fragmentShader: `
-    uniform vec3 uColor; uniform float uFade; varying float vA;
+    uniform sampler2D tDens, tGlyph; uniform vec2 uCells, uCellPx, uRes; uniform float uLevels, uFade, uGain; uniform vec3 uColor, uHot;
     void main(){
-      float d = length(gl_PointCoord - .5);
-      if (d > .5) discard;
-      gl_FragColor = vec4(uColor, smoothstep(.5, .15, d) * vA * uFade * .9);
+      vec2 p = vec2(gl_FragCoord.x, uRes.y - gl_FragCoord.y);          // top-left origin
+      vec2 cell = floor(p / uCellPx), inCell = fract(p / uCellPx);
+      vec2 uv = (cell + .5) / uCells; uv.y = 1.0 - uv.y;
+      float d = texture2D(tDens, uv).r;
+      float lv = 1.0 - exp(-d * uGain);
+      float idx = floor(lv * (uLevels - 1.0) + .35);
+      if (idx < .5) discard;
+      float g = texture2D(tGlyph, vec2((idx + inCell.x) / uLevels, 1.0 - inCell.y)).r;
+      vec3 col = mix(uColor, uHot, smoothstep(.75, 1.0, lv));
+      gl_FragColor = vec4(col, g * (.45 + .55 * lv) * uFade);
     }`,
 });
-const points = new THREE.Points(geo, mat);
-group.add(points);
-
-/* ---------- colour from CSS tokens, so both themes work ---------- */
-const root = document.documentElement;
-const tint = new THREE.Color(), base = new THREE.Color();
-let tintVar = '--point';
-function cssColor(name){ return getComputedStyle(root).getPropertyValue(name).trim() || '#888'; }
-function readColors(){ base.set(cssColor('--point')); tint.set(cssColor(tintVar)); }
-readColors();
-mat.uniforms.uColor.value.copy(tint);
-matchMedia('(prefers-color-scheme: dark)').addEventListener('change', readColors);
-new MutationObserver(readColors).observe(root, { attributes: true, attributeFilter: ['data-theme'] });
+const quad = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), quadMat);
+quad.frustumCulled = false;
+const quadScene = new THREE.Scene(); quadScene.add(quad);
+const quadCam = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
 
 /* ---------- morphing ---------- */
-const figName = document.getElementById('fig-name'), figMeta = document.getElementById('fig-meta');
-let current = 'idle', t0 = -1, dur = 1.5;
-function show(key, tintName){
-  tintVar = tintName || '--point'; readColors();
+const figName = document.getElementById('fig-name'), figMeta = document.getElementById('fig-meta'), figRot = document.getElementById('fig-rot');
+const clock = new THREE.Clock();
+let current = 'idle', t0 = -1;
+function show(key){
   if (key === current) return;
   current = key; from.set(pos); to = S[key]; t0 = clock.getElapsedTime();
-  figName.textContent = META[key][0]; figMeta.textContent = META[key][1] + ' · 5,000 points';
+  figName.textContent = META[key][0]; figMeta.textContent = META[key][1];
   if (reduce){ pos.set(to); t0 = -1; geo.attributes.position.needsUpdate = true; }
 }
 const ease = x => x < .5 ? 4*x*x*x : 1 - Math.pow(-2*x + 2, 3) / 2;
 function stepMorph(now){
   if (t0 < 0) return;
-  const T = (now - t0) / dur;
+  const T = (now - t0) / 1.5;
   if (T >= 1.4){ pos.set(to); t0 = -1; geo.attributes.position.needsUpdate = true; return; }
   for (let i = 0; i < N; i++){
     const d = seed[i] * .4, p = ease(Math.min(1, Math.max(0, (T - d) / .6)));
@@ -370,56 +449,76 @@ function stepMorph(now){
   geo.attributes.position.needsUpdate = true;
 }
 
-/* ---------- list wiring ---------- */
+/* ---------- menu wiring ---------- */
 const rows = [...document.querySelectorAll('.row')];
-const tintOf = el => el.style.getPropertyValue('--tint').match(/--[\w-]+/)[0];
-function activate(el){ rows.forEach(r => r.classList.toggle('is-on', r === el)); show(el.dataset.shape, tintOf(el)); }
+function activate(el){ rows.forEach(r => r.classList.toggle('is-on', r === el)); show(el.dataset.shape); }
+function release(el){ el.classList.remove('is-on'); show('idle'); }
 if (!touch){
   rows.forEach(el => {
     el.addEventListener('pointerenter', () => activate(el));
     el.addEventListener('focus', () => activate(el));
-    el.addEventListener('pointerleave', () => { el.classList.remove('is-on'); show('idle'); });
-    el.addEventListener('blur', () => { el.classList.remove('is-on'); show('idle'); });
+    el.addEventListener('pointerleave', () => release(el));
+    el.addEventListener('blur', () => release(el));
   });
 } else if (!reduce){
-  let k = -1;                          // phones: the cloud walks through the list on its own
-  setInterval(() => { k = (k + 1) % rows.length; activate(rows[k]); }, 4200);
+  let k = -1;                          // phones: the cloud steps through the menu on its own
+  setInterval(() => { k = (k + 1) % rows.length; show(rows[k].dataset.shape); }, 4200);
 }
 
 /* ---------- layout ---------- */
 let narrow = false;
 function resize(){
   const w = innerWidth, h = innerHeight;
-  renderer.setSize(w, h, false);
-  camera.aspect = w / h; camera.updateProjectionMatrix();
   narrow = w <= 860;
+  CELL.w = narrow ? 5 : 6; CELL.h = narrow ? 9 : 10;
+  renderer.setSize(w, h, false);
+  canvas.style.width = w + 'px'; canvas.style.height = h + 'px';
+  const cols = Math.ceil(w / CELL.w), rows_ = Math.ceil(h / CELL.h);
+  camera.aspect = (cols * CELL.w) / (rows_ * CELL.h); camera.updateProjectionMatrix();
+  density.dispose();
+  density = new THREE.WebGLRenderTarget(cols * 2, rows_ * 2, { type: THREE.HalfFloatType, depthBuffer: false, minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter });
+  const dpr = renderer.getPixelRatio();
+  quadMat.uniforms.tDens.value = density.texture;
+  quadMat.uniforms.uCells.value.set(cols, rows_);
+  quadMat.uniforms.uCellPx.value.set(CELL.w * dpr, CELL.h * dpr);
+  quadMat.uniforms.uRes.value.set(w * dpr, h * dpr);
+  quadMat.uniforms.tGlyph.value?.dispose();
+  quadMat.uniforms.tGlyph.value = glyphAtlas();
   const vh = 2 * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) * camera.position.z, vw = vh * camera.aspect;
-  if (narrow){ group.position.set(0, vh * .24, 0); group.scale.setScalar(Math.min(.95, vw / 3.4)); }
-  else { group.position.set(Math.min(vw * .24, 2.3), -.05, 0); group.scale.setScalar(Math.min(1.15, vw / 5.2)); }
-  mat.uniforms.uPR.value = renderer.getPixelRatio();
+  if (narrow){                         // centre the cloud in the gap between title and menu
+    const r = document.querySelector('.spacer').getBoundingClientRect(), cy = r.top + scrollY + r.height / 2;
+    group.position.set(0, (1 - 2 * cy / h) * vh / 2, 0);
+    group.scale.setScalar(Math.min(vw / 3.6, r.height / h * vh / 2.5));
+  }
+  else { group.position.set(Math.min(vw * .25, 2.4), -.25, 0); group.scale.setScalar(Math.min(1.1, vw / 5.4)); }
 }
-addEventListener('resize', resize); resize();
+addEventListener('resize', resize);
+(document.fonts ? document.fonts.load('10px "Share Tech Mono"').catch(() => {}) : Promise.resolve()).then(() => { resize(); frame(); });
 
 const pointer = { x: 0, y: 0 };
 addEventListener('pointermove', e => { pointer.x = e.clientX / innerWidth * 2 - 1; pointer.y = e.clientY / innerHeight * 2 - 1; });
 
 /* ---------- loop ---------- */
-const clock = new THREE.Clock();
+let lastReadout = 0;
 function frame(){
   const now = clock.getElapsedTime();
   stepMorph(now);
-  mat.uniforms.uTime.value = now;
-  mat.uniforms.uColor.value.lerp(tint, .06);
-  const fade = narrow ? 1 - Math.min(1, scrollY / (innerHeight * .5)) * .75 : 1;
-  mat.uniforms.uFade.value += (fade - mat.uniforms.uFade.value) * .15;
+  ptsMat.uniforms.uTime.value = now;
+  const fade = narrow ? 1 - Math.min(1, scrollY / (innerHeight * .5)) * .8 : 1;
+  quadMat.uniforms.uFade.value += (fade - quadMat.uniforms.uFade.value) * .15;
   if (!reduce){
     group.rotation.y += ((Math.sin(now * .22) * .35 + pointer.x * .3) - group.rotation.y) * .04;
     group.rotation.x += ((Math.sin(now * .17) * .08 + pointer.y * .15) - group.rotation.x) * .04;
   }
-  renderer.render(scene, camera);
+  if (now - lastReadout > .25){
+    lastReadout = now;
+    const deg = Math.round(THREE.MathUtils.radToDeg(group.rotation.y));
+    figRot.textContent = `5,000 pts · rot ${deg < 0 ? '-' : '+'}${String(Math.abs(deg)).padStart(3, '0')}°`;
+  }
+  renderer.setRenderTarget(density); renderer.render(scene, camera);
+  renderer.setRenderTarget(null); renderer.render(quadScene, quadCam);
   requestAnimationFrame(frame);
 }
-frame();
 </script>
 </body>
 </html>
