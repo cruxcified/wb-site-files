@@ -444,8 +444,8 @@ html.wbgames-booting, html.wbgames-booting body { overflow: hidden !important; }
     <div class="nav-links">
       <a href="https://wboechler.com/">Home</a>
       <a href="#work">The Engine</a>
-      <a href="#games">Games</a>
       <a href="#engine">Under the Hood</a>
+      <a href="#games">Games</a>
       <a href="#about">About</a>
     </div>
     <div class="nav-right">
@@ -482,6 +482,29 @@ html.wbgames-booting, html.wbgames-booting body { overflow: hidden !important; }
         <!-- The channels as a strip of film. Each frame fills with a still from its channel once you've watched it. -->
         <div class="film" id="wbgames-film" role="group" aria-label="Channels"></div>
       </div>
+    </div>
+  </section>
+
+  <section class="engine" id="engine" data-scene="engine">
+    <div class="wrap">
+      <div class="engine-head">
+        <div>
+          <p class="kicker"><b>PSX Engine</b>In development, v0.4</p>
+          <h2>What’s on the Tapes</h2>
+        </div>
+        <p>A first-person horror engine and editor, built on three.js. It ships as a single-file editor and a Windows installer.</p>
+      </div>
+      <ol class="rows">
+        <li><span>01</span><h3>Render It Like a PS1</h3><p>320×240, vertex snapping, affine textures, 15-bit dithered colour, fog, baked lighting and a flashlight. <a class="watch" href="#work" data-ch="1">▶ Watch it on CH 01</a></p></li>
+        <li><span>02</span><h3>Paint the Map</h3><p>Lay out the level on a grid. The engine turns it into a space you can walk. <a class="watch" href="#work" data-ch="2">▶ Watch it on CH 02</a></p></li>
+        <li><span>03</span><h3>Write the Dialogue</h3><p>Plain text fields, NPCs with animated models, and choices that branch. <a class="watch" href="#work" data-ch="3">▶ Watch it on CH 03</a></p></li>
+        <li><span>04</span><h3>Direct the Scenes</h3><p>A Director mode for cutscenes, plus scripting and plugins for everything else. <a class="watch" href="#work" data-ch="4">▶ Watch it on CH 04</a></p></li>
+        <li><span>05</span><h3>Build From Inside the Game</h3><p>Press B and a hotbar of pieces comes up: floors, walls, doorways, windows, doors and props. A see-through ghost shows where each one goes. <a class="watch" href="#work" data-ch="5">▶ Watch it on CH 05</a></p></li>
+        <li><span>06</span><h3>Cut the Scenes</h3><p>A Cutscene Editor with a timeline for picture, action, props, titles, subtitles, voice, music, sound and blood. Every track has a ＋ that adds at the playhead. <a class="watch" href="#work" data-ch="6">▶ Watch it on CH 06</a></p></li>
+        <li><span>07</span><h3>Film It in Movie Mode</h3><p>Fly the camera, switch between wide, medium and close lenses, set keyframes and record the shot, with VHS tape and cinema bars if you want them. <a class="watch" href="#work" data-ch="7">▶ Watch it on CH 07</a></p></li>
+      </ol>
+      <div class="spec"><span>three.js</span><span>JavaScript</span><span>Python build tools</span><span>Windows installer</span><span>Single-file HTML editor</span></div>
+      <a class="cue" href="#games"><i aria-hidden="true">☟</i>Scroll to Games<i aria-hidden="true">☟</i></a>
     </div>
   </section>
 
@@ -564,29 +587,6 @@ html.wbgames-booting, html.wbgames-booting body { overflow: hidden !important; }
           </div>
         </li>
       </ul>
-      <a class="cue" href="#engine"><i aria-hidden="true">☟</i>Scroll Under the Hood<i aria-hidden="true">☟</i></a>
-    </div>
-  </section>
-
-  <section class="engine" id="engine" data-scene="engine">
-    <div class="wrap">
-      <div class="engine-head">
-        <div>
-          <p class="kicker"><b>PSX Engine</b>In development, v0.4</p>
-          <h2>What’s on the Tapes</h2>
-        </div>
-        <p>A first-person horror engine and editor, built on three.js. It ships as a single-file editor and a Windows installer.</p>
-      </div>
-      <ol class="rows">
-        <li><span>01</span><h3>Render It Like a PS1</h3><p>320×240, vertex snapping, affine textures, 15-bit dithered colour, fog, baked lighting and a flashlight. <a class="watch" href="#work" data-ch="1">▶ Watch it on CH 01</a></p></li>
-        <li><span>02</span><h3>Paint the Map</h3><p>Lay out the level on a grid. The engine turns it into a space you can walk. <a class="watch" href="#work" data-ch="2">▶ Watch it on CH 02</a></p></li>
-        <li><span>03</span><h3>Write the Dialogue</h3><p>Plain text fields, NPCs with animated models, and choices that branch. <a class="watch" href="#work" data-ch="3">▶ Watch it on CH 03</a></p></li>
-        <li><span>04</span><h3>Direct the Scenes</h3><p>A Director mode for cutscenes, plus scripting and plugins for everything else. <a class="watch" href="#work" data-ch="4">▶ Watch it on CH 04</a></p></li>
-        <li><span>05</span><h3>Build From Inside the Game</h3><p>Press B and a hotbar of pieces comes up: floors, walls, doorways, windows, doors and props. A see-through ghost shows where each one goes. <a class="watch" href="#work" data-ch="5">▶ Watch it on CH 05</a></p></li>
-        <li><span>06</span><h3>Cut the Scenes</h3><p>A Cutscene Editor with a timeline for picture, action, props, titles, subtitles, voice, music, sound and blood. Every track has a ＋ that adds at the playhead. <a class="watch" href="#work" data-ch="6">▶ Watch it on CH 06</a></p></li>
-        <li><span>07</span><h3>Film It in Movie Mode</h3><p>Fly the camera, switch between wide, medium and close lenses, set keyframes and record the shot, with VHS tape and cinema bars if you want them. <a class="watch" href="#work" data-ch="7">▶ Watch it on CH 07</a></p></li>
-      </ol>
-      <div class="spec"><span>three.js</span><span>JavaScript</span><span>Python build tools</span><span>Windows installer</span><span>Single-file HTML editor</span></div>
       <a class="cue" href="#about"><i aria-hidden="true">☟</i>Scroll to About<i aria-hidden="true">☟</i></a>
     </div>
   </section>
