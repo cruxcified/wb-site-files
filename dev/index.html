@@ -1303,8 +1303,9 @@ async function start() {
     if (k === 'paint') { r(3, 0, 4, 5); r(4, 5, 2, 5); }
   }
   function buildHud(g, w, h, on) {
-    const narrow = portrait(), list = narrow ? [-2, -1, 0, 1, 2].map((d) => (on + d + BUILD.length) % BUILD.length) : BUILD.map((b, i) => i);
-    const sw = 17, sh = 21, x0 = Math.round(w / 2 - (list.length * (sw + 1)) / 2), y0 = Math.round(h * 0.6);
+    /* The page's words cover the lower left of the tube, so the bar shows the five pieces around the one in hand, a little right of centre. */
+    const narrow = portrait(), list = [-2, -1, 0, 1, 2].map((d) => (on + d + BUILD.length) % BUILD.length);
+    const sw = 17, sh = 21, cx = narrow ? w / 2 : w * 0.58, x0 = Math.round(cx - (list.length * (sw + 1)) / 2), y0 = Math.round(h * 0.55);
     g.textBaseline = 'top';
     list.forEach((i, n) => {
       const [k, , key] = BUILD[i], x = x0 + n * (sw + 1), sel = i === on;
@@ -1314,7 +1315,7 @@ async function start() {
       g.fillStyle = sel ? '#e8e2cf' : '#cfc8b2'; glyph(g, k, x + 4, y0 + 8);
     });
     g.font = '12px VT323, monospace'; g.textAlign = 'center'; g.fillStyle = '#e8e2cf';
-    g.shadowColor = 'rgba(0,0,0,.8)'; g.shadowOffsetY = 1; g.fillText(BUILD[on][1], w / 2, y0 - 14); g.shadowColor = 'transparent'; g.textAlign = 'left';
+    g.shadowColor = 'rgba(0,0,0,.8)'; g.shadowOffsetY = 1; g.fillText(BUILD[on][1], cx, y0 - 9); g.shadowColor = 'transparent'; g.textAlign = 'left';
     g.fillStyle = 'rgba(220,215,200,.55)'; g.fillRect(w / 2 - 1, h / 2 - 6, 2, 12); g.fillRect(w / 2 - 6, h / 2 - 1, 12, 2);
   }
   const ghostMat = new THREE.MeshBasicMaterial({ color: 0x7dff9a, transparent: true, opacity: 0.35, depthWrite: false });
@@ -1323,14 +1324,14 @@ async function start() {
     5: new THREE.Mesh(new THREE.BoxGeometry(1, 1.25, 1), ghostMat),
     6: new THREE.Mesh(new THREE.BoxGeometry(1, 1.25, 0.25), ghostMat),
   };
-  Object.values(ghosts).forEach((m) => { m.visible = false; level.add(m); });
+  Object.values(ghosts).forEach((m) => { m.add(new THREE.LineSegments(new THREE.EdgesGeometry(m.geometry), new THREE.LineBasicMaterial({ color: 0xc8ffd2, transparent: true, opacity: 0.8 }))); m.visible = false; level.add(m); });
   /* Standing in the west corridor, aiming a little way up it: the ghost sits where the crosshair meets the floor. */
   function buildPose(on, p) {
     Object.entries(ghosts).forEach(([k, m]) => { m.visible = +k === on; });
-    ghosts[on].position.copy(cell(1, 4)).setY(on === 1 ? 0.03 : 0.625);   /* a thin wall runs across the corridor */
+    ghosts[on].position.copy(cell(1, 3)).setY(on === 1 ? 0.03 : 0.625);   /* a thin wall runs across the corridor */
     const sway = reduced ? 0 : 1;
     eye.position.copy(cell(1, 6.7)).setY(0.55 + Math.sin(clock * 1.3) * 0.004 * sway);
-    eye.lookAt(tmpV.copy(cell(1, 4)).setY(on === 1 ? 0.12 : 0.5).add(ahead.set(Math.sin(p * 0.6) * 0.12 * sway, 0, 0)));
+    eye.lookAt(tmpV.copy(cell(1, 3)).setY(on === 1 ? 0.2 : 0.5).add(ahead.set(Math.sin(p * 0.6) * 0.12 * sway, 0, 0)));
   }
   const hideGhosts = () => Object.values(ghosts).forEach((m) => { m.visible = false; });
 
@@ -1480,9 +1481,10 @@ async function start() {
     g.fillText(`f/${LENS[m.lens][3].toFixed(1)}  ${LENS[m.lens][2]}mm`, R, 52); g.textAlign = 'left'; g.shadowColor = 'transparent';
     /* the bar: Record and Keyframe, the three lenses, then Grid, Camera, Drawer and Exit */
     const slots = [['R', '⏺', m.rec], ['K', '◆', m.keyed], 0, ['1', '24mm', m.lens === 0], ['2', '50mm', m.lens === 1], ['3', '85mm', false], 0, ['', '▦', true], ['', '⚙'], ['Tab', '☰'], 0, ['', '✕']];
-    const show = narrow ? slots.slice(0, 6) : slots;
-    const sw = 22, gap = 5, sh = 22, tw = show.reduce((a, s) => a + (s ? sw + 1 : gap), 0), y0 = Math.round(h * 0.6);
-    let x = Math.round(w / 2 - tw / 2);
+    /* Record, Keyframe and the lenses, clear of the page's words over the lower left of the tube */
+    const show = narrow ? [slots[0], slots[1], slots[3], slots[4], slots[5]] : slots.slice(0, 6);
+    const sw = 19, gap = 5, sh = 22, tw = show.reduce((a, s) => a + (s ? sw + 1 : gap), 0), y0 = Math.round(h * 0.55);
+    let x = Math.round((narrow ? w / 2 : w * 0.58) - tw / 2);
     show.forEach((s) => {
       if (!s) { x += gap; return; }
       const [key, ico, on] = s;
