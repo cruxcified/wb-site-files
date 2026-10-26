@@ -1212,7 +1212,7 @@ async function start() {
   const OPENING = 'It started the night the lights came back on.';  /* the engine's own default for this card */
   function drawDirector(p) {
     chrome();
-    const menuOpen = p >= 0.2 && p < 0.72;
+    const menuOpen = p >= 0.2 && p < 0.95;
     const addW = button(6, 80, '＋ Add card ▾', { down: menuOpen });
     well(6 + addW + 4, 80, 112, 18); say('find a card…', 6 + addW + 9, 89.5, { size: 13, c: '#808080' });
     button(6 + addW + 120, 80, '🔄 Arrange');
@@ -1226,10 +1226,10 @@ async function start() {
     /* wires, then cards */
     DC.forEach((c, i) => {
       if (!i) return;
-      const a = DC[i - 1], at = 0.9 + i * 0.36;
+      const a = DC[i - 1], at = 1.15 + i * 0.36;
       wire(a.x + a.w, a.y + 9, c.x, c.y + 9, span(p, at - 0.05, at + 0.3));
     });
-    DC.forEach((c, i) => card(c.x, c.y, c.w, c.head, c.title, c.rows, { a: span(p, 0.75 + i * 0.36, 0.95 + i * 0.36), sel: i === sel }));
+    DC.forEach((c, i) => card(c.x, c.y, c.w, c.head, c.title, c.rows, { a: span(p, 1.0 + i * 0.36, 1.2 + i * 0.36), sel: i === sel }));
     /* inspector: the text card */
     if (sel === 3) {
       say('Name', 528, 120, { size: 13, c: '#4a4a4a' }); well(528, 128, 106, 18); say('Opening text', 532, 137.5, { size: 14 });
@@ -1244,21 +1244,21 @@ async function start() {
     if (menuOpen) {
       const mx = 6, my = 99, mw = 170, rows = [['h', 'The story'], ['🎬 Cutscene'], ['🎮 Gameplay'], ['📝 Text card'], ['h', 'Ways it can go'], ['❓ Choice'], ['🔀 Branch'],
         ['h', 'Before the game'], ['📼 Video'], ['🖼 Logo card'], ['🗂 Main menu'], ['✨ Whole game opening…', 1], ['d'], ['📁 Group']];
-      const mh = rows.reduce((h, r) => h + (r[0] === 'd' ? 6 : 16), 6);
+      const RH = 13, mh = rows.reduce((h, r) => h + (r[0] === 'd' ? 5 : RH), 6);
       box('rgba(0,0,0,.3)', mx + 3, my + 3, mw, mh); bevel(mx, my, mw, mh);
       rows.reduce((y, r) => {
-        if (r[0] === 'd') { box('#808080', mx + 4, y + 2, mw - 8, 1); box('#fff', mx + 4, y + 3, mw - 8, 1); return y + 6; }
-        if (r[0] === 'h') { say(r[1], mx + 8, y + 8.5, { size: 12, c: '#606060' }); return y + 16; }
-        const hot = r[1] && p >= 0.45;
-        if (hot) box('#000080', mx + 3, y, mw - 6, 16);
-        say(r[0], mx + 12, y + 8.5, { size: 14, c: hot ? '#fff' : '#000' });
-        return y + 16;
+        if (r[0] === 'd') { box('#808080', mx + 4, y + 2, mw - 8, 1); box('#fff', mx + 4, y + 3, mw - 8, 1); return y + 5; }
+        if (r[0] === 'h') { say(r[1], mx + 8, y + 7, { size: 11, c: '#606060' }); return y + RH; }
+        const hot = r[1] && p >= 0.55;
+        if (hot) box('#000080', mx + 3, y, mw - 6, RH);
+        say(r[0], mx + 12, y + 7, { size: 13, c: hot ? '#fff' : '#000' });
+        return y + RH;
       }, my + 3);
     }
     const T = DC[3];
-    const ptr = pointer(p, [[0, 260, 300], [0.2, 50, 90], [0.62, 90, 283], [2.9, 420, 380], [3.7, T.x + 70, T.y + 9], [4.3, 560, 200], [6.6, playX + 58, 90], [7.6, playX + 40, 140]]);
+    const ptr = pointer(p, [[0, 260, 300], [0.2, 50, 90], [0.8, 100, 251], [2.9, 420, 380], [3.7, T.x + 70, T.y + 9], [4.3, 560, 200], [6.6, playX + 58, 90], [7.6, playX + 40, 140]]);
     arrow(ptr.x, ptr.y, ptr.down); uiFocus = ptr.x;
-    statusBar([[`${Math.min(6, Math.max(0, Math.floor((p - 0.75) / 0.36) + 1))} cards · opening added`, 420], ['Story', 120], ['', 76]]);
+    statusBar([[`${Math.min(6, Math.max(0, Math.floor((p - 1.0) / 0.36) + 1))} cards · opening added`, 420], ['Story', 120], ['', 76]]);
   }
   /* A text card, the way the engine plays one: black, centred, typed in at 18 characters a second. */
   function textCard(q) {
