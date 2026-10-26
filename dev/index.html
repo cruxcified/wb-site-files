@@ -1315,7 +1315,7 @@ async function start() {
       g.fillStyle = sel ? '#e8e2cf' : '#cfc8b2'; glyph(g, k, x + 4, y0 + 8);
     });
     g.font = '12px VT323, monospace'; g.textAlign = 'center'; g.fillStyle = '#e8e2cf';
-    g.shadowColor = 'rgba(0,0,0,.8)'; g.shadowOffsetY = 1; g.fillText(BUILD[on][1], cx, y0 - 9); g.shadowColor = 'transparent'; g.textAlign = 'left';
+    g.shadowColor = 'rgba(0,0,0,.8)'; g.shadowOffsetY = 1; g.fillText(BUILD[on][1], cx, y0 - 14); g.shadowColor = 'transparent'; g.textAlign = 'left';
     g.fillStyle = 'rgba(220,215,200,.55)'; g.fillRect(w / 2 - 1, h / 2 - 6, 2, 12); g.fillRect(w / 2 - 6, h / 2 - 1, 12, 2);
   }
   const ghostMat = new THREE.MeshBasicMaterial({ color: 0x7dff9a, transparent: true, opacity: 0.35, depthWrite: false });
@@ -1363,6 +1363,7 @@ async function start() {
     if (tt >= 2.0 && tt < 4.4) { g.font = `${Math.round(15 * scale)}px VT323, monospace`; g.fillStyle = '#f2ecd8'; g.fillText(CE_SUB, w / 2, h * 0.66); }
     g.shadowColor = 'transparent'; g.textAlign = 'left';
   }
+  /* Laid out like the real one (bin, view and inspector on top, the timeline under them), squeezed up so the page's words don't hide the tracks. */
   function drawCutscene(p) {
     if (!ceShotOk) shoot();
     chrome();
@@ -1379,64 +1380,66 @@ async function start() {
     button(UW - 6 - 50 - 4 - 104, 60, '⏺ Film New Shot', { w: 104 });
     box('#808080', 0, 81, UW, 1); box('#fff', 0, 82, UW, 1);
     /* the bin, the view, the inspector */
-    [['🎥 Shots', 1], ['🎵 Sound'], ['🎭 Cast']].reduce((bx, [l, on]) => bx + button(bx, 88, l, { on, size: 12 }) + 1, 4);
-    well(4, 110, 146, 156);
-    box(p >= 0.9 && p < 1.3 ? '#000080' : '#fff', 6, 112, 142, 34);
-    if (ceShotOk) ui.drawImage(ceShot, 8, 114, 40, 30);
-    say('Shot 1', 54, 122, { size: 14, c: p >= 0.9 && p < 1.3 ? '#fff' : '#000' }); say('5.0 s · filmed', 54, 136, { size: 12, c: p >= 0.9 && p < 1.3 ? '#c8d4ff' : '#606060' });
+    const pick = p >= 0.9 && p < 1.3;
+    [['🎥 Shots', 1], ['🎵 Sound']].reduce((bx, [l, on]) => bx + button(bx, 86, l, { on, size: 12 }) + 1, 4);
+    well(4, 106, 118, 70);
+    box(pick ? '#000080' : '#fff', 6, 108, 114, 26);
+    if (ceShotOk) ui.drawImage(ceShot, 8, 110, 29, 22);
+    say('Shot 1', 42, 115, { size: 13, c: pick ? '#fff' : '#000' }); say('5.0 s · filmed', 42, 127, { size: 11, c: pick ? '#c8d4ff' : '#606060' });
     const clips = ceClips(p);
-    const vx = 156, vy = 86, vw = 240, vh = 180;
+    const vx = 128, vy = 86, vw = 120, vh = 90;
     box('#000', vx, vy, vw, vh);
     if (clips.some((c) => c.tr === 0) && ph < CE.len) {
       ui.drawImage(ceShot, vx, vy, vw, vh);
-      ui.save(); ui.translate(vx, vy); ceWords(ui, vw, vh, ph, 0.75); ui.restore();
+      ui.save(); ui.translate(vx, vy); ceWords(ui, vw, vh, ph, 0.6); ui.restore();
     }
-    box('#808080', 402, 86, 1, 180); box('#fff', 403, 86, 1, 180);
-    const subSel = p >= 3.6 && p < 5.9, bloodSel = p >= 6.0 && p < 6.6;
-    if (subSel) {
-      say('💬 Subtitle', 410, 98, { size: 14 });
-      say('at 0:02.0 · 2.4 s', 410, 116, { size: 13, c: '#4a4a4a' });
-      well(410, 126, 224, 40);
+    box('#808080', 254, 86, 1, 90); box('#fff', 255, 86, 1, 90);
+    if (p >= 3.6 && p < 5.9) {
+      say('💬 Subtitle', 262, 96, { size: 14 }); say('at 0:02.0 · 2.4 s', 360, 96, { size: 13, c: '#4a4a4a' });
+      well(262, 108, 250, 22);
       const n = Math.floor(span(p, 3.8, 5.0) * CE_SUB.length);
-      say(CE_SUB.slice(0, n) + ((p * 3 | 0) % 2 && p < 5.2 ? '|' : ''), 415, 137, { size: 14 });
-      button(410, 174, '🎙 Record voice', { size: 13 });
-    } else if (bloodSel) {
-      say('🩸 Blood', 410, 98, { size: 14 }); say('at 0:03.6 · spatter', 410, 116, { size: 13, c: '#4a4a4a' });
+      say(CE_SUB.slice(0, n) + ((p * 3 | 0) % 2 && p < 5.2 ? '|' : ''), 267, 119.5, { size: 14 });
+      button(262, 138, '🎙 Record voice', { size: 13 });
+    } else if (p >= 6.0 && p < 6.6) {
+      say('🩸 Blood', 262, 96, { size: 14 }); say('at 0:03.6 · spatter', 340, 96, { size: 13, c: '#4a4a4a' });
     }
     /* the timeline */
-    const ty = 270, LW = 124, tx = 6 + LW, pps = (UW - 6 - tx) / 6, rh = 17;
-    box('#2b2b2b', 4, ty, UW - 8, 172);
-    box('#3a3a3a', tx, ty, UW - 6 - tx, 14);
-    for (let s = 0; s <= 6; s++) { box('#8a8a8a', tx + s * pps, ty + 8, 1, 6); say(`0:0${s}`, tx + s * pps + 3, ty + 6, { size: 11, c: '#bdbdbd' }); }
-    box('#c0c0c0', 4, ty, LW + 2, 14);
+    const ty = 180, LW = 120, tx = 6 + LW, pps = (UW - 6 - tx) / 6, rh = 14, top = ty + 13;
+    box('#2b2b2b', 4, ty, UW - 8, 13 + CE_TRACKS.length * rh + 2);
+    box('#3a3a3a', tx, ty, UW - 6 - tx, 12);
+    for (let s = 0; s <= 6; s++) { box('#8a8a8a', tx + s * pps, ty + 7, 1, 5); say(`0:0${s}`, tx + s * pps + 3, ty + 5.5, { size: 11, c: '#bdbdbd' }); }
+    box('#c0c0c0', 4, ty, LW + 2, 12);
+    const plusDown = [[0, 0.5], [3, 1.8], [4, 3.5], [8, 5.9]];
     CE_TRACKS.forEach(([l], i) => {
-      const y = ty + 15 + i * rh;
+      const y = top + i * rh;
       box('#c0c0c0', 4, y, LW + 2, rh - 1); box('#3a3a3a', tx, y + rh - 1, UW - 6 - tx, 1);
-      say(l, 9, y + 8.5, { size: 13, max: LW - 30 });
-      const down = (i === 0 && clicked(p, 0.5)) || (i === 3 && clicked(p, 1.8)) || (i === 4 && clicked(p, 3.5)) || (i === 8 && clicked(p, 5.9));
-      bevel(4 + LW - 20, y + 1, 18, rh - 3, down); say('＋', 4 + LW - 11, y + 8, { size: 12, align: 'center' });
+      say(l, 8, y + 7, { size: 12, max: LW - 26 });
+      const down = plusDown.some(([r, at]) => r === i && clicked(p, at));
+      bevel(4 + LW - 18, y + 1, 16, rh - 3, down); say('＋', 4 + LW - 10, y + 6.5, { size: 11, align: 'center' });
     });
     clips.forEach((c) => {
-      const y = ty + 15 + c.tr * rh + 2, x1 = tx + c.a * pps, w = (c.b - c.a) * pps;
-      box('#000', x1, y, w, rh - 5); box(c.c, x1 + 1, y + 1, w - 2, rh - 7);
-      if (c.tr === 0 && ceShotOk) for (let fx = x1 + 1; fx < x1 + w - 18; fx += 36) ui.drawImage(ceShot, fx, y + 1, 16, rh - 7);
-      say(c.l, x1 + (c.tr === 0 ? 20 : 4), y + (rh - 5) / 2 + 0.5, { size: 12, c: '#fff', max: w - 8 });
-      if (c.sel) { ui.strokeStyle = '#ffe14d'; ui.lineWidth = 2; ui.strokeRect(x1, y, w, rh - 5); }
+      const y = top + c.tr * rh + 1, x1 = tx + c.a * pps, w = (c.b - c.a) * pps, ch = rh - 3;
+      box('#000', x1, y, w, ch); box(c.c, x1 + 1, y + 1, w - 2, ch - 2);
+      if (c.tr === 0 && ceShotOk) for (let fx = x1 + 1; fx < x1 + w - 16; fx += 40) ui.drawImage(ceShot, fx, y + 1, 14, ch - 2);
+      say(c.l, x1 + (c.tr === 0 ? 18 : 4), y + ch / 2 + 0.5, { size: 11, c: '#fff', max: w - 8 });
+      if (c.sel) { ui.strokeStyle = '#ffe14d'; ui.lineWidth = 2; ui.strokeRect(x1, y, w, ch); }
     });
-    const px = tx + ph * pps;
-    box('#ff3b3b', px - 1, ty, 2, 170);
-    ui.fillStyle = '#ff3b3b'; ui.beginPath(); ui.moveTo(px - 6, ty); ui.lineTo(px + 6, ty); ui.lineTo(px, ty + 7); ui.fill();
+    const px = tx + ph * pps, bottom = top + CE_TRACKS.length * rh;
+    box('#ff3b3b', px - 1, ty, 2, bottom - ty);
+    ui.fillStyle = '#ff3b3b'; ui.beginPath(); ui.moveTo(px - 5, ty); ui.lineTo(px + 5, ty); ui.lineTo(px, ty + 6); ui.fill();
     /* ＋ menus: Picture offers a new shot, a framed shot, black or one you've filmed; Titles a title or a credits roll */
+    const menuAt = (row) => [4 + LW, top + row * rh - 3];
     const pop = (row, items, hot) => {
-      const mx = 4 + LW, my = ty + 15 + row * rh - 4, mw = 170, mh = items.length * 16 + 6;
+      const [mx, my] = menuAt(row), mw = 168, mh = items.length * 15 + 6;
       box('rgba(0,0,0,.35)', mx + 3, my + 3, mw, mh); bevel(mx, my, mw, mh);
-      items.forEach((it, i) => { const on = i === hot; if (on) box('#000080', mx + 3, my + 3 + i * 16, mw - 6, 16); say(it, mx + 10, my + 11.5 + i * 16, { size: 14, c: on ? '#fff' : '#000' }); });
+      items.forEach((it, i) => { const on = i === hot; if (on) box('#000080', mx + 3, my + 3 + i * 15, mw - 6, 15); say(it, mx + 9, my + 11 + i * 15, { size: 13, c: on ? '#fff' : '#000' }); });
     };
     if (p >= 0.5 && p < 1.3) pop(0, ['🎥 New shot', '🎭 Framed shot on the cast', '⬛ Black', '🎞 Shot 1'], p >= 0.9 ? 3 : -1);
     if (p >= 1.8 && p < 2.5) pop(3, ['🔤 Title', '📜 Credits roll'], p >= 2.1 ? 0 : -1);
-    const plus = (i) => [4 + LW - 11, ty + 15 + i * rh + 8];
-    const ptr = pointer(p, [[0, 320, 200], [0.5, ...plus(0)], [1.2, 4 + LW + 60, ty + 15 - 4 + 11 + 48], [1.8, ...plus(3)], [2.4, 4 + LW + 60, ty + 15 + 3 * rh - 4 + 11],
-      [3.0, tx + 2.0 * pps, ty + 6], [3.5, ...plus(4)], [4.2, 520, 146], [5.4, tx + 3.6 * pps, ty + 6], [5.9, ...plus(8)], [6.6, backX, 69], [7.0, playX, 69], [7.4, 260, 200]]);
+    const plus = (i) => [4 + LW - 10, top + i * rh + 6];
+    const item = (row, i) => [menuAt(row)[0] + 70, menuAt(row)[1] + 11 + i * 15];
+    const ptr = pointer(p, [[0, 320, 200], [0.5, ...plus(0)], [1.2, ...item(0, 3)], [1.8, ...plus(3)], [2.4, ...item(3, 0)],
+      [3.0, tx + 2.0 * pps, ty + 5], [3.5, ...plus(4)], [4.2, 400, 119], [5.4, tx + 3.6 * pps, ty + 5], [5.9, ...plus(8)], [6.6, backX, 69], [7.0, playX, 69], [7.4, 300, 150]]);
     arrow(ptr.x, ptr.y, ptr.down); uiFocus = ptr.x;
     statusBar([[`Cutscene 1 · ${clips.length} clips · ${(clips.length ? CE.len : 0).toFixed(1)} s`, 420], ['Cutscene Editor', 120], ['', 76]]);
   }
