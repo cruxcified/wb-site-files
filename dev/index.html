@@ -1306,7 +1306,7 @@ async function start() {
   function buildHud(g, w, h, on) {
     /* The page's words cover the lower left of the tube, so the bar shows the five pieces around the one in hand, a little right of centre. */
     const narrow = portrait(), list = [-2, -1, 0, 1, 2].map((d) => (on + d + BUILD.length) % BUILD.length);
-    const sw = 17, sh = 21, cx = narrow ? w / 2 : w * 0.58, x0 = Math.round(cx - (list.length * (sw + 1)) / 2), y0 = Math.round(h * 0.55);
+    const sw = 17, sh = 21, cx = narrow ? w / 2 : w * 0.58, x0 = Math.round(cx - (list.length * (sw + 1)) / 2), y0 = Math.round(h * (narrow ? 0.3 : 0.55));
     g.textBaseline = 'top';
     list.forEach((i, n) => {
       const [k, , key] = BUILD[i], x = x0 + n * (sw + 1), sel = i === on;
@@ -1359,9 +1359,11 @@ async function start() {
   }
   /* What the cut puts over the picture at time tt: the title, then the subtitle. */
   function ceWords(g, w, h, tt, scale = 1) {
+    const narrow = scale === 1 && portrait();   /* on a phone: smaller, and up clear of the page's words */
+    if (narrow) scale = 0.75;
     g.textAlign = 'center'; g.textBaseline = 'middle'; g.shadowColor = 'rgba(0,0,0,.9)'; g.shadowOffsetY = 1;
-    if (tt < 1.5) { g.globalAlpha = Math.min(1, tt / 0.3, (1.5 - tt) / 0.3); g.font = `${Math.round(30 * scale)}px VT323, monospace`; g.fillStyle = '#e8e2cf'; g.fillText(CE_TITLE, w / 2, h * 0.45); g.globalAlpha = 1; }
-    if (tt >= 2.0 && tt < 4.4) { g.font = `${Math.round(15 * scale)}px VT323, monospace`; g.fillStyle = '#f2ecd8'; g.fillText(CE_SUB, w / 2, h * 0.58); }
+    if (tt < 1.5) { g.globalAlpha = Math.min(1, tt / 0.3, (1.5 - tt) / 0.3); g.font = `${Math.round(30 * scale)}px VT323, monospace`; g.fillStyle = '#e8e2cf'; g.fillText(CE_TITLE, w / 2, h * (narrow ? 0.3 : 0.45)); g.globalAlpha = 1; }
+    if (tt >= 2.0 && tt < 4.4) { g.font = `${Math.round(15 * scale)}px VT323, monospace`; g.fillStyle = '#f2ecd8'; g.fillText(CE_SUB, w / 2, h * (narrow ? 0.38 : 0.58)); }
     g.shadowColor = 'transparent'; g.textAlign = 'left';
   }
   /* Laid out like the real one (bin, view and inspector on top, the timeline under them), squeezed up so the page's words don't hide the tracks. */
@@ -1487,7 +1489,7 @@ async function start() {
     const slots = [['R', '⏺', m.rec], ['K', '◆', m.keyed], 0, ['1', '24', m.lens === 0], ['2', '50', m.lens === 1], ['3', '85', false], 0, ['', '▦', true], ['', '⚙'], ['Tab', '☰'], 0, ['', '✕']];
     /* Record, Keyframe and the lenses, clear of the page's words over the lower left of the tube */
     const show = narrow ? [slots[0], slots[1], slots[3], slots[4], slots[5]] : slots.slice(0, 6);
-    const sw = 19, gap = 5, sh = 22, tw = show.reduce((a, s) => a + (s ? sw + 1 : gap), 0), y0 = Math.round(h * 0.55);
+    const sw = 19, gap = 5, sh = 22, tw = show.reduce((a, s) => a + (s ? sw + 1 : gap), 0), y0 = Math.round(h * (narrow ? 0.3 : 0.55));
     let x = Math.round((narrow ? w / 2 : w * 0.58) - tw / 2);
     show.forEach((s) => {
       if (!s) { x += gap; return; }
