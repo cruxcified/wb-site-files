@@ -12,16 +12,16 @@
 <style>
 /* Layout: a terminal index. ASCII title across the top, a numbered menu of projects on the left,
    and one point cloud on the right drawn in ASCII that reshapes for the selected entry.
-   One committed look: green phosphor on black, like a ship's computer terminal. */
+   One committed look: grey phosphor on black, like a ship's computer terminal. */
 :root{
-  --bg:#030705;
-  --phos:#8ff5b9;      /* phosphor */
-  --dim:#4f8a6b;
-  --faint:#1b3326;
+  --bg:#080808;
+  --phos:#d2d2ce;      /* phosphor, white-grey */
+  --dim:#7c7c78;
+  --faint:#2a2a28;
   --amber:#ffb84d;     /* selection keys, status */
   --mono:"Share Tech Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
   --block:"Chakra Petch", "Arial Black", sans-serif;
-  --glow:0 0 6px rgba(143,245,185,.45), 0 0 18px rgba(143,245,185,.12);
+  --glow:0 0 6px rgba(210,210,206,.28), 0 0 18px rgba(210,210,206,.07);
   color-scheme:dark;
 }
 *{box-sizing:border-box}
@@ -82,7 +82,7 @@ main.col{margin-top:28px}
 /* render readout */
 .fig{position:fixed;z-index:2;right:max(20px, calc(env(safe-area-inset-right, 0px) + 20px));bottom:calc(env(safe-area-inset-bottom, 0px) + 22px);
   font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);text-align:right;pointer-events:none;
-  border:1px solid var(--faint);padding:8px 10px;background:rgba(3,7,5,.7);font-variant-numeric:tabular-nums}
+  border:1px solid var(--faint);padding:8px 10px;background:rgba(8,8,8,.75);font-variant-numeric:tabular-nums}
 .fig b{font-weight:400;color:var(--phos)}
 
 .spacer{display:none}
@@ -400,7 +400,7 @@ const quadMat = new THREE.ShaderMaterial({
   uniforms: {
     tDens: { value: null }, tGlyph: { value: null },
     uCells: { value: new THREE.Vector2() }, uCellPx: { value: new THREE.Vector2() }, uRes: { value: new THREE.Vector2() },
-    uLevels: { value: RAMP.length }, uColor: { value: new THREE.Color('#8ff5b9') }, uHot: { value: new THREE.Color('#d9ffe9') },
+    uLevels: { value: RAMP.length }, uColor: { value: new THREE.Color('#bdbdb9') }, uHot: { value: new THREE.Color('#ffffff') },
     uFade: { value: 1 }, uGain: { value: .9 },
   },
   vertexShader: `void main(){ gl_Position = vec4(position.xy, 0.0, 1.0); }`,
