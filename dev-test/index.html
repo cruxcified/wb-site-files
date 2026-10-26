@@ -1304,7 +1304,7 @@ async function start() {
   }
   function buildHud(g, w, h, on) {
     const narrow = portrait(), list = narrow ? [-2, -1, 0, 1, 2].map((d) => (on + d + BUILD.length) % BUILD.length) : BUILD.map((b, i) => i);
-    const sw = 17, sh = 21, x0 = Math.round(w / 2 - (list.length * (sw + 1)) / 2), y0 = h - 36;
+    const sw = 17, sh = 21, x0 = Math.round(w / 2 - (list.length * (sw + 1)) / 2), y0 = Math.round(h * 0.6);
     g.textBaseline = 'top';
     list.forEach((i, n) => {
       const [k, , key] = BUILD[i], x = x0 + n * (sw + 1), sel = i === on;
@@ -1324,13 +1324,13 @@ async function start() {
     6: new THREE.Mesh(new THREE.BoxGeometry(1, 1.25, 0.25), ghostMat),
   };
   Object.values(ghosts).forEach((m) => { m.visible = false; level.add(m); });
-  function placeGhost(on, u) {
+  /* Standing in the west corridor, aiming a little way up it: the ghost sits where the crosshair meets the floor. */
+  function buildPose(on, p) {
     Object.entries(ghosts).forEach(([k, m]) => { m.visible = +k === on; });
-    const m = ghosts[on]; if (!m) return;
-    path.getPointAt((u + 0.075) % 1, tmpV); path.getPointAt((u + 0.08) % 1, ahead);
-    const cx = Math.round(tmpV.x + cols / 2 - 0.5), cz = Math.round(tmpV.z + rows / 2 - 0.5);
-    m.position.copy(cell(cx, cz)).setY(on === 1 ? 0.03 : 0.625);
-    m.rotation.y = Math.abs(ahead.x - tmpV.x) > Math.abs(ahead.z - tmpV.z) ? Math.PI / 2 : 0;   /* a thin wall runs across the corridor */
+    ghosts[on].position.copy(cell(1, 4)).setY(on === 1 ? 0.03 : 0.625);   /* a thin wall runs across the corridor */
+    const sway = reduced ? 0 : 1;
+    eye.position.copy(cell(1, 6.7)).setY(0.55 + Math.sin(clock * 1.3) * 0.004 * sway);
+    eye.lookAt(tmpV.copy(cell(1, 4)).setY(on === 1 ? 0.12 : 0.5).add(ahead.set(Math.sin(p * 0.6) * 0.12 * sway, 0, 0)));
   }
   const hideGhosts = () => Object.values(ghosts).forEach((m) => { m.visible = false; });
 
@@ -1359,7 +1359,7 @@ async function start() {
   function ceWords(g, w, h, tt, scale = 1) {
     g.textAlign = 'center'; g.textBaseline = 'middle'; g.shadowColor = 'rgba(0,0,0,.9)'; g.shadowOffsetY = 1;
     if (tt < 1.5) { g.globalAlpha = Math.min(1, tt / 0.3, (1.5 - tt) / 0.3); g.font = `${Math.round(30 * scale)}px VT323, monospace`; g.fillStyle = '#e8e2cf'; g.fillText(CE_TITLE, w / 2, h * 0.45); g.globalAlpha = 1; }
-    if (tt >= 2.0 && tt < 4.4) { g.font = `${Math.round(15 * scale)}px VT323, monospace`; g.fillStyle = '#f2ecd8'; g.fillText(CE_SUB, w / 2, h * 0.84); }
+    if (tt >= 2.0 && tt < 4.4) { g.font = `${Math.round(15 * scale)}px VT323, monospace`; g.fillStyle = '#f2ecd8'; g.fillText(CE_SUB, w / 2, h * 0.66); }
     g.shadowColor = 'transparent'; g.textAlign = 'left';
   }
   function drawCutscene(p) {
@@ -1481,7 +1481,7 @@ async function start() {
     /* the bar: Record and Keyframe, the three lenses, then Grid, Camera, Drawer and Exit */
     const slots = [['R', '⏺', m.rec], ['K', '◆', m.keyed], 0, ['1', '24mm', m.lens === 0], ['2', '50mm', m.lens === 1], ['3', '85mm', false], 0, ['', '▦', true], ['', '⚙'], ['Tab', '☰'], 0, ['', '✕']];
     const show = narrow ? slots.slice(0, 6) : slots;
-    const sw = 22, gap = 5, sh = 22, tw = show.reduce((a, s) => a + (s ? sw + 1 : gap), 0), y0 = h - 34;
+    const sw = 22, gap = 5, sh = 22, tw = show.reduce((a, s) => a + (s ? sw + 1 : gap), 0), y0 = Math.round(h * 0.6);
     let x = Math.round(w / 2 - tw / 2);
     show.forEach((s) => {
       if (!s) { x += gap; return; }
@@ -1884,7 +1884,7 @@ async function start() {
         } else {
           path.getPointAt(0.3, v3); path.getPointAt(0.312, ahead);
           eye.position.copy(v3); eye.lookAt(ahead.x, 0.55, ahead.z);
-          if (c.kind === 'build') { placeGhost(5, 0.3); over = (gg, w, h) => buildHud(gg, w, h, 5); }
+          if (c.kind === 'build') { buildPose(5, 0); over = (gg, w, h) => buildHud(gg, w, h, 5); }
         }
         setMood(c.kind === 'otherworld' ? 1 : 0, 0);
         psxUniforms.uLightPos.value.copy(eye.position); eye.getWorldDirection(psxUniforms.uLightDir.value);
@@ -1949,7 +1949,7 @@ async function start() {
       if (Math.floor(clock * 7) !== uiT) { uiT = Math.floor(clock * 7); paintUi(drawMap, clock, [250, 520]); }
       view = 'ui';
     } else if (kind === 'build') {
-      const on = buildPiece(p); view = 'walk'; over = (g, w, h) => buildHud(g, w, h, on);
+      const on = buildPiece(p); view = 'build'; over = (g, w, h) => buildHud(g, w, h, on);
     } else if (kind === 'cutscene') {
       const q = p % CE.loop;
       if (q < CE.edit) { if (Math.floor(clock * 20) !== uiT) { uiT = Math.floor(clock * 20); paintUi(drawCutscene, q, [130, 520]); } view = 'ui'; }
@@ -1965,7 +1965,7 @@ async function start() {
     setMood(ow ? ow.rust : 0, ow ? ow.dark : 0);
     if (ow && ow.dark > 0.05) burst = Math.max(burst, ow.dark * 0.45);
     if (view !== lastView) { if (lastView && scene === 'work' && (view === 'still' || view === 'film' || (view === 'ui' && over))) burst = Math.max(burst, 0.5); lastView = view; }
-    if ((view === 'walk' || view === 'still' || view === 'film' || view === 'play' || view === 'movie') && cur.power > 0.01) {
+    if ((view === 'walk' || view === 'still' || view === 'film' || view === 'play' || view === 'movie' || view === 'build') && cur.power > 0.01) {
       const fov = view === 'movie' ? focalFov(LENS[movieNow.lens][2]) : 68;
       if (eye.fov !== fov) { eye.fov = fov; eye.updateProjectionMatrix(); }
       blood.visible = kind === 'cutscene' && view === 'film' && ceT >= 3.6;
@@ -1976,6 +1976,8 @@ async function start() {
         filmPose(filmU);
       } else if (view === 'movie') {   /* Movie Mode: the camera hangs, then flies in while it records */
         moviePose(movieNow);
+      } else if (view === 'build') {
+        buildPose(buildPiece(p), p);
       } else if (view === 'play') {    /* control handed back: walking again from where the shot ended */
         const w = Math.min(1, (p % DIR.loop - DIR.bars - 0.7) / 2.7);
         eye.position.copy(cell(8, 2.5)).lerp(cell(8, 2.95), w).setY(0.58 + Math.sin(clock * 6.5) * 0.012); eye.lookAt(tmpV.copy(cell(8, 4)).setY(0.6));
@@ -1984,7 +1986,6 @@ async function start() {
         path.getPointAt(u, v3); path.getPointAt((u + 0.012) % 1, ahead);
         eye.position.copy(v3); eye.position.y += Math.sin(clock * 6.5) * 0.012;
         eye.lookAt(ahead.x, 0.55, ahead.z);
-        if (kind === 'build') placeGhost(buildPiece(p), u);
         if (ow && ow.dark > 0) { eye.rotateZ(Math.sin(clock * 47) * 0.03 * ow.dark); eye.position.y += Math.sin(clock * 31) * 0.015 * ow.dark; }
       }
       if (kind !== 'build') hideGhosts();

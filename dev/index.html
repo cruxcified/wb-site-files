@@ -598,7 +598,7 @@ html.wbgames-booting, html.wbgames-booting body { overflow: hidden !important; }
     <div class="wrap">
       <div class="engine-head">
         <div>
-          <p class="kicker"><b>PSX Engine</b>In development, v0.3</p>
+          <p class="kicker"><b>PSX Engine</b>In development, v0.4</p>
           <h2>What’s on the Tapes</h2>
         </div>
         <p>A first-person horror engine and editor, built on three.js. It ships as a single-file editor and a Windows installer.</p>
@@ -608,6 +608,10 @@ html.wbgames-booting, html.wbgames-booting body { overflow: hidden !important; }
         <li><span>02</span><h3>Paint the Map</h3><p>Lay out the level on a grid. The engine turns it into a space you can walk. <a class="watch" href="#work" data-ch="2">▶ Watch it on CH 02</a></p></li>
         <li><span>03</span><h3>Write the Dialogue</h3><p>Plain text fields, NPCs with animated models, and choices that branch. <a class="watch" href="#work" data-ch="3">▶ Watch it on CH 03</a></p></li>
         <li><span>04</span><h3>Direct the Scenes</h3><p>A Director mode for cutscenes, plus scripting and plugins for everything else. <a class="watch" href="#work" data-ch="4">▶ Watch it on CH 04</a></p></li>
+        <li><span>05</span><h3>Build From Inside the Game</h3><p>Press B and a hotbar of pieces comes up: floors, walls, doorways, windows, doors and props. A see-through ghost shows where each one goes. <a class="watch" href="#work" data-ch="5">▶ Watch it on CH 05</a></p></li>
+        <li><span>06</span><h3>Cut the Scenes</h3><p>A Cutscene Editor with a timeline for picture, action, props, titles, subtitles, voice, music, sound and blood. Every track has a ＋ that adds at the playhead. <a class="watch" href="#work" data-ch="6">▶ Watch it on CH 06</a></p></li>
+        <li><span>07</span><h3>Film It in Movie Mode</h3><p>Fly the camera, switch between wide, medium and close lenses, set keyframes and record the shot, with VHS tape and cinema bars if you want them. <a class="watch" href="#work" data-ch="7">▶ Watch it on CH 07</a></p></li>
+        <li><span>08</span><h3>Flip to the Otherworld</h3><p>Any room can get a rust-red twin. A story action shudders the room dark and leaves you on the same spot in the other version. <a class="watch" href="#work" data-ch="8">▶ Watch it on CH 08</a></p></li>
       </ol>
       <div class="spec"><span>three.js</span><span>JavaScript</span><span>Python build tools</span><span>Windows installer</span><span>Single-file HTML editor</span></div>
       <a class="cue" href="#contact"><i aria-hidden="true">☟</i>Scroll to Contact<i aria-hidden="true">☟</i></a>
@@ -709,7 +713,9 @@ html.wbgames-booting, html.wbgames-booting body { overflow: hidden !important; }
 <script type="module">
 /* ---------- Channels for "Selected work" ----------
    kind: 'walk' (live 3D level), 'editor' (the map being painted), 'dialogue' (a dialogue graph, then it playing),
-   'director' (Director Mode laying out an opening, then it playing) or 'nosignal' (colour bars + static). */
+   'director' (Director Mode laying out an opening, then it playing), 'build' (build mode's hotbar over the level),
+   'cutscene' (the Cutscene Editor's timeline, then the cut playing), 'movie' (Movie Mode filming a shot),
+   'otherworld' (the level flipping to its rust-red twin) or 'nosignal' (colour bars + static). */
 const CHANNELS = [
   { kind: 'walk', title: 'PSX Engine', mode: 'Explore mode', href: '#engine',
     desc: 'Walk the map you painted, at 320×240 with fog and a flashlight.' },
@@ -719,6 +725,14 @@ const CHANNELS = [
     desc: 'Lines and choices on a graph, then the same conversation in the game. The key option stays hidden until you have the key.' },
   { kind: 'director', title: 'PSX Engine', mode: 'Director mode', href: '#engine',
     desc: 'Lay out the opening on a corkboard: intro, logo, menu, a text card, a cutscene, then the first room. Then play it.' },
+  { kind: 'build', title: 'PSX Engine', mode: 'Build mode', href: '#engine',
+    desc: 'Press B and build from inside the game. The hotbar holds the pieces, and a see-through ghost shows where each one lands.' },
+  { kind: 'cutscene', title: 'PSX Engine', mode: 'Cutscene Editor', href: '#engine',
+    desc: 'Every track has a ＋. Drop a shot, a title, a subtitle and a blood spatter at the playhead, then play it.' },
+  { kind: 'movie', title: 'PSX Engine', mode: 'Movie Mode', href: '#engine',
+    desc: 'Pick a lens, frame the shot on the thirds grid, then press R and record the camera as you fly.' },
+  { kind: 'otherworld', title: 'PSX Engine', mode: 'Otherworld', href: '#engine',
+    desc: 'The room shudders and goes dark, and you are standing on the same spot in its rust-red twin.' },
 ];
 /* The level both channels use. # wall, . floor, F the figure. */
 const MAP = [
@@ -835,7 +849,7 @@ async function start() {
   const ceilTex = pix(16, (g, n) => { g.fillStyle = '#17161a'; g.fillRect(0, 0, n, n); g.fillStyle = '#1f1d22'; g.fillRect(0, 0, n, 1); g.fillRect(0, 0, 1, n); });
   const figTex = pix(16, (g, n) => { g.fillStyle = '#0b0a0c'; g.fillRect(0, 0, n, n); g.fillStyle = '#d8d2c4'; g.fillRect(5, 4, 2, 2); g.fillRect(9, 4, 2, 2); });
 
-  const psxUniforms = { uSnap: { value: new THREE.Vector2(W / 2, H / 2) }, uLightPos: { value: new THREE.Vector3() }, uLightDir: { value: new THREE.Vector3() }, uFog: { value: new THREE.Color(0x07070a) } };
+  const psxUniforms = { uSnap: { value: new THREE.Vector2(W / 2, H / 2) }, uLightPos: { value: new THREE.Vector3() }, uLightDir: { value: new THREE.Vector3() }, uFog: { value: new THREE.Color(0x07070a) }, uTint: { value: new THREE.Vector3(1.15, 1.0, 0.82) } };
   const psxMat = (map) => new THREE.ShaderMaterial({
     uniforms: { ...psxUniforms, uMap: { value: map } },
     vertexShader: /* glsl */`
@@ -860,14 +874,14 @@ async function start() {
       }`,
     fragmentShader: /* glsl */`
       precision highp float;
-      uniform sampler2D uMap; uniform vec3 uFog;
+      uniform sampler2D uMap; uniform vec3 uFog; uniform vec3 uTint;
       varying vec3 vUvw; varying float vLight; varying float vFog;
       float bayer(vec2 p){ int x=int(mod(p.x,4.0)), y=int(mod(p.y,4.0)), i=x+y*4; float m[16];
         m[0]=0.;m[1]=8.;m[2]=2.;m[3]=10.;m[4]=12.;m[5]=4.;m[6]=14.;m[7]=6.;m[8]=3.;m[9]=11.;m[10]=1.;m[11]=9.;m[12]=15.;m[13]=7.;m[14]=13.;m[15]=5.;
         float v=0.; for(int k=0;k<16;k++){ if(k==i) v=m[k]; } return v/16.0-0.5; }
       void main(){
         vec3 tex = texture2D(uMap, vUvw.xy / vUvw.z).rgb;
-        vec3 col = tex * vLight * vec3(1.15, 1.0, 0.82);
+        vec3 col = tex * vLight * uTint;
         col = mix(col, uFog, vFog);
         col = floor(col * 31.0 + bayer(gl_FragCoord.xy) + 0.5) / 31.0;    // 15-bit colour with ordered dither
         gl_FragColor = vec4(col, 1.0);
@@ -968,7 +982,7 @@ async function start() {
     const g = ui.createLinearGradient(0, 0, UW, 0); g.addColorStop(0, '#000080'); g.addColorStop(1, '#1084d0');
     ui.fillStyle = g; ui.fillRect(0, 34, UW, 20);
     box('#fff', 7, 39, 10, 10); box('#000080', 9, 41, 6, 6);
-    say('PSX Engine', 24, 44.5, { c: '#fff', size: 16 }); say('v0.3', 100, 44.5, { c: '#c8d4ff', size: 14 });
+    say('PSX Engine', 24, 44.5, { c: '#fff', size: 16 }); say('v0.4', 100, 44.5, { c: '#c8d4ff', size: 14 });
     ['_', '□', '×'].forEach((s, i) => { bevel(UW - 58 + i * 18, 37, 16, 14); say(s, UW - 50 + i * 18, 44, { size: 13, align: 'center' }); });
     ['File', 'Edit', 'Room', 'Camera', 'Game', 'View', 'Help'].reduce((x, m) => { say(m, x, 64, { size: 14 }); return x + m.length * 7 + 18; }, 12);
     box('#808080', 0, 73, UW, 1); box('#fff', 0, 74, UW, 1);
@@ -1197,10 +1211,13 @@ async function start() {
   const OPENING = 'It started the night the lights came back on.';  /* the engine's own default for this card */
   function drawDirector(p) {
     chrome();
-    let x = 6;
-    [['Cutscene'], ['Gameplay'], ['Text Card'], ['Branch'], ['Choice'], ['✦ Game Opening', 0.3]].forEach(([l, at]) => { x += button(x, 80, l, { down: at && clicked(p, at) }) + 2; });
-    const playX = UW - 6 - 116;
+    const menuOpen = p >= 0.2 && p < 0.72;
+    const addW = button(6, 80, '＋ Add card ▾', { down: menuOpen });
+    well(6 + addW + 4, 80, 112, 18); say('find a card…', 6 + addW + 9, 89.5, { size: 13, c: '#808080' });
+    button(6 + addW + 120, 80, '🔄 Arrange');
+    const playX = UW - 6 - 60 - 4 - 116;
     button(playX, 80, '▶ Play from here', { w: 116, down: clicked(p, 6.6) });
+    button(UW - 6 - 60, 80, '✕ Close', { w: 60 });
     box('#808080', 0, 101, UW, 1); box('#fff', 0, 102, UW, 1);
     corkboard(0, 103, 520, 340, '#c8b488');
     box('#fff', 520, 103, 1, 340);
@@ -1222,8 +1239,23 @@ async function start() {
       say('typewriter', 544, 250, { size: 13 });
       say('duration  5 s', 528, 270, { size: 13 });
     } else say('Click a card to edit it.', 528, 120, { size: 13, c: '#4a4a4a', max: 106 });
+    /* ＋ Add card's menu: every kind of card, grouped, and the whole opening at the bottom of "Before the game" */
+    if (menuOpen) {
+      const mx = 6, my = 99, mw = 170, rows = [['h', 'The story'], ['🎬 Cutscene'], ['🎮 Gameplay'], ['📝 Text card'], ['h', 'Ways it can go'], ['❓ Choice'], ['🔀 Branch'],
+        ['h', 'Before the game'], ['📼 Video'], ['🖼 Logo card'], ['🗂 Main menu'], ['✨ Whole game opening…', 1], ['d'], ['📁 Group']];
+      const mh = rows.reduce((h, r) => h + (r[0] === 'd' ? 6 : 16), 6);
+      box('rgba(0,0,0,.3)', mx + 3, my + 3, mw, mh); bevel(mx, my, mw, mh);
+      rows.reduce((y, r) => {
+        if (r[0] === 'd') { box('#808080', mx + 4, y + 2, mw - 8, 1); box('#fff', mx + 4, y + 3, mw - 8, 1); return y + 6; }
+        if (r[0] === 'h') { say(r[1], mx + 8, y + 8.5, { size: 12, c: '#606060' }); return y + 16; }
+        const hot = r[1] && p >= 0.45;
+        if (hot) box('#000080', mx + 3, y, mw - 6, 16);
+        say(r[0], mx + 12, y + 8.5, { size: 14, c: hot ? '#fff' : '#000' });
+        return y + 16;
+      }, my + 3);
+    }
     const T = DC[3];
-    const ptr = pointer(p, [[0, 260, 300], [0.3, 444, 90], [2.9, 420, 380], [3.7, T.x + 70, T.y + 9], [4.3, 560, 200], [6.6, playX + 58, 90], [7.6, playX + 40, 140]]);
+    const ptr = pointer(p, [[0, 260, 300], [0.2, 50, 90], [0.62, 90, 283], [2.9, 420, 380], [3.7, T.x + 70, T.y + 9], [4.3, 560, 200], [6.6, playX + 58, 90], [7.6, playX + 40, 140]]);
     arrow(ptr.x, ptr.y, ptr.down); uiFocus = ptr.x;
     statusBar([[`${Math.min(6, Math.max(0, Math.floor((p - 0.75) / 0.36) + 1))} cards · opening added`, 420], ['Story', 120], ['', 76]]);
   }
@@ -1234,6 +1266,248 @@ async function start() {
     let n = Math.floor(q * 18);
     lines.forEach((l, i) => { say(l.slice(0, Math.max(0, n)), UW / 2, UH * 0.47 + (i - (lines.length - 1) / 2) * size * 1.2, { c: '#d8d8d8', size, align: 'center' }); n -= l.length + 1; });
     uiTex.needsUpdate = true;
+  }
+
+  /* ---------- Channels 5–8: what's new in v0.4 ---------- */
+  const bump = (x, a, b) => (x <= a || x >= b ? 0 : Math.sin(Math.PI * (x - a) / (b - a)));
+  /* The pose a filmed shot uses: a slow push in on the figure, u 0→1. */
+  function filmPose(u) {
+    eye.position.copy(cell(8, 0.9)).lerp(cell(8, 2.5), smooth(u)).setY(0.72 - 0.14 * smooth(u)); eye.lookAt(tmpV.copy(cell(8, 4)).setY(0.78));
+  }
+
+  /* Channel 5: build mode. B brings up the hotbar and a see-through green ghost where the crosshair is.
+     The bar's order, keys and ghost colour are the engine's own (BUILD_ORDER, BUILD_PIECES, BUILD_GHOST_MAT). */
+  const BUILD = [['select', 'Select', 'C'], ['floor', 'Floor', '1'], ['ceiling', 'Ceiling', '2'], ['water', 'Water', '3'], ['roof', 'Roof'], ['wall', 'Wall', '4'],
+    ['thin2', 'Thin wall', '5'], ['edgewall', 'Edge wall', '6'], ['halfwall', 'Half wall'], ['freewall', 'Free wall'], ['doorway', 'Doorway', '7'], ['window', 'Window', '8'],
+    ['door', 'Door', '9'], ['stairs', 'Stairs'], ['prop', 'Prop', '0'], ['scatter', 'Scatter'], ['paint', 'Paint']];
+  const BUILD_LOOP = [1, 5, 6];   /* Floor, Wall, Thin wall: four seconds each */
+  const buildPiece = (p) => BUILD_LOOP[Math.floor(p / 4) % BUILD_LOOP.length];
+  function glyph(g, k, x, y) {   /* a 10×10 picture of each piece */
+    const r = (a, b, c, d) => g.fillRect(x + a, y + b, c, d);
+    if (k === 'select') { g.beginPath(); g.moveTo(x + 3, y); g.lineTo(x + 3, y + 9); g.lineTo(x + 5, y + 7); g.lineTo(x + 7, y + 10); g.lineTo(x + 8, y + 9); g.lineTo(x + 6, y + 6); g.lineTo(x + 9, y + 6); g.fill(); }
+    if (k === 'floor') r(0, 6, 10, 3);
+    if (k === 'ceiling') r(0, 1, 10, 3);
+    if (k === 'water') { r(0, 3, 3, 1); r(3, 2, 4, 1); r(7, 3, 3, 1); r(0, 7, 3, 1); r(3, 6, 4, 1); r(7, 7, 3, 1); }
+    if (k === 'roof') { g.beginPath(); g.moveTo(x, y + 8); g.lineTo(x + 5, y + 2); g.lineTo(x + 10, y + 8); g.fill(); }
+    if (k === 'wall') r(1, 0, 8, 10);
+    if (k === 'thin2') r(4, 0, 3, 10);
+    if (k === 'edgewall') r(0, 0, 2, 10);
+    if (k === 'halfwall') r(1, 5, 8, 5);
+    if (k === 'freewall') { g.save(); g.translate(x + 5, y + 5); g.rotate(-0.7); g.fillRect(-1.5, -6, 3, 12); g.restore(); }
+    if (k === 'doorway') { r(0, 0, 10, 2); r(0, 0, 2, 10); r(8, 0, 2, 10); }
+    if (k === 'window') { r(0, 0, 10, 2); r(0, 8, 10, 2); r(0, 0, 2, 10); r(8, 0, 2, 10); }
+    if (k === 'door') { r(2, 0, 6, 10); g.clearRect(x + 6, y + 5, 1, 1); }
+    if (k === 'stairs') { r(0, 7, 10, 3); r(3, 4, 7, 3); r(6, 1, 4, 3); }
+    if (k === 'prop') { r(1, 2, 8, 8); g.clearRect(x + 2, y + 5, 6, 1); }
+    if (k === 'scatter') { r(1, 1, 2, 2); r(6, 2, 2, 2); r(3, 6, 2, 2); r(8, 7, 2, 2); }
+    if (k === 'paint') { r(3, 0, 4, 5); r(4, 5, 2, 5); }
+  }
+  function buildHud(g, w, h, on) {
+    const narrow = portrait(), list = narrow ? [-2, -1, 0, 1, 2].map((d) => (on + d + BUILD.length) % BUILD.length) : BUILD.map((b, i) => i);
+    const sw = 17, sh = 21, x0 = Math.round(w / 2 - (list.length * (sw + 1)) / 2), y0 = Math.round(h * 0.6);
+    g.textBaseline = 'top';
+    list.forEach((i, n) => {
+      const [k, , key] = BUILD[i], x = x0 + n * (sw + 1), sel = i === on;
+      g.fillStyle = sel ? 'rgba(60,48,18,.85)' : 'rgba(10,12,18,.78)'; g.fillRect(x, y0, sw, sh);
+      g.strokeStyle = sel ? '#ffd56a' : '#3a4258'; g.lineWidth = 1; g.strokeRect(x + 0.5, y0 + 0.5, sw - 1, sh - 1);
+      if (key) { g.font = '8px VT323, monospace'; g.fillStyle = sel ? '#ffd56a' : '#9aa3b8'; g.fillText(key, x + 2, y0 + 1); }
+      g.fillStyle = sel ? '#e8e2cf' : '#cfc8b2'; glyph(g, k, x + 4, y0 + 8);
+    });
+    g.font = '12px VT323, monospace'; g.textAlign = 'center'; g.fillStyle = '#e8e2cf';
+    g.shadowColor = 'rgba(0,0,0,.8)'; g.shadowOffsetY = 1; g.fillText(BUILD[on][1], w / 2, y0 - 14); g.shadowColor = 'transparent'; g.textAlign = 'left';
+    g.fillStyle = 'rgba(220,215,200,.55)'; g.fillRect(w / 2 - 1, h / 2 - 6, 2, 12); g.fillRect(w / 2 - 6, h / 2 - 1, 12, 2);
+  }
+  const ghostMat = new THREE.MeshBasicMaterial({ color: 0x7dff9a, transparent: true, opacity: 0.35, depthWrite: false });
+  const ghosts = {
+    1: new THREE.Mesh(new THREE.BoxGeometry(1, 0.06, 1), ghostMat),
+    5: new THREE.Mesh(new THREE.BoxGeometry(1, 1.25, 1), ghostMat),
+    6: new THREE.Mesh(new THREE.BoxGeometry(1, 1.25, 0.25), ghostMat),
+  };
+  Object.values(ghosts).forEach((m) => { m.visible = false; level.add(m); });
+  /* Standing in the west corridor, aiming a little way up it: the ghost sits where the crosshair meets the floor. */
+  function buildPose(on, p) {
+    Object.entries(ghosts).forEach(([k, m]) => { m.visible = +k === on; });
+    ghosts[on].position.copy(cell(1, 4)).setY(on === 1 ? 0.03 : 0.625);   /* a thin wall runs across the corridor */
+    const sway = reduced ? 0 : 1;
+    eye.position.copy(cell(1, 6.7)).setY(0.55 + Math.sin(clock * 1.3) * 0.004 * sway);
+    eye.lookAt(tmpV.copy(cell(1, 4)).setY(on === 1 ? 0.12 : 0.5).add(ahead.set(Math.sin(p * 0.6) * 0.12 * sway, 0, 0)));
+  }
+  const hideGhosts = () => Object.values(ghosts).forEach((m) => { m.visible = false; });
+
+  /* Channel 6: the Cutscene Editor. Shot, title, subtitle and a blood spatter go on with each track's ＋, then it plays.
+     The track names, clip colours and ＋ menus are the engine's own; the subtitle is a line from its demo project. */
+  const CE = { edit: 7.4, play: 7.0, len: 5.0, loop: 12.6 };
+  const CE_TRACKS = [['🎥 Picture'], ['🕺 Action'], ['📦 Props'], ['🔤 Titles'], ['💬 Subtitles'], ['🗣 Voice'], ['🎵 Music'], ['🔊 Sound'], ['🩸 Blood']];
+  const CE_SUB = 'it hasn\'t moved.', CE_TITLE = 'NIGHT ONE';
+  const ceClips = (p) => [
+    p >= 1.3 && { tr: 0, a: 0, b: CE.len, c: '#1d4f8f', l: 'Shot 1' },
+    p >= 2.5 && { tr: 3, a: 0, b: 1.5, c: '#5c3d99', l: CE_TITLE },
+    p >= 3.6 && { tr: 4, a: 2.0, b: 4.4, c: '#2f6f6f', l: CE_SUB, sel: p < 5.9 },
+    p >= 6.0 && { tr: 8, a: 3.6, b: 4.2, c: '#8a1218', l: 'spatter', sel: p < 6.6 },
+  ].filter(Boolean);
+  const cePlayhead = (p) => (p < 3.0 ? 0 : p < 5.4 ? 2.0 : p < 6.6 ? 3.6 : p < 7.0 ? 0 : p - 7.0);
+  const ceShot = document.createElement('canvas'); ceShot.width = W; ceShot.height = H; let ceShotOk = false;
+  function shoot() {   /* Shot 1, as filmed, for the editor's preview */
+    ceShotOk = true; hideGhosts(); blood.visible = false;
+    filmPose(0.4); psxUniforms.uLightPos.value.copy(eye.position); eye.getWorldDirection(psxUniforms.uLightDir.value);
+    renderer.setRenderTarget(rt); renderer.render(level, eye); renderer.setRenderTarget(null);
+    try { renderer.readRenderTargetPixels(rt, 0, 0, W, H, stillBuf); } catch (e) { return; }
+    for (let y = 0; y < H; y++) stillImg.data.set(stillBuf.subarray((H - 1 - y) * W * 4, (H - y) * W * 4), y * W * 4);
+    ceShot.getContext('2d').putImageData(stillImg, 0, 0);
+  }
+  /* What the cut puts over the picture at time tt: the title, then the subtitle. */
+  function ceWords(g, w, h, tt, scale = 1) {
+    g.textAlign = 'center'; g.textBaseline = 'middle'; g.shadowColor = 'rgba(0,0,0,.9)'; g.shadowOffsetY = 1;
+    if (tt < 1.5) { g.globalAlpha = Math.min(1, tt / 0.3, (1.5 - tt) / 0.3); g.font = `${Math.round(30 * scale)}px VT323, monospace`; g.fillStyle = '#e8e2cf'; g.fillText(CE_TITLE, w / 2, h * 0.45); g.globalAlpha = 1; }
+    if (tt >= 2.0 && tt < 4.4) { g.font = `${Math.round(15 * scale)}px VT323, monospace`; g.fillStyle = '#f2ecd8'; g.fillText(CE_SUB, w / 2, h * 0.66); }
+    g.shadowColor = 'transparent'; g.textAlign = 'left';
+  }
+  function drawCutscene(p) {
+    if (!ceShotOk) shoot();
+    chrome();
+    box('#c0c0c0', 0, 56, UW, UH - 56);
+    /* the bar */
+    say('🎞 Cutscene Editor', 8, 69.5, { size: 15 });
+    let x = 152;
+    const backX = x + 14; x += button(x, 60, '⏮', { down: clicked(p, 6.6), w: 28 }) + 3;
+    const playX = x + 31; x += button(x, 60, p >= 7.0 ? '❚❚ Pause' : '▶ Play', { down: clicked(p, 7.0), w: 62 }) + 6;
+    const ph = cePlayhead(p), tc = (s) => `${Math.floor(s / 60)}:${(s % 60).toFixed(1).padStart(4, '0')}`;
+    say(`${tc(ph)} / ${tc(p >= 1.3 ? CE.len : 0)}`, x, 69.5, { size: 14 }); x += 92;
+    button(x, 60, '✂ Split');
+    button(UW - 6 - 50, 60, '✓ Done', { w: 50 });
+    button(UW - 6 - 50 - 4 - 104, 60, '⏺ Film New Shot', { w: 104 });
+    box('#808080', 0, 81, UW, 1); box('#fff', 0, 82, UW, 1);
+    /* the bin, the view, the inspector */
+    [['🎥 Shots', 1], ['🎵 Sound'], ['🎭 Cast']].reduce((bx, [l, on]) => bx + button(bx, 88, l, { on, size: 12 }) + 1, 4);
+    well(4, 110, 146, 156);
+    box(p >= 0.9 && p < 1.3 ? '#000080' : '#fff', 6, 112, 142, 34);
+    if (ceShotOk) ui.drawImage(ceShot, 8, 114, 40, 30);
+    say('Shot 1', 54, 122, { size: 14, c: p >= 0.9 && p < 1.3 ? '#fff' : '#000' }); say('5.0 s · filmed', 54, 136, { size: 12, c: p >= 0.9 && p < 1.3 ? '#c8d4ff' : '#606060' });
+    const clips = ceClips(p);
+    const vx = 156, vy = 86, vw = 240, vh = 180;
+    box('#000', vx, vy, vw, vh);
+    if (clips.some((c) => c.tr === 0) && ph < CE.len) {
+      ui.drawImage(ceShot, vx, vy, vw, vh);
+      ui.save(); ui.translate(vx, vy); ceWords(ui, vw, vh, ph, 0.75); ui.restore();
+    }
+    box('#808080', 402, 86, 1, 180); box('#fff', 403, 86, 1, 180);
+    const subSel = p >= 3.6 && p < 5.9, bloodSel = p >= 6.0 && p < 6.6;
+    if (subSel) {
+      say('💬 Subtitle', 410, 98, { size: 14 });
+      say('at 0:02.0 · 2.4 s', 410, 116, { size: 13, c: '#4a4a4a' });
+      well(410, 126, 224, 40);
+      const n = Math.floor(span(p, 3.8, 5.0) * CE_SUB.length);
+      say(CE_SUB.slice(0, n) + ((p * 3 | 0) % 2 && p < 5.2 ? '|' : ''), 415, 137, { size: 14 });
+      button(410, 174, '🎙 Record voice', { size: 13 });
+    } else if (bloodSel) {
+      say('🩸 Blood', 410, 98, { size: 14 }); say('at 0:03.6 · spatter', 410, 116, { size: 13, c: '#4a4a4a' });
+    }
+    /* the timeline */
+    const ty = 270, LW = 124, tx = 6 + LW, pps = (UW - 6 - tx) / 6, rh = 17;
+    box('#2b2b2b', 4, ty, UW - 8, 172);
+    box('#3a3a3a', tx, ty, UW - 6 - tx, 14);
+    for (let s = 0; s <= 6; s++) { box('#8a8a8a', tx + s * pps, ty + 8, 1, 6); say(`0:0${s}`, tx + s * pps + 3, ty + 6, { size: 11, c: '#bdbdbd' }); }
+    box('#c0c0c0', 4, ty, LW + 2, 14);
+    CE_TRACKS.forEach(([l], i) => {
+      const y = ty + 15 + i * rh;
+      box('#c0c0c0', 4, y, LW + 2, rh - 1); box('#3a3a3a', tx, y + rh - 1, UW - 6 - tx, 1);
+      say(l, 9, y + 8.5, { size: 13, max: LW - 30 });
+      const down = (i === 0 && clicked(p, 0.5)) || (i === 3 && clicked(p, 1.8)) || (i === 4 && clicked(p, 3.5)) || (i === 8 && clicked(p, 5.9));
+      bevel(4 + LW - 20, y + 1, 18, rh - 3, down); say('＋', 4 + LW - 11, y + 8, { size: 12, align: 'center' });
+    });
+    clips.forEach((c) => {
+      const y = ty + 15 + c.tr * rh + 2, x1 = tx + c.a * pps, w = (c.b - c.a) * pps;
+      box('#000', x1, y, w, rh - 5); box(c.c, x1 + 1, y + 1, w - 2, rh - 7);
+      if (c.tr === 0 && ceShotOk) for (let fx = x1 + 1; fx < x1 + w - 18; fx += 36) ui.drawImage(ceShot, fx, y + 1, 16, rh - 7);
+      say(c.l, x1 + (c.tr === 0 ? 20 : 4), y + (rh - 5) / 2 + 0.5, { size: 12, c: '#fff', max: w - 8 });
+      if (c.sel) { ui.strokeStyle = '#ffe14d'; ui.lineWidth = 2; ui.strokeRect(x1, y, w, rh - 5); }
+    });
+    const px = tx + ph * pps;
+    box('#ff3b3b', px - 1, ty, 2, 170);
+    ui.fillStyle = '#ff3b3b'; ui.beginPath(); ui.moveTo(px - 6, ty); ui.lineTo(px + 6, ty); ui.lineTo(px, ty + 7); ui.fill();
+    /* ＋ menus: Picture offers a new shot, a framed shot, black or one you've filmed; Titles a title or a credits roll */
+    const pop = (row, items, hot) => {
+      const mx = 4 + LW, my = ty + 15 + row * rh - 4, mw = 170, mh = items.length * 16 + 6;
+      box('rgba(0,0,0,.35)', mx + 3, my + 3, mw, mh); bevel(mx, my, mw, mh);
+      items.forEach((it, i) => { const on = i === hot; if (on) box('#000080', mx + 3, my + 3 + i * 16, mw - 6, 16); say(it, mx + 10, my + 11.5 + i * 16, { size: 14, c: on ? '#fff' : '#000' }); });
+    };
+    if (p >= 0.5 && p < 1.3) pop(0, ['🎥 New shot', '🎭 Framed shot on the cast', '⬛ Black', '🎞 Shot 1'], p >= 0.9 ? 3 : -1);
+    if (p >= 1.8 && p < 2.5) pop(3, ['🔤 Title', '📜 Credits roll'], p >= 2.1 ? 0 : -1);
+    const plus = (i) => [4 + LW - 11, ty + 15 + i * rh + 8];
+    const ptr = pointer(p, [[0, 320, 200], [0.5, ...plus(0)], [1.2, 4 + LW + 60, ty + 15 - 4 + 11 + 48], [1.8, ...plus(3)], [2.4, 4 + LW + 60, ty + 15 + 3 * rh - 4 + 11],
+      [3.0, tx + 2.0 * pps, ty + 6], [3.5, ...plus(4)], [4.2, 520, 146], [5.4, tx + 3.6 * pps, ty + 6], [5.9, ...plus(8)], [6.6, backX, 69], [7.0, playX, 69], [7.4, 260, 200]]);
+    arrow(ptr.x, ptr.y, ptr.down); uiFocus = ptr.x;
+    statusBar([[`Cutscene 1 · ${clips.length} clips · ${(clips.length ? CE.len : 0).toFixed(1)} s`, 420], ['Cutscene Editor', 120], ['', 76]]);
+  }
+  /* The blood track's spatter: a dark stain that splashes onto the wall beside the figure on cue. */
+  const bloodTex = pix(64, (g, n) => {
+    const r2 = (() => { let s = 31; return () => ((s = (s * 16807) % 2147483647) / 2147483647); })();
+    g.clearRect(0, 0, n, n);
+    const blob = (x, y, r, a) => { g.fillStyle = `rgba(${70 + r2() * 30 | 0},4,8,${a})`; g.beginPath(); g.arc(x, y, r, 0, Math.PI * 2); g.fill(); };
+    blob(32, 30, 12, 0.9);
+    for (let i = 0; i < 26; i++) { const a = r2() * Math.PI * 2, d = 10 + r2() * 20; blob(32 + Math.cos(a) * d, 30 + Math.sin(a) * d * 0.8, 1 + r2() * 3.5, 0.85); }
+    for (let i = 0; i < 5; i++) { const x = 22 + r2() * 20; g.fillStyle = 'rgba(80,4,8,.85)'; g.fillRect(x | 0, 34, 2, 8 + r2() * 22 | 0); }
+  });
+  bloodTex.wrapS = bloodTex.wrapT = THREE.ClampToEdgeWrapping;
+  const blood = new THREE.Mesh(new THREE.PlaneGeometry(0.8, 0.8), new THREE.MeshBasicMaterial({ map: bloodTex, transparent: true, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -2 }));
+  blood.position.copy(cell(9, 3.6)).setX(cell(9, 3.6).x - 0.499).setY(0.62); blood.rotation.y = -Math.PI / 2; blood.visible = false;
+  level.add(blood);
+
+  /* Channel 7: Movie Mode. Pick a lens (1 2 3), frame on the thirds grid, R records the camera as it flies, K drops a keyframe.
+     The bar and the HUD are the engine's own (#movieStrip, #movieHud). */
+  const MOVIE = { lens: 2.4, rec: 3.6, key: 6.4, stop: 9.6, loop: 12 };
+  const LENS = [['24mm', 'Wide', 24, 4], ['50mm', 'Medium', 50, 2.8], ['85mm', 'Close', 85, 2]];
+  const movieState = (p) => ({ lens: p < MOVIE.lens ? 0 : 1, rec: p >= MOVIE.rec && p < MOVIE.stop, recT: Math.max(0, Math.min(p, MOVIE.stop) - MOVIE.rec), keyed: p >= MOVIE.key && p < MOVIE.key + 0.35, p });
+  const focalFov = (f) => THREE.MathUtils.radToDeg(2 * Math.atan(12 / f));
+  function moviePose(m) {
+    const u = smooth(m.recT / (MOVIE.stop - MOVIE.rec)), sway = reduced ? 0 : 1;
+    eye.position.copy(cell(8, 0.95)).lerp(cell(8, 2.3), u).setY(0.95 - 0.3 * u + Math.sin(clock * 0.9) * 0.006 * sway);
+    eye.position.x += Math.sin(clock * 0.7) * 0.01 * sway;
+    eye.lookAt(tmpV.copy(cell(8, 4)).setY(0.74));
+  }
+  function movieHud(g, w, h, m) {
+    g.textBaseline = 'middle';
+    /* thirds grid */
+    g.fillStyle = 'rgba(255,255,255,.22)';
+    [1, 2].forEach((k) => { g.fillRect(Math.round(w * k / 3), 0, 1, h); g.fillRect(0, Math.round(h * k / 3), w, 1); });
+    const narrow = portrait(), L = narrow ? Math.round(w * 0.34) : 12, R = narrow ? w - Math.round(w * 0.34) : w - 12;
+    /* REC / STANDBY, and the lens */
+    g.font = '13px VT323, monospace'; g.shadowColor = m.rec ? 'rgba(255,0,0,.6)' : 'rgba(0,0,0,.8)'; g.shadowBlur = m.rec ? 4 : 0; g.shadowOffsetY = m.rec ? 0 : 1;
+    g.fillStyle = m.rec && (m.p * 2 | 0) % 2 ? '#ff3131' : m.rec ? '#a01818' : '#808080'; g.beginPath(); g.arc(L + 4, 52, 3.5, 0, Math.PI * 2); g.fill();
+    g.fillStyle = '#ff4141'; g.fillText(m.rec ? `00:${String(Math.floor(m.recT)).padStart(2, '0')}` : 'STANDBY', L + 12, 52);
+    g.shadowColor = 'rgba(0,0,0,.8)'; g.shadowBlur = 0; g.shadowOffsetY = 1;
+    g.textAlign = 'right'; g.fillStyle = '#c8ffb0'; g.font = '12px VT323, monospace';
+    g.fillText(`f/${LENS[m.lens][3].toFixed(1)}  ${LENS[m.lens][2]}mm`, R, 52); g.textAlign = 'left'; g.shadowColor = 'transparent';
+    /* the bar: Record and Keyframe, the three lenses, then Grid, Camera, Drawer and Exit */
+    const slots = [['R', '⏺', m.rec], ['K', '◆', m.keyed], 0, ['1', '24mm', m.lens === 0], ['2', '50mm', m.lens === 1], ['3', '85mm', false], 0, ['', '▦', true], ['', '⚙'], ['Tab', '☰'], 0, ['', '✕']];
+    const show = narrow ? slots.slice(0, 6) : slots;
+    const sw = 22, gap = 5, sh = 22, tw = show.reduce((a, s) => a + (s ? sw + 1 : gap), 0), y0 = Math.round(h * 0.6);
+    let x = Math.round(w / 2 - tw / 2);
+    show.forEach((s) => {
+      if (!s) { x += gap; return; }
+      const [key, ico, on] = s;
+      g.fillStyle = on ? 'rgba(60,48,18,.85)' : 'rgba(10,12,18,.78)'; g.fillRect(x, y0, sw, sh);
+      g.strokeStyle = on ? '#ffd56a' : '#3a4258'; g.lineWidth = 1; g.strokeRect(x + 0.5, y0 + 0.5, sw - 1, sh - 1);
+      if (key) { g.font = '8px VT323, monospace'; g.fillStyle = on ? '#ffd56a' : '#9aa3b8'; g.fillText(key, x + 2, y0 + 5); }
+      g.textAlign = 'center'; g.fillStyle = ico === '⏺' ? '#ff4b4b' : '#e8e2cf';
+      g.font = ico.endsWith('mm') ? '9px VT323, monospace' : '11px VT323, monospace'; g.fillText(ico, x + sw / 2, y0 + 14); g.textAlign = 'left';
+      x += sw + 1;
+    });
+  }
+
+  /* Channel 8: the Otherworld twin. The same room in the engine's rust-red mood (OTHERWORLD_MOOD: fog #160905, light #7a4632).
+     A shift shudders the room, takes it dark, and swaps it on the same spot; another brings it back. */
+  const OW = { a: 5, b: 12, len: 1, loop: 14 };
+  const LIGHT = new THREE.Vector3(1.15, 1.0, 0.82), RUST = new THREE.Vector3(1.75, 0.82, 0.55);
+  const FOG = new THREE.Color(0x07070a), RUST_FOG = new THREE.Color(0x160905);
+  function otherworld(p) {
+    const q = p % OW.loop, dark = Math.max(bump(q, OW.a, OW.a + OW.len), bump(q, OW.b, OW.b + OW.len));
+    return { rust: q >= OW.a + OW.len / 2 && q < OW.b + OW.len / 2 ? 1 : 0, dark };
+  }
+  function setMood(rust, dark) {
+    psxUniforms.uTint.value.copy(LIGHT).lerp(RUST, rust).multiplyScalar(1 - 0.92 * dark);
+    psxUniforms.uFog.value.copy(FOG).lerp(RUST_FOG, rust).multiplyScalar(1 - dark);
+    level.background.copy(psxUniforms.uFog.value);
   }
 
   /* ---------- No signal: colour bars ---------- */
@@ -1267,7 +1541,7 @@ async function start() {
     if (c.kind === 'nosignal') {
       osd.textAlign = 'center'; osd.font = '28px VT323, monospace'; osd.shadowColor = 'transparent';
       osd.fillStyle = '#000000'; osd.fillRect(W / 2 - 66, 96, 132, 34); osd.fillStyle = '#ffffff'; osd.fillText('NO SIGNAL', W / 2, 100);
-    } else if (label > 0.01 && (c.kind === 'walk' || over)) {
+    } else if (label > 0.01 && c.kind !== 'movie' && (c.kind === 'walk' || c.kind === 'otherworld' || over)) {
       osd.fillText(`CH ${String(channel + 1).padStart(2, '0')} / ${String(CHANNELS.length).padStart(2, '0')}`, 30, 46); osd.fillText('PLAY ▶', 30, 59);
       osd.textAlign = 'right'; osd.fillText(clock, W - 30, 46);
     }
@@ -1587,13 +1861,14 @@ async function start() {
   let split = 0, stillT = -1;
   const stillBuf = new Uint8Array(W * H * 4), stillC = document.createElement('canvas'); stillC.width = W; stillC.height = H;
   const stillG = stillC.getContext('2d'), stillImg = stillG.createImageData(W, H);
-  function grabStill(view) {
+  function grabStill(view, over) {
     const g = filmFrames[channel]?.querySelector('canvas')?.getContext('2d'); if (!g) return;
     if (view === 'ui') { g.drawImage(uiTex.image, 0, 0, 160, 120); }
     else {
       try { renderer.readRenderTargetPixels(rt, 0, 0, W, H, stillBuf); } catch (e) { return; }
       for (let y = 0; y < H; y++) stillImg.data.set(stillBuf.subarray((H - 1 - y) * W * 4, (H - y) * W * 4), y * W * 4);
       stillG.putImageData(stillImg, 0, 0); g.drawImage(stillC, 0, 0, 160, 120);
+      if (over) { g.save(); g.scale(160 / W, 120 / H); over(g, W, H); g.restore(); }
     }
     filmFrames[channel].classList.add('has');
   }
@@ -1601,18 +1876,29 @@ async function start() {
   function prefillFilm() {
     CHANNELS.forEach((c, i) => {
       const g = filmFrames[i]?.querySelector('canvas')?.getContext('2d'); if (!g) return;
-      if (c.kind === 'walk') {
-        path.getPointAt(0.3, v3); path.getPointAt(0.312, ahead);
-        eye.position.copy(v3); eye.lookAt(ahead.x, 0.55, ahead.z);
+      if (c.kind === 'walk' || c.kind === 'build' || c.kind === 'otherworld' || c.kind === 'movie') {
+        let over = null;
+        hideGhosts(); blood.visible = false;
+        if (c.kind === 'movie') {
+          const m = movieState(6); moviePose(m); eye.fov = focalFov(LENS[m.lens][2]); eye.updateProjectionMatrix(); over = (gg, w, h) => movieHud(gg, w, h, m);
+        } else {
+          path.getPointAt(0.3, v3); path.getPointAt(0.312, ahead);
+          eye.position.copy(v3); eye.lookAt(ahead.x, 0.55, ahead.z);
+          if (c.kind === 'build') { buildPose(5, 0); over = (gg, w, h) => buildHud(gg, w, h, 5); }
+        }
+        setMood(c.kind === 'otherworld' ? 1 : 0, 0);
         psxUniforms.uLightPos.value.copy(eye.position); eye.getWorldDirection(psxUniforms.uLightDir.value);
         renderer.setRenderTarget(rt); renderer.render(level, eye); renderer.setRenderTarget(null);
+        setMood(0, 0); hideGhosts(); eye.fov = 68; eye.updateProjectionMatrix();
         try { renderer.readRenderTargetPixels(rt, 0, 0, W, H, stillBuf); } catch (e) { return; }
         for (let y = 0; y < H; y++) stillImg.data.set(stillBuf.subarray((H - 1 - y) * W * 4, (H - y) * W * 4), y * W * 4);
         stillG.putImageData(stillImg, 0, 0); g.drawImage(stillC, 0, 0, 160, 120);
+        if (over) { g.save(); g.scale(160 / W, 120 / H); over(g, W, H); g.restore(); }
       } else {
         if (c.kind === 'editor') paintUi(drawMap, 3, [250, 520]);
         else if (c.kind === 'dialogue') paintUi(drawDialogue, DLG.edit * 0.8);
         else if (c.kind === 'director') paintUi(drawDirector, DIR.edit * 0.85, [150, 470]);
+        else if (c.kind === 'cutscene') paintUi(drawCutscene, 6.3, [130, 520]);
         focusS = -1;
         g.drawImage(uiTex.image, 0, 0, 160, 120);
       }
@@ -1621,6 +1907,7 @@ async function start() {
     uiT = -1;
   }
   let filled = false;
+  let ceT = 0, movieNow = movieState(0);
   let last = performance.now(), clock = 0, frames = 0, fpsT = 0, slow = 0, uiT = -1, lastScene = '', lastKind = '', lastView = '', enteredWork = false, chT = 0, filmU = 0;
   const v3 = new THREE.Vector3(), ahead = new THREE.Vector3(), tmpV = new THREE.Vector3(), topV = new THREE.Vector3(), botV = new THREE.Vector3();
 
@@ -1661,13 +1948,36 @@ async function start() {
     } else if (kind === 'editor') {
       if (Math.floor(clock * 7) !== uiT) { uiT = Math.floor(clock * 7); paintUi(drawMap, clock, [250, 520]); }
       view = 'ui';
+    } else if (kind === 'build') {
+      const on = buildPiece(p); view = 'build'; over = (g, w, h) => buildHud(g, w, h, on);
+    } else if (kind === 'cutscene') {
+      const q = p % CE.loop;
+      if (q < CE.edit) { if (Math.floor(clock * 20) !== uiT) { uiT = Math.floor(clock * 20); paintUi(drawCutscene, q, [130, 520]); } view = 'ui'; }
+      else {
+        const tt = q - CE.play; view = 'film'; filmU = Math.min(1, tt / CE.len); ceT = tt;
+        over = (g, w, h) => { if (tt >= CE.len) { g.fillStyle = '#000'; g.fillRect(0, 0, w, h); } else ceWords(g, w, h, tt); };
+      }
+    } else if (kind === 'movie') {
+      const m = movieState(reduced ? 6 : p % MOVIE.loop); view = 'movie'; movieNow = m; over = (g, w, h) => movieHud(g, w, h, m);
     }
+    /* Otherworld: the shift shudders the picture as it goes dark. */
+    const ow = kind === 'otherworld' ? otherworld(p) : null;
+    setMood(ow ? ow.rust : 0, ow ? ow.dark : 0);
+    if (ow && ow.dark > 0.05) burst = Math.max(burst, ow.dark * 0.45);
     if (view !== lastView) { if (lastView && scene === 'work' && (view === 'still' || view === 'film' || (view === 'ui' && over))) burst = Math.max(burst, 0.5); lastView = view; }
-    if ((view === 'walk' || view === 'still' || view === 'film' || view === 'play') && cur.power > 0.01) {
+    if ((view === 'walk' || view === 'still' || view === 'film' || view === 'play' || view === 'movie' || view === 'build') && cur.power > 0.01) {
+      const fov = view === 'movie' ? focalFov(LENS[movieNow.lens][2]) : 68;
+      if (eye.fov !== fov) { eye.fov = fov; eye.updateProjectionMatrix(); }
+      blood.visible = kind === 'cutscene' && view === 'film' && ceT >= 3.6;
+      if (blood.visible) blood.scale.setScalar(0.3 + 0.7 * smooth((ceT - 3.6) / 0.15));
       if (view === 'still') {          /* stood still, reading */
         eye.position.copy(cell(8, 2.2)).setY(0.55 + Math.sin(clock * 1.3) * 0.004); eye.lookAt(tmpV.copy(cell(8, 4)).setY(0.62));
       } else if (view === 'film') {    /* a slow push in on the figure, no head bob */
-        eye.position.copy(cell(8, 0.9)).lerp(cell(8, 2.5), smooth(filmU)).setY(0.72 - 0.14 * smooth(filmU)); eye.lookAt(tmpV.copy(cell(8, 4)).setY(0.78));
+        filmPose(filmU);
+      } else if (view === 'movie') {   /* Movie Mode: the camera hangs, then flies in while it records */
+        moviePose(movieNow);
+      } else if (view === 'build') {
+        buildPose(buildPiece(p), p);
       } else if (view === 'play') {    /* control handed back: walking again from where the shot ended */
         const w = Math.min(1, (p % DIR.loop - DIR.bars - 0.7) / 2.7);
         eye.position.copy(cell(8, 2.5)).lerp(cell(8, 2.95), w).setY(0.58 + Math.sin(clock * 6.5) * 0.012); eye.lookAt(tmpV.copy(cell(8, 4)).setY(0.6));
@@ -1676,8 +1986,10 @@ async function start() {
         path.getPointAt(u, v3); path.getPointAt((u + 0.012) % 1, ahead);
         eye.position.copy(v3); eye.position.y += Math.sin(clock * 6.5) * 0.012;
         eye.lookAt(ahead.x, 0.55, ahead.z);
+        if (ow && ow.dark > 0) { eye.rotateZ(Math.sin(clock * 47) * 0.03 * ow.dark); eye.position.y += Math.sin(clock * 31) * 0.015 * ow.dark; }
       }
-      if (t.zoom > 0.5 && view !== 'film') { eye.rotateY(-lookS.x * (view === 'walk' ? 0.35 : 0.12)); eye.rotateX(-lookS.y * (view === 'walk' ? 0.18 : 0.06)); }
+      if (kind !== 'build') hideGhosts();
+      if (t.zoom > 0.5 && view !== 'film' && view !== 'movie') { eye.rotateY(-lookS.x * (view === 'walk' ? 0.35 : 0.12)); eye.rotateX(-lookS.y * (view === 'walk' ? 0.18 : 0.06)); }
       psxUniforms.uLightPos.value.copy(eye.position);
       eye.getWorldDirection(psxUniforms.uLightDir.value);
       renderer.setRenderTarget(rt); renderer.render(level, eye); renderer.setRenderTarget(null);
@@ -1689,7 +2001,7 @@ async function start() {
     }
     if (cur.osd > 0.01 || over) drawOsd(clock, cur.osd, over);
     if (!filled && (clock > 0.4 || reduced)) { filled = true; prefillFilm(); }
-    if (scene === 'work' && clock - stillT > 0.6 && cur.power > 0.5) { stillT = clock; grabStill(view); }
+    if (scene === 'work' && clock - stillT > 0.6 && cur.power > 0.5) { stillT = clock; grabStill(view, over); }
 
     /* Camera, with a little drift toward the pointer (less when you're inside the TV). */
     const drift = (1 - t.zoom) * (reduced ? 0 : 1);
