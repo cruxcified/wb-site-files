@@ -185,7 +185,7 @@ html.wbgames-booting, html.wbgames-booting body { overflow: hidden !important; }
 #wbgames .work { height: 190vh; }
 #wbgames .work-sticky { position: sticky; top: 0; height: 100vh; height: 100svh; display: flex; flex-direction: column; justify-content: space-between;
   padding-block: calc(var(--frame) + 96px + env(safe-area-inset-top, 0px)) calc(var(--frame) + clamp(24px, 5vh, 48px));
-  background: linear-gradient(to top, rgba(6, 5, 6, .78), rgba(6, 5, 6, .2) 34%, transparent 55%); }
+  background: linear-gradient(to top, rgba(6, 5, 6, .9), rgba(6, 5, 6, .6) 28%, rgba(6, 5, 6, .15) 50%, transparent 62%); }
 #wbgames .work-top { display: flex; justify-content: space-between; align-items: baseline; }
 #wbgames.osd-on .work-top { visibility: hidden; }
 #wbgames .counter { font-family: var(--vcr); font-size: 28px; letter-spacing: .04em; text-shadow: var(--glow); white-space: nowrap; }
@@ -194,7 +194,6 @@ html.wbgames-booting, html.wbgames-booting body { overflow: hidden !important; }
 #wbgames .work-bottom h3 small { display: block; font-style: italic; font-size: 19px; color: var(--dim); margin-bottom: 8px; letter-spacing: 0; }
 #wbgames .work-bottom p { max-width: 50ch; margin-top: 10px; font-size: 18px; }
 #wbgames .work-bottom { position: relative; isolation: isolate; }
-#wbgames .work-bottom::before { content: ""; position: absolute; z-index: -1; inset: -90px -40px -40px; background: linear-gradient(to top, rgba(0,0,0,.82), rgba(0,0,0,.55) 55%, transparent); pointer-events: none; }
 #wbgames .work-bottom h3, #wbgames .work-bottom p, #wbgames .work-bottom small { text-shadow: 0 1px 2px #000, 0 0 14px rgba(0,0,0,.9); }
 #wbgames .work-bottom h3 small { color: #d8d8d8; }
 #wbgames .controls { display: flex; align-items: center; gap: 18px; }
@@ -1809,41 +1808,11 @@ async function start() {
   });
   addEventListener('scroll', requestRender, { passive: true });
 
-  /* Step into the screen: one scroll, swipe or key (or the line under the title) carries you from the title into the TV, and the camera glides in on its own. */
+  /* The hero scrolls normally into the TV. */
   let stepUntil = 0, stepLock = 0;
   const workEl = root.querySelector('#work');
   const workTop = () => workEl.getBoundingClientRect().top + scrollY;
-  const jump = (y) => { const now = performance.now(); stepUntil = now + 1700; stepLock = now + 1000; scrollTo({ top: y, behavior: 'instant' }); requestRender(); };
-  const intent = (down) => {                           /* true when the gesture was used up by a step */
-    if (performance.now() < stepLock) return true;
-    const y = scrollY, w = workTop();
-    if (down && y < w - 4) { jump(w); return true; }
-    if (!down && y > 0 && y <= w + 4) { jump(0); return true; }
-    return false;
-  };
-  /* A blocking wheel listener makes the browser scroll on the main thread, which turns ordinary scrolling choppy.
-     So it's only attached while you're between the title and the TV, where the step needs it. */
-  const onWheel = (e) => { if (Math.abs(e.deltaY) > 2 && intent(e.deltaY > 0)) e.preventDefault(); };
-  let wheelOn = false;
-  const syncWheel = () => {
-    const want = scrollY <= workTop() + 4 || performance.now() < stepLock;
-    if (want === wheelOn) return; wheelOn = want;
-    if (want) { addEventListener('wheel', onWheel, { passive: false }); addEventListener('touchmove', onTouch, { passive: false }); }
-    else { removeEventListener('wheel', onWheel, { passive: false }); removeEventListener('touchmove', onTouch, { passive: false }); }
-  };
-  let touchY = null;
-  addEventListener('touchstart', (e) => { touchY = e.touches[0].clientY; }, { passive: true });
-  const onTouch = (e) => {
-    if (touchY == null) return; const dy = touchY - e.touches[0].clientY;
-    if (Math.abs(dy) > 24) { if (intent(dy > 0)) e.preventDefault(); touchY = null; }
-  };
-  addEventListener('scroll', syncWheel, { passive: true }); syncWheel();
-  addEventListener('keydown', (e) => {
-    if (e.target.closest?.('input, textarea, select, button, [contenteditable]')) return;
-    const down = ['ArrowDown', 'PageDown', ' '].includes(e.key) && !e.shiftKey, up = ['ArrowUp', 'PageUp'].includes(e.key) || (e.key === ' ' && e.shiftKey);
-    if ((down || up) && intent(down)) e.preventDefault();
-  });
-  root.querySelector('#wbgames-step')?.addEventListener('click', (e) => { e.preventDefault(); jump(workTop()); });
+  root.querySelector('#wbgames-step')?.addEventListener('click', (e) => { e.preventDefault(); scrollTo({ top: workTop(), behavior: 'smooth' }); });
   document.addEventListener('visibilitychange', () => { if (!document.hidden) { last = performance.now(); requestRender(); } });
 
   const splitRT = new THREE.WebGLRenderTarget(1, 1, { type: THREE.HalfFloatType, samples: 4 });
