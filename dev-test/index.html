@@ -848,6 +848,7 @@ async function start() {
   });
   const ceilTex = pix(16, (g, n) => { g.fillStyle = '#17161a'; g.fillRect(0, 0, n, n); g.fillStyle = '#1f1d22'; g.fillRect(0, 0, n, 1); g.fillRect(0, 0, 1, n); });
   const figTex = pix(16, (g, n) => { g.fillStyle = '#0b0a0c'; g.fillRect(0, 0, n, n); g.fillStyle = '#d8d2c4'; g.fillRect(5, 4, 2, 2); g.fillRect(9, 4, 2, 2); });
+  const coatTex = pix(16, (g, n) => { g.fillStyle = '#0b0a0c'; g.fillRect(0, 0, n, n); g.fillStyle = '#16131a'; for (let i = 0; i < 12; i++) g.fillRect(rnd() * n | 0, rnd() * n | 0, 1, 2); });   /* the eyes go on the head only */
 
   const psxUniforms = { uSnap: { value: new THREE.Vector2(W / 2, H / 2) }, uLightPos: { value: new THREE.Vector3() }, uLightDir: { value: new THREE.Vector3() }, uFog: { value: new THREE.Color(0x07070a) }, uTint: { value: new THREE.Vector3(1.15, 1.0, 0.82) } };
   const psxMat = (map) => new THREE.ShaderMaterial({
@@ -906,7 +907,7 @@ async function start() {
   MAP.forEach((row, z) => [...row].forEach((ch, x) => {
     if (ch !== 'F') return;
     const fig = new THREE.Group();
-    const body = new THREE.Mesh(new THREE.CylinderGeometry(0.11, 0.16, 0.8, 5, 2), psxMat(figTex));
+    const body = new THREE.Mesh(new THREE.CylinderGeometry(0.11, 0.16, 0.8, 5, 2), psxMat(coatTex));
     body.position.y = 0.42;
     const head = new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.2, 0.16), psxMat(figTex));
     head.position.y = 0.93;
@@ -1465,25 +1466,25 @@ async function start() {
   const focalFov = (f) => THREE.MathUtils.radToDeg(2 * Math.atan(12 / f));
   function moviePose(m) {
     const u = smooth(m.recT / (MOVIE.stop - MOVIE.rec)), sway = reduced ? 0 : 1;
-    eye.position.copy(cell(8, 0.95)).lerp(cell(8, 2.3), u).setY(0.95 - 0.3 * u + Math.sin(clock * 0.9) * 0.006 * sway);
+    eye.position.copy(cell(8, 0.95)).lerp(cell(8, 1.8), u).setY(0.95 - 0.12 * u + Math.sin(clock * 0.9) * 0.006 * sway);
     eye.position.x += Math.sin(clock * 0.7) * 0.01 * sway;
-    eye.lookAt(tmpV.copy(cell(8, 4)).setY(0.74));
+    eye.lookAt(tmpV.copy(cell(8, 4)).setY(0.8));
   }
   function movieHud(g, w, h, m) {
     g.textBaseline = 'middle';
     /* thirds grid */
     g.fillStyle = 'rgba(255,255,255,.22)';
     [1, 2].forEach((k) => { g.fillRect(Math.round(w * k / 3), 0, 1, h); g.fillRect(0, Math.round(h * k / 3), w, 1); });
-    const narrow = portrait(), L = narrow ? Math.round(w * 0.34) : 12, R = narrow ? w - Math.round(w * 0.34) : w - 12;
+    const narrow = portrait(), L = narrow ? Math.round(w * 0.34) : 30, R = narrow ? w - Math.round(w * 0.34) : w - 30;
     /* REC / STANDBY, and the lens */
     g.font = '13px VT323, monospace'; g.shadowColor = m.rec ? 'rgba(255,0,0,.6)' : 'rgba(0,0,0,.8)'; g.shadowBlur = m.rec ? 4 : 0; g.shadowOffsetY = m.rec ? 0 : 1;
-    g.fillStyle = m.rec && (m.p * 2 | 0) % 2 ? '#ff3131' : m.rec ? '#a01818' : '#808080'; g.beginPath(); g.arc(L + 4, 52, 3.5, 0, Math.PI * 2); g.fill();
-    g.fillStyle = '#ff4141'; g.fillText(m.rec ? `00:${String(Math.floor(m.recT)).padStart(2, '0')}` : 'STANDBY', L + 12, 52);
+    g.fillStyle = m.rec && (m.p * 2 | 0) % 2 ? '#ff3131' : m.rec ? '#a01818' : '#808080'; g.beginPath(); g.arc(L + 4, 50, 3.5, 0, Math.PI * 2); g.fill();
+    g.fillStyle = '#ff4141'; g.fillText(m.rec ? `00:${String(Math.floor(m.recT)).padStart(2, '0')}` : 'STANDBY', L + 12, 50);
     g.shadowColor = 'rgba(0,0,0,.8)'; g.shadowBlur = 0; g.shadowOffsetY = 1;
     g.textAlign = 'right'; g.fillStyle = '#c8ffb0'; g.font = '12px VT323, monospace';
-    g.fillText(`f/${LENS[m.lens][3].toFixed(1)}  ${LENS[m.lens][2]}mm`, R, 52); g.textAlign = 'left'; g.shadowColor = 'transparent';
+    g.fillText(`f/${LENS[m.lens][3].toFixed(1)}  ${LENS[m.lens][2]}mm`, R, 50); g.textAlign = 'left'; g.shadowColor = 'transparent';
     /* the bar: Record and Keyframe, the three lenses, then Grid, Camera, Drawer and Exit */
-    const slots = [['R', '⏺', m.rec], ['K', '◆', m.keyed], 0, ['1', '24mm', m.lens === 0], ['2', '50mm', m.lens === 1], ['3', '85mm', false], 0, ['', '▦', true], ['', '⚙'], ['Tab', '☰'], 0, ['', '✕']];
+    const slots = [['R', '⏺', m.rec], ['K', '◆', m.keyed], 0, ['1', '24', m.lens === 0], ['2', '50', m.lens === 1], ['3', '85', false], 0, ['', '▦', true], ['', '⚙'], ['Tab', '☰'], 0, ['', '✕']];
     /* Record, Keyframe and the lenses, clear of the page's words over the lower left of the tube */
     const show = narrow ? [slots[0], slots[1], slots[3], slots[4], slots[5]] : slots.slice(0, 6);
     const sw = 19, gap = 5, sh = 22, tw = show.reduce((a, s) => a + (s ? sw + 1 : gap), 0), y0 = Math.round(h * 0.55);
@@ -1495,7 +1496,7 @@ async function start() {
       g.strokeStyle = on ? '#ffd56a' : '#3a4258'; g.lineWidth = 1; g.strokeRect(x + 0.5, y0 + 0.5, sw - 1, sh - 1);
       if (key) { g.font = '8px VT323, monospace'; g.fillStyle = on ? '#ffd56a' : '#9aa3b8'; g.fillText(key, x + 2, y0 + 5); }
       g.textAlign = 'center'; g.fillStyle = ico === '⏺' ? '#ff4b4b' : '#e8e2cf';
-      g.font = ico.endsWith('mm') ? '9px VT323, monospace' : '11px VT323, monospace'; g.fillText(ico, x + sw / 2, y0 + 14); g.textAlign = 'left';
+      g.font = /\d/.test(ico) ? '12px VT323, monospace' : '11px VT323, monospace'; g.fillText(ico, x + sw / 2, y0 + 14); g.textAlign = 'left';
       x += sw + 1;
     });
   }
