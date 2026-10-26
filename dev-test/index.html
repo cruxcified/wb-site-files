@@ -1914,6 +1914,7 @@ async function start() {
   let filled = false;
   let ceT = 0, movieNow = movieState(0);
   let last = performance.now(), clock = 0, frames = 0, fpsT = 0, slow = 0, uiT = -1, lastScene = '', lastKind = '', lastView = '', enteredWork = false, chT = 0, filmU = 0;
+  window.__seek = (s) => { chT = clock - s; requestRender(); };   /* TEST ONLY */
   const v3 = new THREE.Vector3(), ahead = new THREE.Vector3(), tmpV = new THREE.Vector3(), topV = new THREE.Vector3(), botV = new THREE.Vector3();
 
   frame = function () {
