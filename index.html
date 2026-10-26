@@ -1,1 +1,522 @@
-<!doctype html><meta http-equiv="refresh" content="0; url=/apps/"><a href="/apps/">Apps</a>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Will Boechler Lab</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Things Will Boechler has made: productivity apps, Dolorem Company horror games, the PSX Engine, Dog Days, and his creative portfolio.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Chakra+Petch:wght@700&display=swap">
+<style>
+/* Layout: a terminal index. ASCII title across the top, a numbered menu of projects on the left,
+   and one point cloud on the right drawn in ASCII that reshapes for the selected entry.
+   One committed look: grey phosphor on black, like a ship's computer terminal. */
+:root{
+  --bg:#080808;
+  --phos:#d2d2ce;      /* phosphor, white-grey */
+  --dim:#7c7c78;
+  --faint:#2a2a28;
+  --amber:#ffb84d;     /* selection keys, status */
+  --mono:"Share Tech Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  --block:"Chakra Petch", "Arial Black", sans-serif;
+  --glow:0 0 6px rgba(210,210,206,.28), 0 0 18px rgba(210,210,206,.07);
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--phos);font-family:var(--mono);font-size:15px;line-height:1.45;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:inherit}
+::selection{background:var(--phos);color:var(--bg)}
+
+#stage{position:fixed;left:0;top:0;width:100%;height:100%;display:block;pointer-events:none;z-index:0}
+/* the glass: scanlines and a soft vignette over everything */
+body::after{content:"";position:fixed;inset:0;z-index:5;pointer-events:none;
+  background:
+    repeating-linear-gradient(to bottom, rgba(0,0,0,0) 0 2px, rgba(0,0,0,.22) 2px 3px),
+    radial-gradient(120% 90% at 50% 50%, rgba(0,0,0,0) 60%, rgba(0,0,0,.55) 100%);
+  animation:flick 6s steps(1) infinite}
+@keyframes flick{0%,100%{opacity:1}47%{opacity:.93}48%{opacity:1}83%{opacity:.96}}
+
+.hub{position:relative;z-index:1;min-height:100%;display:flex;flex-direction:column;gap:28px;
+  padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));padding-block:28px 24px}
+/* the whole page sits in a centred 1180px frame: menu on the left, cloud centred in the space to its right */
+.col{width:100%;max-width:620px;margin-left:max(0px, calc((100% - 1180px) / 2))}
+
+/* header */
+.status{display:flex;flex-wrap:wrap;gap:4px 18px;font-size:12px;letter-spacing:.06em;color:var(--dim);text-transform:uppercase}
+.status b{font-weight:400;color:var(--amber)}
+.title{margin:14px 0 0;font-weight:400;max-width:620px}
+.title pre{margin:0;font-family:var(--mono);line-height:1;letter-spacing:0;color:var(--phos);text-shadow:var(--glow);white-space:pre;overflow:hidden}
+.title .plain{font-family:var(--block);font-size:clamp(40px, 7vw, 96px);letter-spacing:.02em;text-shadow:var(--glow);line-height:1}
+.title.ready .plain{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+
+/* menu */
+main.col{margin-top:28px}
+.intro{margin:0 0 22px;max-width:46ch;color:var(--dim);font-size:15px}
+.intro b{font-weight:400;color:var(--phos)}
+.menu-head{display:flex;justify-content:space-between;gap:12px;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);
+  border-bottom:1px solid var(--faint);padding-bottom:6px}
+.list{list-style:none;margin:0;padding:0}
+.list li{border-bottom:1px dashed var(--faint)}
+.row{position:relative;display:grid;grid-template-columns:2.6em 1fr auto;column-gap:10px;align-items:baseline;padding:12px 10px 12px 6px;text-decoration:none;outline:none}
+.key{color:var(--amber);font-size:14px}
+.name{font-size:clamp(22px, 2.5vw, 30px);letter-spacing:.03em;text-transform:uppercase;line-height:1.1;text-shadow:var(--glow)}
+.dest{font-size:12px;color:var(--dim);white-space:nowrap;letter-spacing:.04em}
+.desc{grid-column:2 / -1;margin-top:3px;color:var(--dim);font-size:14px;max-width:56ch;min-width:0}
+.row:hover,.row:focus-visible,.row.is-on{background:var(--phos);color:var(--bg)}
+.row:hover *,.row:focus-visible *,.row.is-on *{color:var(--bg);text-shadow:none}
+.row:hover .key::before,.row:focus-visible .key::before,.row.is-on .key::before{content:"▶";position:absolute;left:-1.3em;color:var(--phos)}
+
+.foot{margin-top:auto;display:flex;flex-wrap:wrap;gap:8px 22px;align-items:baseline;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--dim)}
+.foot a{text-decoration:none;color:var(--phos)}
+.foot a::before{content:"[";color:var(--dim)} .foot a::after{content:"]";color:var(--dim)}
+.foot a:hover,.foot a:focus-visible{background:var(--phos);color:var(--bg);outline:none}
+.foot .copy{margin-left:auto}
+
+/* render readout */
+.fig{position:fixed;z-index:2;right:max(20px, calc(env(safe-area-inset-right, 0px) + 20px), calc((100vw - 1180px) / 2));bottom:calc(env(safe-area-inset-bottom, 0px) + 22px);
+  font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);text-align:right;pointer-events:none;
+  border:1px solid var(--faint);padding:8px 10px;background:rgba(8,8,8,.75);font-variant-numeric:tabular-nums}
+.fig b{font-weight:400;color:var(--phos)}
+
+.spacer{display:none}
+@media (max-width:1000px){
+  .col{margin-left:0;max-width:none}
+  main.col{margin-top:0}
+  .spacer{display:block;height:34vh;height:34svh}
+  .fig{bottom:auto;top:calc(env(safe-area-inset-top, 0px) + 12px);right:max(16px, env(safe-area-inset-right, 0px));display:none}
+  .foot .copy{margin-left:0;width:100%}
+  .row:hover .key::before,.row:focus-visible .key::before,.row.is-on .key::before{content:none}
+}
+@media (prefers-reduced-motion:reduce){ body::after{animation:none} }
+.no-gl .fig,.no-gl .spacer{display:none}
+</style>
+</head>
+<body>
+<canvas id="stage" aria-hidden="true"></canvas>
+
+<div class="hub">
+  <header class="col">
+    <div class="status"><span>Boechler Lab</span><span>Node <b>lab.wboechler.com</b></span></div>
+    <h1 class="title" id="title"><span class="plain">Will Boechler</span><pre id="ascii" aria-hidden="true"></pre></h1>
+  </header>
+
+  <div class="spacer" aria-hidden="true"></div>
+
+  <main class="col">
+    <p class="intro"><b>Things I've made, and a few I'm still making.</b> Apps, horror games, an engine to build them, and the rest of my work.</p>
+    <div class="menu-head" aria-hidden="true"><span>Key / Entry</span><span>Location</span></div>
+    <ul class="list" id="list">
+      <li><a class="row" href="/apps/" data-shape="apps">
+        <span class="key">[1]</span><span class="name">Productivity Apps</span><span class="dest">/apps</span>
+        <span class="desc">Scriptorium, Newsstand, Subscan, Socha and the rest of the small apps I build for myself.</span>
+      </a></li>
+      <li><a class="row" href="/dev/" data-shape="disc">
+        <span class="key">[2]</span><span class="name">Dolorem Company</span><span class="dest">/dev</span>
+        <span class="desc">Horror games that feel like PS1 discs found in an abandoned video store.</span>
+      </a></li>
+      <li><a class="row" href="/dev/#engine" data-shape="lattice">
+        <span class="key">[3]</span><span class="name">PSX Engine</span><span class="dest">/dev#engine</span>
+        <span class="desc">My homemade editor for PS1-style games, with map, cutscene and movie modes.</span>
+      </a></li>
+      <li><a class="row" href="https://littlelabgames.itch.io/dog-days" data-shape="dog">
+        <span class="key">[4]</span><span class="name">Dog Days</span><span class="dest">itch.io</span>
+        <span class="desc">A 50-room game made in bipsi, based on my MFA thesis.</span>
+      </a></li>
+      <li><a class="row" href="https://wboechler.com/" data-shape="lens">
+        <span class="key">[5]</span><span class="name">Creative Portfolio</span><span class="dest">wboechler.com</span>
+        <span class="desc">Photography, short films, teaching and writing.</span>
+      </a></li>
+    </ul>
+  </main>
+
+  <footer class="col foot">
+    <a href="https://boechlerbooks.substack.com">Substack</a>
+    <a href="https://www.instagram.com/conr.d/">Instagram</a>
+    <a href="https://github.com/cruxcified">GitHub</a>
+    <span class="copy">© 2026 Will Boechler</span>
+  </footer>
+</div>
+
+<p class="fig" id="fig" aria-hidden="true"><b id="fig-name">Standby</b><br><span id="fig-meta">Sphere</span><br><span id="fig-rot">5,000 pts · rot +000°</span></p>
+
+<script>
+/* ASCII title and menu keys: plain script so they work even without WebGL */
+(function(){
+  var RAMP = " .:-=+*#%@";
+  var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var title = document.getElementById('title'), pre = document.getElementById('ascii');
+  var target = '', timer = 0;
+
+  function render(){
+    var width = title.clientWidth, narrow = width < 560;
+    var lines = narrow ? ['WILL', 'BOECHLER'] : ['WILL BOECHLER'];
+    var fs = narrow ? 6 : 7;
+    pre.style.fontSize = fs + 'px';
+    var probe = document.createElement('span'); probe.textContent = '0000000000';
+    probe.style.cssText = 'position:absolute;visibility:hidden;font:' + fs + 'px "Share Tech Mono", monospace';
+    document.body.appendChild(probe); var cw = probe.getBoundingClientRect().width / 10; probe.remove();
+    var cols = Math.floor(width / cw);
+
+    var F = 200, big = document.createElement('canvas'), b = big.getContext('2d');
+    b.font = '700 ' + F + 'px "Chakra Petch", "Arial Black", sans-serif';
+    var tw = Math.max.apply(null, lines.map(function(l){ return b.measureText(l).width; }));
+    var lh = F * .82, th = lh * lines.length;
+    big.width = Math.ceil(tw); big.height = Math.ceil(th);
+    b.font = '700 ' + F + 'px "Chakra Petch", "Arial Black", sans-serif';
+    b.fillStyle = '#fff'; b.textBaseline = 'alphabetic';
+    lines.forEach(function(l, i){ b.fillText(l, (tw - b.measureText(l).width) / 2, lh * (i + 1) - F * .1); });
+
+    var rows = Math.max(1, Math.round(th / tw * cols * cw / fs));
+    var small = document.createElement('canvas'); small.width = cols; small.height = rows;
+    var s = small.getContext('2d'); s.imageSmoothingQuality = 'high'; s.drawImage(big, 0, 0, cols, rows);
+    var px = s.getImageData(0, 0, cols, rows).data, out = '';
+    for (var y = 0; y < rows; y++){
+      var line = '';
+      for (var x = 0; x < cols; x++){ var v = px[(y * cols + x) * 4 + 3] / 255; line += RAMP[Math.min(RAMP.length - 1, Math.round(v * (RAMP.length - 1)))]; }
+      out += line.replace(/\s+$/, '') + (y < rows - 1 ? '\n' : '');
+    }
+    target = out; title.classList.add('ready');
+    decode();
+  }
+
+  function decode(){                     // characters settle in from noise, left to right
+    clearInterval(timer);
+    if (reduce){ pre.textContent = target; return; }
+    var t0 = performance.now(), noise = '#%@*+=:';
+    timer = setInterval(function(){
+      var p = (performance.now() - t0) / 900, w = target.indexOf('\n'); if (w < 0) w = target.length;
+      var out = '', col = 0;
+      for (var i = 0; i < target.length; i++){
+        var c = target[i];
+        if (c === '\n'){ out += c; col = 0; continue; }
+        out += (c !== ' ' && col / w > p) ? noise[(Math.random() * noise.length) | 0] : c;
+        col++;
+      }
+      pre.textContent = out;
+      if (p >= 1.05){ clearInterval(timer); pre.textContent = target; }
+    }, 40);
+  }
+
+  var fontsReady = document.fonts ? Promise.all([
+    document.fonts.load('700 200px "Chakra Petch"'), document.fonts.load('7px "Share Tech Mono"')
+  ]).catch(function(){}) : Promise.resolve();
+  fontsReady.then(render);
+  var lastW = 0;
+  addEventListener('resize', function(){ var w = title.clientWidth; if (Math.abs(w - lastW) > 20){ lastW = w; render(); } });
+
+
+  var rows = [].slice.call(document.querySelectorAll('.row'));
+  addEventListener('keydown', function(e){
+    if (e.metaKey || e.ctrlKey || e.altKey) return;
+    var n = parseInt(e.key, 10);
+    if (n >= 1 && n <= rows.length){ rows[n - 1].focus(); rows[n - 1].click(); }
+  });
+})();
+</script>
+
+<script type="module">
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.186.1/build/three.module.js';
+
+const N = 5000;
+const CELL = { w: 6, h: 10 };            // one character cell, in CSS pixels
+const RAMP = ' .,:;-=+*#%@';
+const canvas = document.getElementById('stage');
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const touch = matchMedia('(hover: none)').matches;
+
+let renderer;
+try { renderer = new THREE.WebGLRenderer({ canvas, antialias: false, alpha: true }); }
+catch (e) { document.documentElement.classList.add('no-gl'); canvas.remove(); throw e; }
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.setClearColor(0x000000, 0);
+renderer.autoClear = true;
+
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(35, 1, 0.1, 50);
+camera.position.set(0, 0, 5.4);
+const group = new THREE.Group();
+scene.add(group);
+
+/* ---------- shapes: each returns N xyz points ---------- */
+function rng(seed){ return () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+function rotate(a, rx, ry){
+  const cx = Math.cos(rx), sx = Math.sin(rx), cy = Math.cos(ry), sy = Math.sin(ry);
+  for (let i = 0; i < a.length; i += 3){
+    let x = a[i], y = a[i+1], z = a[i+2];
+    let y2 = y*cx - z*sx, z2 = y*sx + z*cx;
+    a[i] = x*cy + z2*sy; a[i+1] = y2; a[i+2] = -x*sy + z2*cy;
+  }
+  return a;
+}
+function build(fn, seed){
+  const r = rng(seed), out = new Float32Array(N*3);
+  for (let i = 0; i < N; i++){ const p = fn(i, r); out[i*3] = p[0]; out[i*3+1] = p[1]; out[i*3+2] = p[2]; }
+  return out;
+}
+function sortX(a){
+  const idx = [...Array(N).keys()].sort((p, q) => (a[p*3] + a[p*3+1]*.35) - (a[q*3] + a[q*3+1]*.35));
+  const out = new Float32Array(N*3);
+  idx.forEach((k, i) => { out[i*3] = a[k*3]; out[i*3+1] = a[k*3+1]; out[i*3+2] = a[k*3+2]; });
+  return out;
+}
+
+const S = {};
+
+S.idle = build((i, r) => {             // a loose sphere
+  const y = 1 - (i + .5) / N * 2, rad = Math.sqrt(1 - y*y), th = i * 2.39996;
+  const k = 1.05 + (r() - .5) * .05;
+  return [Math.cos(th)*rad*k, y*k, Math.sin(th)*rad*k];
+}, 1);
+
+S.apps = rotate(build((i, r) => {      // nine icons on a home screen
+  const t = i % 9, cx = (t % 3 - 1) * .66, cy = (1 - Math.floor(t / 3)) * .66, z = ((t * 7) % 3 - 1) * .07, h = .26, n = 5;
+  if (r() < .62){
+    const a = r() * Math.PI * 2, c = Math.cos(a), s = Math.sin(a);
+    return [cx + Math.sign(c)*Math.pow(Math.abs(c), 2/n)*h, cy + Math.sign(s)*Math.pow(Math.abs(s), 2/n)*h, z];
+  }
+  let x, y; do { x = r()*2 - 1; y = r()*2 - 1; } while (Math.pow(Math.abs(x), n) + Math.pow(Math.abs(y), n) > 1);
+  return [cx + x*h*.92, cy + y*h*.92, z + (r() - .5) * .02];
+}, 2), -.18, .42);
+
+S.disc = rotate(build((i, r) => {      // a PS1 disc with its tracks
+  const u = r(), a = r() * Math.PI * 2;
+  let rad;
+  if (u < .1) rad = .2 + r()*.09;
+  else if (u < .17) rad = 1.02;
+  else if (u < .2) rad = .34;
+  else { rad = Math.sqrt(.12 + r()*(1 - .12)); if (r() < .75) rad = Math.round(rad*30)/30; }
+  return [Math.cos(a)*rad*1.08, Math.sin(a)*rad*1.08, (r() - .5) * .015];
+}, 3), 1.05, .15);
+
+S.lattice = (() => {                   // a 3x3x3 voxel lattice
+  const g = [-.78, -.26, .26, .78];
+  return rotate(build((i, r) => {
+    const a = g[(r()*4)|0], b = g[(r()*4)|0];
+    if (r() < .14) { const c = g[(r()*4)|0], j = () => (r() - .5) * .03; return [a + j(), b + j(), c + j()]; }
+    const t = (r()*2 - 1) * .78, axis = i % 3;
+    return axis === 0 ? [t, a, b] : axis === 1 ? [a, t, b] : [a, b, t];
+  }, 4), .5, .62);
+})();
+
+S.dog = (() => {                       // a bitsy-sized pixel dog
+  const art = [
+    "..............##....",
+    ".............###....",
+    ".............######.",
+    ".............######.",
+    "#............####...",
+    "##...........###....",
+    ".##############.....",
+    "..#############.....",
+    "..#############.....",
+    "..##.##.....##.##...",
+    "..##.##.....##.##...",
+    "..##.##.....##.##...",
+  ];
+  const px = [];
+  art.forEach((row, y) => [...row].forEach((c, x) => { if (c === '#') px.push([x, y]); }));
+  const s = .1;
+  return build((i, r) => {
+    const [x, y] = px[i % px.length], k = Math.floor(i / px.length);
+    const sx = (k % 4 + .5) / 4, sy = (Math.floor(k / 4) % 4 + .5) / 4;
+    return [(x + sx - 10) * s, (6 - y - sy) * s, (r() - .5) * .02];
+  }, 5);
+})();
+
+S.lens = rotate(build((i, r) => {      // a six-blade aperture in its barrel
+  const u = r(), a = r()*Math.PI*2;
+  if (u < .28){ const z = -.75 + r()*.9; return [Math.cos(a)*.95, Math.sin(a)*.95, z]; }
+  if (u < .5){ const rad = r() < .5 ? .95 : .84; return [Math.cos(a)*rad, Math.sin(a)*rad, .15]; }
+  if (u < .82){
+    const b = (r()*6)|0, a0 = b*Math.PI/3, t = r();
+    const p0 = [Math.cos(a0)*.4, Math.sin(a0)*.4], a1 = a0 + Math.PI/3 + .55, p1 = [Math.cos(a1)*.84, Math.sin(a1)*.84];
+    return [p0[0] + (p1[0] - p0[0])*t, p0[1] + (p1[1] - p0[1])*t, .05];
+  }
+  if (u < .92) return [Math.cos(a)*.62, Math.sin(a)*.62, .1];
+  const rad = .4 + r()*.44; return [Math.cos(a)*rad, Math.sin(a)*rad, .04];
+}, 7), .22, -.55);
+
+const META = {
+  idle:    ['Standby', 'Sphere'],
+  apps:    ['Productivity Apps', 'Nine icons, 3 × 3'],
+  disc:    ['Dolorem Company', 'PS1 disc, tilted'],
+  lattice: ['PSX Engine', 'Voxel lattice, 3 × 3 × 3'],
+  dog:     ['Dog Days', 'Pixel dog, 20 × 12'],
+  lens:    ['Creative Portfolio', 'Six-blade aperture'],
+};
+for (const k in S) S[k] = sortX(S[k]);
+
+/* ---------- pass 1: points pile up as density in a small grid, two texels per character ---------- */
+const pos = new Float32Array(S.idle), from = new Float32Array(S.idle);
+let to = S.idle;
+const seed = new Float32Array(N);
+{ const r = rng(9); for (let i = 0; i < N; i++) seed[i] = r(); }
+const geo = new THREE.BufferGeometry();
+geo.setAttribute('position', new THREE.BufferAttribute(pos, 3).setUsage(THREE.DynamicDrawUsage));
+geo.setAttribute('seed', new THREE.BufferAttribute(seed, 1));
+
+const ptsMat = new THREE.ShaderMaterial({
+  transparent: true, depthWrite: false, depthTest: false, blending: THREE.AdditiveBlending,
+  uniforms: { uTime: { value: 0 } },
+  vertexShader: `
+    attribute float seed; uniform float uTime; varying float vW;
+    void main(){
+      vec4 mv = modelViewMatrix * vec4(position, 1.0);
+      gl_Position = projectionMatrix * mv;
+      gl_PointSize = 1.5;
+      vW = (.7 + .3 * sin(uTime * 1.7 + seed * 40.0)) * smoothstep(8.0, 4.0, -mv.z) * (5.4 / -mv.z);
+    }`,
+  fragmentShader: `varying float vW; void main(){ gl_FragColor = vec4(vW, vW, vW, 1.0); }`,
+});
+group.add(new THREE.Points(geo, ptsMat));
+
+let density = new THREE.WebGLRenderTarget(2, 2, { type: THREE.HalfFloatType, depthBuffer: false });
+
+/* ---------- pass 2: each character cell picks a glyph from the ramp by density ---------- */
+function glyphAtlas(){
+  const dpr = renderer.getPixelRatio(), w = Math.round(CELL.w * dpr), h = Math.round(CELL.h * dpr);
+  const c = document.createElement('canvas'); c.width = w * RAMP.length; c.height = h;
+  const g = c.getContext('2d');
+  g.fillStyle = '#fff'; g.textAlign = 'center'; g.textBaseline = 'middle';
+  g.font = `${Math.round(h * .95)}px "Share Tech Mono", monospace`;
+  [...RAMP].forEach((ch, i) => g.fillText(ch, i * w + w / 2, h / 2 + dpr * .5));
+  const t = new THREE.CanvasTexture(c);
+  t.minFilter = t.magFilter = THREE.NearestFilter; t.generateMipmaps = false;
+  return t;
+}
+const quadMat = new THREE.ShaderMaterial({
+  transparent: true, depthTest: false, depthWrite: false,
+  uniforms: {
+    tDens: { value: null }, tGlyph: { value: null },
+    uCells: { value: new THREE.Vector2() }, uCellPx: { value: new THREE.Vector2() }, uRes: { value: new THREE.Vector2() },
+    uLevels: { value: RAMP.length }, uColor: { value: new THREE.Color('#bdbdb9') }, uHot: { value: new THREE.Color('#ffffff') },
+    uFade: { value: 1 }, uGain: { value: .9 },
+  },
+  vertexShader: `void main(){ gl_Position = vec4(position.xy, 0.0, 1.0); }`,
+  fragmentShader: `
+    uniform sampler2D tDens, tGlyph; uniform vec2 uCells, uCellPx, uRes; uniform float uLevels, uFade, uGain; uniform vec3 uColor, uHot;
+    void main(){
+      vec2 p = vec2(gl_FragCoord.x, uRes.y - gl_FragCoord.y);          // top-left origin
+      vec2 cell = floor(p / uCellPx), inCell = fract(p / uCellPx);
+      vec2 uv = (cell + .5) / uCells; uv.y = 1.0 - uv.y;
+      float d = texture2D(tDens, uv).r;
+      float lv = 1.0 - exp(-d * uGain);
+      float idx = floor(lv * (uLevels - 1.0) + .35);
+      if (idx < .5) discard;
+      float g = texture2D(tGlyph, vec2((idx + inCell.x) / uLevels, 1.0 - inCell.y)).r;
+      vec3 col = mix(uColor, uHot, smoothstep(.75, 1.0, lv));
+      gl_FragColor = vec4(col, g * (.45 + .55 * lv) * uFade);
+    }`,
+});
+const quad = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), quadMat);
+quad.frustumCulled = false;
+const quadScene = new THREE.Scene(); quadScene.add(quad);
+const quadCam = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+
+/* ---------- morphing ---------- */
+const figName = document.getElementById('fig-name'), figMeta = document.getElementById('fig-meta'), figRot = document.getElementById('fig-rot');
+const clock = new THREE.Clock();
+let current = 'idle', t0 = -1;
+function show(key){
+  if (key === current) return;
+  current = key; from.set(pos); to = S[key]; t0 = clock.getElapsedTime();
+  figName.textContent = META[key][0]; figMeta.textContent = META[key][1];
+  if (reduce){ pos.set(to); t0 = -1; geo.attributes.position.needsUpdate = true; }
+}
+const ease = x => x < .5 ? 4*x*x*x : 1 - Math.pow(-2*x + 2, 3) / 2;
+function stepMorph(now){
+  if (t0 < 0) return;
+  const T = (now - t0) / 1.5;
+  if (T >= 1.4){ pos.set(to); t0 = -1; geo.attributes.position.needsUpdate = true; return; }
+  for (let i = 0; i < N; i++){
+    const d = seed[i] * .4, p = ease(Math.min(1, Math.max(0, (T - d) / .6)));
+    const lift = Math.sin(p * Math.PI) * .18, j = i*3;
+    pos[j]   = from[j]   + (to[j]   - from[j])   * p + Math.sin(seed[i]*91) * lift;
+    pos[j+1] = from[j+1] + (to[j+1] - from[j+1]) * p + Math.cos(seed[i]*57) * lift;
+    pos[j+2] = from[j+2] + (to[j+2] - from[j+2]) * p + Math.sin(seed[i]*23) * lift;
+  }
+  geo.attributes.position.needsUpdate = true;
+}
+
+/* ---------- menu wiring ---------- */
+const rows = [...document.querySelectorAll('.row')];
+function activate(el){ rows.forEach(r => r.classList.toggle('is-on', r === el)); show(el.dataset.shape); }
+function release(el){ el.classList.remove('is-on'); show('idle'); }
+if (!touch){
+  rows.forEach(el => {
+    el.addEventListener('pointerenter', () => activate(el));
+    el.addEventListener('focus', () => activate(el));
+    el.addEventListener('pointerleave', () => release(el));
+    el.addEventListener('blur', () => release(el));
+  });
+} else if (!reduce){
+  let k = -1;                          // phones: the cloud steps through the menu on its own
+  setInterval(() => { k = (k + 1) % rows.length; show(rows[k].dataset.shape); }, 4200);
+}
+
+/* ---------- layout ---------- */
+let narrow = false;
+function resize(){
+  const w = innerWidth, h = innerHeight;
+  narrow = w <= 1000;
+  CELL.w = narrow ? 5 : 6; CELL.h = narrow ? 9 : 10;
+  renderer.setSize(w, h, false);
+  canvas.style.width = w + 'px'; canvas.style.height = h + 'px';
+  const cols = Math.ceil(w / CELL.w), rows_ = Math.ceil(h / CELL.h);
+  camera.aspect = (cols * CELL.w) / (rows_ * CELL.h); camera.updateProjectionMatrix();
+  density.dispose();
+  density = new THREE.WebGLRenderTarget(cols * 2, rows_ * 2, { type: THREE.HalfFloatType, depthBuffer: false, minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter });
+  const dpr = renderer.getPixelRatio();
+  quadMat.uniforms.tDens.value = density.texture;
+  quadMat.uniforms.uCells.value.set(cols, rows_);
+  quadMat.uniforms.uCellPx.value.set(CELL.w * dpr, CELL.h * dpr);
+  quadMat.uniforms.uRes.value.set(w * dpr, h * dpr);
+  quadMat.uniforms.tGlyph.value?.dispose();
+  quadMat.uniforms.tGlyph.value = glyphAtlas();
+  const gw = cols * CELL.w, gh = rows_ * CELL.h;
+  const vh = 2 * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) * camera.position.z, vw = vh * camera.aspect;
+  if (narrow){                         // centre the cloud in the gap between title and menu
+    const r = document.querySelector('.spacer').getBoundingClientRect(), cy = r.top + scrollY + r.height / 2;
+    group.position.set(0, (1 - 2 * cy / gh) * vh / 2, 0);
+    group.scale.setScalar(Math.min(vw / 3.6, r.height / h * vh / 2.5));
+  }
+  else {                               // centre the cloud between the menu and the right edge of the frame
+    const m = document.querySelector('main.col').getBoundingClientRect();
+    const right = w - m.left, cx = (m.right + right) / 2, cy = Math.min(m.top + scrollY + m.height / 2, h * .58);
+    group.position.set((cx / gw * 2 - 1) * vw / 2, (1 - 2 * cy / gh) * vh / 2, 0);
+    group.scale.setScalar(Math.min(1.1, (right - m.right) / gw * vw / 2.7, h / gh * vh / 2.9));
+  }
+}
+addEventListener('resize', resize);
+(document.fonts ? document.fonts.load('10px "Share Tech Mono"').catch(() => {}) : Promise.resolve()).then(() => { resize(); frame(); });
+
+const pointer = { x: 0, y: 0 };
+addEventListener('pointermove', e => { pointer.x = e.clientX / innerWidth * 2 - 1; pointer.y = e.clientY / innerHeight * 2 - 1; });
+
+/* ---------- loop ---------- */
+let lastReadout = 0;
+function frame(){
+  const now = clock.getElapsedTime();
+  stepMorph(now);
+  ptsMat.uniforms.uTime.value = now;
+  const fade = narrow ? 1 - Math.min(1, scrollY / (innerHeight * .5)) * .8 : 1;
+  quadMat.uniforms.uFade.value += (fade - quadMat.uniforms.uFade.value) * .15;
+  if (!reduce){
+    group.rotation.y += ((Math.sin(now * .22) * .35 + pointer.x * .3) - group.rotation.y) * .04;
+    group.rotation.x += ((Math.sin(now * .17) * .08 + pointer.y * .15) - group.rotation.x) * .04;
+  }
+  if (now - lastReadout > .25){
+    lastReadout = now;
+    const deg = Math.round(THREE.MathUtils.radToDeg(group.rotation.y));
+    figRot.textContent = `5,000 pts · rot ${deg < 0 ? '-' : '+'}${String(Math.abs(deg)).padStart(3, '0')}°`;
+  }
+  renderer.setRenderTarget(density); renderer.render(scene, camera);
+  renderer.setRenderTarget(null); renderer.render(quadScene, quadCam);
+  requestAnimationFrame(frame);
+}
+</script>
+</body>
+</html>
