@@ -47,14 +47,10 @@ body::after{content:"";position:fixed;inset:0;z-index:5;pointer-events:none;
 /* header */
 .status{display:flex;flex-wrap:wrap;gap:4px 18px;font-size:12px;letter-spacing:.06em;color:var(--dim);text-transform:uppercase}
 .status b{font-weight:400;color:var(--amber)}
-.title{margin:14px 0 0;font-weight:400}
+.title{margin:14px 0 0;font-weight:400;max-width:620px}
 .title pre{margin:0;font-family:var(--mono);line-height:1;letter-spacing:0;color:var(--phos);text-shadow:var(--glow);white-space:pre;overflow:hidden}
 .title .plain{font-family:var(--block);font-size:clamp(40px, 7vw, 96px);letter-spacing:.02em;text-shadow:var(--glow);line-height:1}
 .title.ready .plain{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
-.sub{margin-top:10px;display:flex;flex-wrap:wrap;gap:4px 14px;font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--dim)}
-.sub span:first-child{color:var(--phos)}
-.cursor{display:inline-block;width:.6em;height:1em;background:var(--phos);vertical-align:-2px;margin-left:4px;animation:blink 1.05s steps(1) infinite;box-shadow:var(--glow)}
-@keyframes blink{50%{opacity:0}}
 
 /* menu */
 main.col{margin-top:28px}
@@ -94,7 +90,7 @@ main.col{margin-top:28px}
   .foot .copy{margin-left:0;width:100%}
   .row:hover .key::before,.row:focus-visible .key::before,.row.is-on .key::before{content:none}
 }
-@media (prefers-reduced-motion:reduce){ body::after,.cursor{animation:none} }
+@media (prefers-reduced-motion:reduce){ body::after{animation:none} }
 .no-gl .fig,.no-gl .spacer{display:none}
 </style>
 </head>
@@ -105,7 +101,6 @@ main.col{margin-top:28px}
   <header class="col wide">
     <div class="status"><span>Boechler Lab</span><span>Node <b>lab.wboechler.com</b></span><span id="clock">--:--:--</span></div>
     <h1 class="title" id="title"><span class="plain">Will Boechler</span><pre id="ascii" aria-hidden="true"></pre></h1>
-    <div class="sub"><span>Index of works</span><span>5 entries</span><span>Select 1–5<i class="cursor"></i></span></div>
   </header>
 
   <div class="spacer" aria-hidden="true"></div>
