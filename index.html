@@ -41,8 +41,8 @@ body::after{content:"";position:fixed;inset:0;z-index:5;pointer-events:none;
 
 .hub{position:relative;z-index:1;min-height:100%;display:flex;flex-direction:column;gap:28px;
   padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));padding-block:28px 24px}
-.col{width:100%;max-width:620px;margin-left:clamp(0px, 5vw, 80px)}
-.wide{max-width:min(980px, 100%)}
+/* the whole page sits in a centred 1180px frame: menu on the left, cloud centred in the space to its right */
+.col{width:100%;max-width:620px;margin-left:max(0px, calc((100% - 1180px) / 2))}
 
 /* header */
 .status{display:flex;flex-wrap:wrap;gap:4px 18px;font-size:12px;letter-spacing:.06em;color:var(--dim);text-transform:uppercase}
@@ -76,13 +76,13 @@ main.col{margin-top:28px}
 .foot .copy{margin-left:auto}
 
 /* render readout */
-.fig{position:fixed;z-index:2;right:max(20px, calc(env(safe-area-inset-right, 0px) + 20px));bottom:calc(env(safe-area-inset-bottom, 0px) + 22px);
+.fig{position:fixed;z-index:2;right:max(20px, calc(env(safe-area-inset-right, 0px) + 20px), calc((100vw - 1180px) / 2));bottom:calc(env(safe-area-inset-bottom, 0px) + 22px);
   font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);text-align:right;pointer-events:none;
   border:1px solid var(--faint);padding:8px 10px;background:rgba(8,8,8,.75);font-variant-numeric:tabular-nums}
 .fig b{font-weight:400;color:var(--phos)}
 
 .spacer{display:none}
-@media (max-width:860px){
+@media (max-width:1000px){
   .col{margin-left:0;max-width:none}
   main.col{margin-top:0}
   .spacer{display:block;height:34vh;height:34svh}
@@ -98,7 +98,7 @@ main.col{margin-top:28px}
 <canvas id="stage" aria-hidden="true"></canvas>
 
 <div class="hub">
-  <header class="col wide">
+  <header class="col">
     <div class="status"><span>Boechler Lab</span><span>Node <b>lab.wboechler.com</b></span><span id="clock">--:--:--</span></div>
     <h1 class="title" id="title"><span class="plain">Will Boechler</span><pre id="ascii" aria-hidden="true"></pre></h1>
   </header>
@@ -464,7 +464,7 @@ if (!touch){
 let narrow = false;
 function resize(){
   const w = innerWidth, h = innerHeight;
-  narrow = w <= 860;
+  narrow = w <= 1000;
   CELL.w = narrow ? 5 : 6; CELL.h = narrow ? 9 : 10;
   renderer.setSize(w, h, false);
   canvas.style.width = w + 'px'; canvas.style.height = h + 'px';
@@ -479,13 +479,19 @@ function resize(){
   quadMat.uniforms.uRes.value.set(w * dpr, h * dpr);
   quadMat.uniforms.tGlyph.value?.dispose();
   quadMat.uniforms.tGlyph.value = glyphAtlas();
+  const gw = cols * CELL.w, gh = rows_ * CELL.h;
   const vh = 2 * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) * camera.position.z, vw = vh * camera.aspect;
   if (narrow){                         // centre the cloud in the gap between title and menu
     const r = document.querySelector('.spacer').getBoundingClientRect(), cy = r.top + scrollY + r.height / 2;
-    group.position.set(0, (1 - 2 * cy / h) * vh / 2, 0);
+    group.position.set(0, (1 - 2 * cy / gh) * vh / 2, 0);
     group.scale.setScalar(Math.min(vw / 3.6, r.height / h * vh / 2.5));
   }
-  else { group.position.set(Math.min(vw * .25, 2.4), -.25, 0); group.scale.setScalar(Math.min(1.1, vw / 5.4)); }
+  else {                               // centre the cloud between the menu and the right edge of the frame
+    const m = document.querySelector('main.col').getBoundingClientRect();
+    const right = w - m.left, cx = (m.right + right) / 2, cy = Math.min(m.top + scrollY + m.height / 2, h * .58);
+    group.position.set((cx / gw * 2 - 1) * vw / 2, (1 - 2 * cy / gh) * vh / 2, 0);
+    group.scale.setScalar(Math.min(1.1, (right - m.right) / gw * vw / 2.7, h / gh * vh / 2.9));
+  }
 }
 addEventListener('resize', resize);
 (document.fonts ? document.fonts.load('10px "Share Tech Mono"').catch(() => {}) : Promise.resolve()).then(() => { resize(); frame(); });
