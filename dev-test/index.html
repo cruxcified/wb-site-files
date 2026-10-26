@@ -1966,7 +1966,7 @@ async function start() {
       }
     } else if (kind === 'movie') {
       const m = movieState(reduced ? 6 : p % MOVIE.loop); view = 'movie'; movieNow = m; over = (g, w, h) => movieHud(g, w, h, m);
-    }
+    } else if (kind === 'otherworld') view = 'walk';
     /* Otherworld: the shift shudders the picture as it goes dark. */
     const ow = kind === 'otherworld' ? otherworld(p) : null;
     setMood(ow ? ow.rust : 0, ow ? ow.dark : 0);
