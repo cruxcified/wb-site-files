@@ -8,21 +8,22 @@
 <meta name="description" content="Things Will Boechler has made: productivity apps, Dolorem Company horror games, the PSX Engine, Dog Days, and his creative portfolio.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Chakra+Petch:wght@700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=IBM+Plex+Mono:wght@300;400&family=Chakra+Petch:wght@700&display=swap">
 <style>
 /* Layout: a terminal index. ASCII title across the top, a numbered menu of projects on the left,
    and one point cloud on the right drawn in ASCII that reshapes for the selected entry.
-   One committed look: grey phosphor on black, like a ship's computer terminal. */
+   One committed look: light and airy, ink on a pale morning sky. */
 :root{
-  --bg:#080808;
-  --phos:#d2d2ce;      /* phosphor, white-grey */
-  --dim:#7c7c78;
-  --faint:#2a2a28;
-  --amber:#ffb84d;     /* selection keys, status */
-  --mono:"Share Tech Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  --bg:#f3f5f6;       /* pale sky */
+  --phos:#38424a;      /* ink */
+  --dim:#87929a;
+  --faint:#dfe5e9;
+  --amber:#5f8db5;     /* keys and status: soft sky blue */
+  --hl:#e6edf2;        /* selected row */
+  --mono:"IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
   --block:"Chakra Petch", "Arial Black", sans-serif;
-  --glow:0 0 6px rgba(210,210,206,.28), 0 0 18px rgba(210,210,206,.07);
-  color-scheme:dark;
+  --glow:none;
+  color-scheme:light;
 }
 *{box-sizing:border-box}
 html,body{height:100%}
@@ -31,13 +32,10 @@ a{color:inherit}
 ::selection{background:var(--phos);color:var(--bg)}
 
 #stage{position:fixed;left:0;top:0;width:100%;height:100%;display:block;pointer-events:none;z-index:0}
-/* the glass: scanlines and a soft vignette over everything */
-body::after{content:"";position:fixed;inset:0;z-index:5;pointer-events:none;
-  background:
-    repeating-linear-gradient(to bottom, rgba(0,0,0,0) 0 2px, rgba(0,0,0,.22) 2px 3px),
-    radial-gradient(120% 90% at 50% 50%, rgba(0,0,0,0) 60%, rgba(0,0,0,.55) 100%);
-  animation:flick 6s steps(1) infinite}
-@keyframes flick{0%,100%{opacity:1}47%{opacity:.93}48%{opacity:1}83%{opacity:.96}}
+/* soft daylight from the top right */
+body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:radial-gradient(70% 60% at 85% 10%, rgba(255,255,255,.9), rgba(255,255,255,0) 70%),
+             linear-gradient(to bottom, #f7f9fa, #eaeff2)}
 
 .hub{position:relative;z-index:1;min-height:100%;display:flex;flex-direction:column;gap:28px;
   padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));padding-block:28px 24px}
@@ -48,7 +46,7 @@ body::after{content:"";position:fixed;inset:0;z-index:5;pointer-events:none;
 .status{display:flex;flex-wrap:wrap;gap:4px 18px;font-size:12px;letter-spacing:.06em;color:var(--dim);text-transform:uppercase}
 .status b{font-weight:400;color:var(--amber)}
 .title{margin:14px 0 0;font-weight:400;max-width:620px}
-.title pre{margin:0;font-family:var(--mono);line-height:1;letter-spacing:0;color:var(--phos);text-shadow:var(--glow);white-space:pre;overflow:hidden}
+.title pre{margin:0;font-family:"Share Tech Mono", monospace;line-height:1;letter-spacing:0;color:var(--phos);text-shadow:var(--glow);white-space:pre;overflow:hidden}
 .title .plain{font-family:var(--block);font-size:clamp(40px, 7vw, 96px);letter-spacing:.02em;text-shadow:var(--glow);line-height:1}
 .title.ready .plain{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
 
@@ -59,14 +57,14 @@ main.col{margin-top:28px}
 .menu-head{display:flex;justify-content:space-between;gap:12px;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);
   border-bottom:1px solid var(--faint);padding-bottom:6px}
 .list{list-style:none;margin:0;padding:0}
-.list li{border-bottom:1px dashed var(--faint)}
+.list li{border-bottom:1px solid var(--faint)}
 .row{position:relative;display:grid;grid-template-columns:2.6em 1fr auto;column-gap:10px;align-items:baseline;padding:12px 10px 12px 6px;text-decoration:none;outline:none}
 .key{color:var(--amber);font-size:14px}
-.name{font-size:clamp(22px, 2.5vw, 30px);letter-spacing:.03em;text-transform:uppercase;line-height:1.1;text-shadow:var(--glow)}
+.name{font-size:clamp(22px, 2.5vw, 30px);font-weight:300;letter-spacing:-.01em;line-height:1.1;text-shadow:var(--glow)}
 .dest{font-size:12px;color:var(--dim);white-space:nowrap;letter-spacing:.04em}
 .desc{grid-column:2 / -1;margin-top:3px;color:var(--dim);font-size:14px;max-width:56ch;min-width:0}
-.row:hover,.row:focus-visible,.row.is-on{background:var(--phos);color:var(--bg)}
-.row:hover *,.row:focus-visible *,.row.is-on *{color:var(--bg);text-shadow:none}
+.row:hover,.row:focus-visible,.row.is-on{background:var(--hl)}
+.row:hover .name,.row:focus-visible .name,.row.is-on .name{color:var(--phos)}
 .row:hover .key::before,.row:focus-visible .key::before,.row.is-on .key::before{content:"▶";position:absolute;left:-1.3em;color:var(--phos)}
 
 .foot{margin-top:auto;display:flex;flex-wrap:wrap;gap:8px 22px;align-items:baseline;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--dim)}
@@ -78,7 +76,7 @@ main.col{margin-top:28px}
 /* render readout */
 .fig{position:fixed;z-index:2;right:max(20px, calc(env(safe-area-inset-right, 0px) + 20px), calc((100vw - 1180px) / 2));bottom:calc(env(safe-area-inset-bottom, 0px) + 22px);
   font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);text-align:right;pointer-events:none;
-  border:1px solid var(--faint);padding:8px 10px;background:rgba(8,8,8,.75);font-variant-numeric:tabular-nums}
+  border:1px solid var(--faint);padding:8px 10px;background:rgba(243,245,246,.8);font-variant-numeric:tabular-nums}
 .fig b{font-weight:400;color:var(--phos)}
 
 .spacer{display:none}
@@ -90,7 +88,7 @@ main.col{margin-top:28px}
   .foot .copy{margin-left:0;width:100%}
   .row:hover .key::before,.row:focus-visible .key::before,.row.is-on .key::before{content:none}
 }
-@media (prefers-reduced-motion:reduce){ body::after{animation:none} }
+
 .no-gl .fig,.no-gl .spacer{display:none}
 </style>
 </head>
@@ -404,7 +402,7 @@ const quadMat = new THREE.ShaderMaterial({
   uniforms: {
     tDens: { value: null }, tGlyph: { value: null },
     uCells: { value: new THREE.Vector2() }, uCellPx: { value: new THREE.Vector2() }, uRes: { value: new THREE.Vector2() },
-    uLevels: { value: RAMP.length }, uColor: { value: new THREE.Color('#bdbdb9') }, uHot: { value: new THREE.Color('#ffffff') },
+    uLevels: { value: RAMP.length }, uColor: { value: new THREE.Color('#6b7780') }, uHot: { value: new THREE.Color('#3d4a54') },
     uFade: { value: 1 }, uGain: { value: .9 },
   },
   vertexShader: `void main(){ gl_Position = vec4(position.xy, 0.0, 1.0); }`,
