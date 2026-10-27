@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="theme-color" content="#111213" />
     <title>omni</title>
-    <script type="module" crossorigin src="./assets/index-CLo8MlAe.js"></script>
-    <link rel="stylesheet" crossorigin href="./assets/index-CnE6Hjh9.css">
+    <script type="module" crossorigin src="./assets/index-Cci2Mbzk.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-KOpTbtDm.css">
   </head>
   <body>
     <canvas id="scene" aria-hidden="true"></canvas>
@@ -28,6 +28,10 @@
       <button id="pause" class="dock__pause" type="button" aria-label="Pause">
         <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M8 5v14M16 5v14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" fill="none" /></svg>
       </button>
+      <button id="record" class="dock__record" type="button" aria-pressed="false" aria-label="Record">
+        <span class="dock__record-dot" aria-hidden="true"></span><span class="dock__record-time" id="record-time">rec</span>
+      </button>
+      <button id="layers-toggle" class="dock__layers" type="button" aria-expanded="false" aria-controls="layers">layers</button>
       <fieldset class="knobs" id="knobs">
         <legend class="visually-hidden">Sound</legend>
         <label class="knob"><span>tone</span><input type="range" name="tone" min="0" max="1" step="0.01" /></label>
@@ -37,6 +41,19 @@
         <label class="knob"><span>speed</span><input type="range" name="speed" min="0" max="1" step="0.01" /></label>
         <label class="knob"><span>volume</span><input id="volume" type="range" min="-30" max="0" step="1" value="-8" /></label>
       </fieldset>
+    </section>
+
+    <section class="layers" id="layers" aria-label="Layers" hidden>
+      <div class="layers__row">
+        <div class="moods" role="radiogroup" aria-label="Mood">
+          <button type="button" role="radio" data-mood="daylight">daylight</button>
+          <button type="button" role="radio" data-mood="dusk">dusk</button>
+          <button type="button" role="radio" data-mood="night">night</button>
+        </div>
+        <button id="drift" class="drift" type="button" aria-pressed="false" title="Let the mood and density wander on their own">drift</button>
+      </div>
+      <label class="knob layers__density"><span>density</span><input id="density" type="range" min="0" max="1" step="0.01" /></label>
+      <ul class="layer-list" id="layer-list"></ul>
     </section>
 
   </body>
