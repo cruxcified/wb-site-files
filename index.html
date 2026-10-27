@@ -125,8 +125,12 @@ main.col{margin-top:28px}
         <span class="key">[4]</span><span class="name">Dog Days</span><span class="dest">itch.io</span>
         <span class="desc">A 50-room game made in bipsi, based on my MFA thesis.</span>
       </a></li>
+      <li><a class="row" href="/omni/" data-shape="ripple">
+        <span class="key">[5]</span><span class="name">omni</span><span class="dest">/omni</span>
+        <span class="desc">Endless ambient music for empty rooms. Walk a quiet 3D room while piano and guitar drift.</span>
+      </a></li>
       <li><a class="row" href="https://wboechler.com/" data-shape="lens">
-        <span class="key">[5]</span><span class="name">Creative Portfolio</span><span class="dest">wboechler.com</span>
+        <span class="key">[6]</span><span class="name">Creative Portfolio</span><span class="dest">wboechler.com</span>
         <span class="desc">Photography, short films, teaching and writing.</span>
       </a></li>
     </ul>
@@ -339,12 +343,20 @@ S.lens = rotate(build((i, r) => {      // a six-blade aperture in its barrel
   const rad = .4 + r()*.44; return [Math.cos(a)*rad, Math.sin(a)*rad, .04];
 }, 7), .22, -.55);
 
+S.ripple = rotate(build((i, r) => {    // ripples spreading across still water
+  const a = r()*Math.PI*2; let rad = Math.sqrt(r())*1.25;
+  if (r() < .7) rad = Math.round(rad*7)/7 + (r() - .5)*.02;   // rings
+  const x = Math.cos(a)*rad, z = Math.sin(a)*rad;
+  return [x, Math.sin(rad*9)*.12*(1.35 - rad) + (r() - .5)*.01, z];
+}, 8), .55, 0);
+
 const META = {
   idle:    ['Standby', 'Sphere'],
   apps:    ['Productivity Apps', 'Nine icons, 3 × 3'],
   disc:    ['Dolorem Company', 'PS1 disc, tilted'],
   lattice: ['PSX Engine', 'Voxel lattice, 3 × 3 × 3'],
   dog:     ['Dog Days', 'Pixel dog, 20 × 12'],
+  ripple:  ['omni', 'Ripples on still water'],
   lens:    ['Creative Portfolio', 'Six-blade aperture'],
 };
 for (const k in S) S[k] = sortX(S[k]);
