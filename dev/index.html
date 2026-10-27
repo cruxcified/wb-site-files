@@ -352,6 +352,15 @@ html.wbgames-booting, html.wbgames-booting body { overflow: hidden !important; }
 @keyframes wbgames-nudge { 50% { transform: translateX(6px); } }
 @media (prefers-reduced-motion: reduce) { #wbgames .cue i, #wbgames .hero .sub i { animation: none; } }
 @media (max-width: 980px) { #wbgames .nav { display: flex; } }
+/* VCR readout fixed in the corners for the whole page (borrowed from 31-for-31). */
+#wbgames .vcr { position: fixed; inset: 0; z-index: 30; pointer-events: none; font-family: var(--vcr); font-size: clamp(20px, 1.8vw, 28px); letter-spacing: .08em; text-shadow: var(--glow); }
+#wbgames .vcr p { position: absolute; white-space: nowrap; }
+#wbgames .vcr-tl { left: calc(var(--frame) + clamp(16px, 2.6vw, 40px)); bottom: calc(var(--frame) + 18px); }
+#wbgames .vcr-tl b { color: #ff3b30; font-weight: 400; animation: wbgames-blink 1.6s steps(1) infinite; }
+#wbgames .vcr-br { right: calc(var(--frame) + clamp(16px, 2.6vw, 40px)); bottom: calc(var(--frame) + 18px); }
+html.wbgames-booting #wbgames .vcr, #wbgames .hero .osd { display: none; }
+@media (max-width: 760px) { #wbgames .vcr { font-size: 18px; } }
+@media (prefers-reduced-motion: reduce) { #wbgames .vcr-tl b { animation: none; } }
 /* The fade behind the channel copy carries on below the sticky screen, so it has no hard edge when the next section scrolls up. */
 #wbgames .work-sticky::after { content: ""; position: absolute; left: 0; right: 0; top: 100%; height: 45vh; pointer-events: none; background: linear-gradient(rgba(6, 5, 6, .9), transparent); }
 /* Game info sits beside the case you pick (below it on phones), not under the shelf. */
@@ -658,6 +667,10 @@ html.wbgames-booting, html.wbgames-booting body { overflow: hidden !important; }
     </div>
   </section>
 
+  <div class="vcr" aria-hidden="true">
+    <p class="vcr-tl"><b>●</b> REC&nbsp; SP&nbsp; <span id="wbgames-vcr-date">OCT 27</span></p>
+    <p class="vcr-br"><span id="wbgames-vcr-mode">PLAY ▶</span>&nbsp; <span id="wbgames-vcr-tc">0:00:00</span>&nbsp; <span id="wbgames-vcr-n"></span></p>
+  </div>
   <div class="tube" aria-hidden="true"><i></i></div>
 
   <div class="editor-note">
@@ -680,8 +693,10 @@ html.wbgames-booting, html.wbgames-booting body { overflow: hidden !important; }
   var yr = new Date().getFullYear();
   [].forEach.call(root.querySelectorAll('.wbgames-yr'), function (el) { el.textContent = yr; });
   var games = document.getElementById('games'), tc = document.getElementById('wbgames-tc'), tc0 = Date.now();
-  var onScroll = function () { if (games) root.classList.toggle('reading', games.getBoundingClientRect().top < innerHeight * 0.6); };
-  addEventListener('scroll', onScroll, { passive: true }); onScroll();
+  /* VCR corners: today's date, a running counter, and which tape you're on. */
+  var M = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'], now = new Date(), vtc = document.getElementById('wbgames-vcr-tc');
+  var vd = document.getElementById('wbgames-vcr-date'); if (vd) vd.textContent = M[now.getMonth()] + ' ' + String(now.getDate()).padStart(2, '0');
+  if (vtc) setInterval(function () { var t = Math.floor((Date.now() - tc0) / 1000); vtc.textContent = Math.floor(t / 3600) + ':' + String(Math.floor(t / 60) % 60).padStart(2, '0') + ':' + String(t % 60).padStart(2, '0'); }, 1000);
   if (tc) setInterval(function () { var t = Math.floor((Date.now() - tc0) / 1000); tc.textContent = Math.floor(t / 3600) + ':' + String(Math.floor(t / 60) % 60).padStart(2, '0') + ':' + String(t % 60).padStart(2, '0'); }, 1000);
 
   /* Boot screen: shown once per visit. The 3D script reports real loading progress through __wbgamesBoot(0..1). */
