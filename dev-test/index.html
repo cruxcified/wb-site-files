@@ -724,7 +724,6 @@ html.wbgames-booting #wbgames .vcr, #wbgames .hero .osd { display: none; }
     var d = li.dataset, title = d.title || (li.querySelector('h3') || {}).textContent || '';
     var t = document.createElement('article'); t.className = 'tape'; t.dataset.n = i + 1;
     var cover = document.createElement('div'); cover.className = 'tape-cover';
-    cover.innerHTML = '<p class="osd-in"><span>PLAY ▶</span><span>SP</span></p>';
     if (d.cover) { var img = new Image(); img.src = d.cover; img.alt = title + ' cover'; img.loading = 'lazy'; cover.appendChild(img); }
     else { var b = document.createElement('div'); b.className = 'tape-blank'; b.innerHTML = '<span>DOLOREM CO.</span><b></b><span></span>'; b.querySelector('b').textContent = title; b.lastChild.textContent = d.tag || 'COMING SOON'; cover.appendChild(b); }
     var copy = document.createElement('div'); copy.className = 'tape-copy';
