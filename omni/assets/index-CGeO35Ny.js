@@ -4801,7 +4801,7 @@ void main() {
         #include <tonemapping_fragment>
         #include <colorspace_fragment>
       }
-    `},i=new Jb(new Bh(40,40),{textureWidth:t,textureHeight:n,color:`#8f8f8f`,clipBias:.003,shader:r});return i.rotation.x=-Math.PI/2,i.position.y=-.002,e.add(i),i}var Qb={soft:{label:`soft`,ratioCap:1,scale:.75,samples:0,shadow:1024,mirror:0,dust:900},balanced:{label:`balanced`,ratioCap:1.5,scale:1,samples:4,shadow:2048,mirror:.5,dust:1500},hd:{label:`hd`,ratioCap:2,scale:1,samples:4,shadow:4096,mirror:.75,dust:2400},ultra:{label:`ultra`,ratioCap:3,scale:1,samples:8,shadow:4096,mirror:1,dust:3600}};function $b(){return Math.min(window.innerWidth,window.innerHeight)<700||matchMedia(`(pointer: coarse)`).matches?`balanced`:`hd`}var ex=11;function tx(e){let t=new Xh({uniforms:{uOpacity:{value:.09},uTime:{value:0}},vertexShader:`
+    `},i=new Jb(new Bh(40,40),{textureWidth:t,textureHeight:n,color:`#8f8f8f`,clipBias:.003,shader:r});return i.rotation.x=-Math.PI/2,i.position.y=-.002,i.material.depthWrite=!1,e.add(i),i}var Qb={soft:{label:`soft`,ratioCap:1,scale:.75,samples:0,shadow:1024,mirror:0,dust:900},balanced:{label:`balanced`,ratioCap:1.5,scale:1,samples:4,shadow:2048,mirror:.5,dust:1500},hd:{label:`hd`,ratioCap:2,scale:1,samples:4,shadow:4096,mirror:.75,dust:2400},ultra:{label:`ultra`,ratioCap:3,scale:1,samples:8,shadow:4096,mirror:1,dust:3600}};function $b(){return Math.min(window.innerWidth,window.innerHeight)<700||matchMedia(`(pointer: coarse)`).matches?`balanced`:`hd`}var ex=11;function tx(e){let t=new Xh({uniforms:{uOpacity:{value:.09},uTime:{value:0}},vertexShader:`
       attribute float along;
       varying float vAlong;
       varying vec3 vNormal;
@@ -4823,6 +4823,8 @@ void main() {
       varying vec3 vView;
       varying vec3 vWorld;
       void main() {
+        // The beams run on past the floor; nothing below it should ever show.
+        if (vWorld.y < 0.0) discard;
         float facing = pow(abs(dot(normalize(vNormal), vView)), 1.6);
         float fade = pow(1.0 - vAlong, 1.4) * smoothstep(0.0, 0.08, vAlong);
         float shimmer = 0.85 + 0.15 * sin(vWorld.z * 1.7 + vWorld.y * 2.3 + uTime * 0.4);
