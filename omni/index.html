@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="theme-color" content="#111213" />
     <title>omni</title>
-    <script type="module" crossorigin src="./assets/index-DbPpxvm3.js"></script>
-    <link rel="stylesheet" crossorigin href="./assets/index-PV7pT0za.css">
+    <script type="module" crossorigin src="./assets/index-DmWbdopm.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-Ceyhh_PK.css">
   </head>
   <body>
     <canvas id="scene" aria-hidden="true"></canvas>
@@ -18,6 +18,16 @@
         <span class="begin__ring" aria-hidden="true"></span>
         <span class="begin__label">begin</span>
       </button>
+      <div class="quality">
+        <span class="quality__label" id="quality-label">quality</span>
+        <div class="moods" role="radiogroup" aria-labelledby="quality-label">
+          <button type="button" role="radio" data-quality="soft">soft</button>
+          <button type="button" role="radio" data-quality="balanced">balanced</button>
+          <button type="button" role="radio" data-quality="hd">hd</button>
+          <button type="button" role="radio" data-quality="ultra">ultra</button>
+        </div>
+        <p class="quality__note" id="quality-note"></p>
+      </div>
       <p class="hint">best with headphones, quietly</p>
       <p class="credit">piano: Salamander Grand by Alexander Holm, CC BY 3.0</p>
     </main>
@@ -34,6 +44,7 @@
       </button>
       <button id="layers-toggle" class="dock__layers" type="button" aria-expanded="false" aria-controls="layers" data-panel="layers">layers</button>
       <button id="melody-toggle" class="dock__layers" type="button" aria-expanded="false" aria-controls="melody" data-panel="melody">melody</button>
+      <button id="room-toggle" class="dock__layers" type="button" aria-expanded="false" aria-controls="room" data-panel="room">room</button>
       <fieldset class="knobs" id="knobs">
         <legend class="visually-hidden">Sound</legend>
         <label class="knob"><span>tone</span><input type="range" name="tone" min="0" max="1" step="0.01" /></label>
@@ -79,6 +90,32 @@
         <button id="melody-next" class="drift" type="button" aria-label="Later bars">›</button>
       </div>
       <p class="melody__hint">tap squares to add or remove notes · every note fits the mood</p>
+    </section>
+
+    <section class="panel room-panel" id="room" aria-label="Room" hidden>
+      <div class="layers__row">
+        <span class="room-panel__label" id="palette-label">colour</span>
+        <div class="moods" role="radiogroup" aria-labelledby="palette-label">
+          <button type="button" role="radio" data-palette="plaster">plaster</button>
+          <button type="button" role="radio" data-palette="blush">blush</button>
+          <button type="button" role="radio" data-palette="mist">mist</button>
+          <button type="button" role="radio" data-palette="sand">sand</button>
+        </div>
+      </div>
+      <div class="layers__row">
+        <span class="room-panel__label" id="floor-label">floor</span>
+        <div class="moods" role="radiogroup" aria-labelledby="floor-label">
+          <button type="button" role="radio" data-floor="tile">tile</button>
+          <button type="button" role="radio" data-floor="glossy">glossy</button>
+          <button type="button" role="radio" data-floor="water">water</button>
+        </div>
+      </div>
+      <p class="room-panel__note" id="floor-note" hidden>reflections are off at soft quality</p>
+      <div class="layers__row room-panel__dials">
+        <label class="knob"><span>dream</span><input id="room-dream" type="range" min="0" max="1" step="0.01" /></label>
+        <label class="knob"><span>light motes</span><input id="room-motes" type="range" min="0" max="1" step="0.01" /></label>
+        <button id="room-clouds" class="drift" type="button" aria-pressed="false">clouds</button>
+      </div>
     </section>
 
   </body>
