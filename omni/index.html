@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="theme-color" content="#111213" />
     <title>omni</title>
-    <script type="module" crossorigin src="./assets/index-Cci2Mbzk.js"></script>
-    <link rel="stylesheet" crossorigin href="./assets/index-KOpTbtDm.css">
+    <script type="module" crossorigin src="./assets/index-DbPpxvm3.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-PV7pT0za.css">
   </head>
   <body>
     <canvas id="scene" aria-hidden="true"></canvas>
@@ -19,6 +19,7 @@
         <span class="begin__label">begin</span>
       </button>
       <p class="hint">best with headphones, quietly</p>
+      <p class="credit">piano: Salamander Grand by Alexander Holm, CC BY 3.0</p>
     </main>
 
     <p class="corner-mark" aria-hidden="true">omni</p>
@@ -31,7 +32,8 @@
       <button id="record" class="dock__record" type="button" aria-pressed="false" aria-label="Record">
         <span class="dock__record-dot" aria-hidden="true"></span><span class="dock__record-time" id="record-time">rec</span>
       </button>
-      <button id="layers-toggle" class="dock__layers" type="button" aria-expanded="false" aria-controls="layers">layers</button>
+      <button id="layers-toggle" class="dock__layers" type="button" aria-expanded="false" aria-controls="layers" data-panel="layers">layers</button>
+      <button id="melody-toggle" class="dock__layers" type="button" aria-expanded="false" aria-controls="melody" data-panel="melody">melody</button>
       <fieldset class="knobs" id="knobs">
         <legend class="visually-hidden">Sound</legend>
         <label class="knob"><span>tone</span><input type="range" name="tone" min="0" max="1" step="0.01" /></label>
@@ -43,17 +45,40 @@
       </fieldset>
     </section>
 
-    <section class="layers" id="layers" aria-label="Layers" hidden>
+    <section class="panel layers" id="layers" aria-label="Layers" hidden>
       <div class="layers__row">
         <div class="moods" role="radiogroup" aria-label="Mood">
           <button type="button" role="radio" data-mood="daylight">daylight</button>
           <button type="button" role="radio" data-mood="dusk">dusk</button>
           <button type="button" role="radio" data-mood="night">night</button>
         </div>
+        <label class="knob layers__density"><span>density</span><input id="density" type="range" min="0" max="1" step="0.01" /></label>
         <button id="drift" class="drift" type="button" aria-pressed="false" title="Let the mood and density wander on their own">drift</button>
       </div>
-      <label class="knob layers__density"><span>density</span><input id="density" type="range" min="0" max="1" step="0.01" /></label>
       <ul class="layer-list" id="layer-list"></ul>
+    </section>
+
+    <section class="panel melody" id="melody" aria-label="Melody" hidden>
+      <div class="layers__row melody__bar">
+        <button id="melody-play" class="drift" type="button" aria-pressed="false">play</button>
+        <div class="moods" role="radiogroup" aria-label="Length in bars">
+          <button type="button" role="radio" data-bars="4">4</button>
+          <button type="button" role="radio" data-bars="8">8</button>
+          <button type="button" role="radio" data-bars="16">16</button>
+          <button type="button" role="radio" data-bars="32">32 bars</button>
+        </div>
+        <span class="melody__actions">
+          <button id="melody-new" class="drift" type="button" title="omni writes a new melody at this length">new melody</button>
+          <button id="melody-clear" class="drift" type="button">clear</button>
+        </span>
+      </div>
+      <div class="melody__grid" id="melody-grid" role="group" aria-label="Notes"></div>
+      <div class="melody__pages" id="melody-pages">
+        <button id="melody-prev" class="drift" type="button" aria-label="Earlier bars">‹</button>
+        <span id="melody-page-label" aria-live="polite"></span>
+        <button id="melody-next" class="drift" type="button" aria-label="Later bars">›</button>
+      </div>
+      <p class="melody__hint">tap squares to add or remove notes · every note fits the mood</p>
     </section>
 
   </body>
