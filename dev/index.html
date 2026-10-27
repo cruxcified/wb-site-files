@@ -357,6 +357,7 @@ html.wbgames-booting, html.wbgames-booting body { overflow: hidden !important; }
 /* Game info sits beside the case you pick (below it on phones), not under the shelf. */
 #wbgames.webgl .case-stage.shelf .game-list { position: absolute; z-index: 2; right: 9%; top: 50%; transform: translateY(-50%); width: min(38%, 480px); margin: 0; cursor: auto;
   opacity: 0; visibility: hidden; transition: opacity .35s, visibility 0s .35s; }
+#wbgames.webgl .case-stage.shelf .game-list::before { content: ""; position: absolute; z-index: -1; inset: -18% -14%; background: radial-gradient(closest-side, rgba(6, 5, 6, .92), rgba(6, 5, 6, .75) 60%, transparent); pointer-events: none; }
 #wbgames.webgl .case-stage.shelf.picked:not(.opened) .game-list { opacity: 1; visibility: visible; transition: opacity .45s .25s; }
 #wbgames.webgl .case-stage.shelf .game-list .game.on { grid-template-columns: minmax(0, 1fr); gap: 16px; animation: none; }
 #wbgames.webgl .case-stage.shelf .game h3 { font-size: clamp(28px, 2.8vw, 46px); }
@@ -365,7 +366,7 @@ html.wbgames-booting, html.wbgames-booting body { overflow: hidden !important; }
   #wbgames.webgl .case-stage.shelf .game .shot { display: none; }
 }
 /* 2026-10-26: fewer boxes, the scene carries the page. Nav floats with no bar; About photo has no frame. */
-#wbgames .nav { background: linear-gradient(rgba(8, 6, 7, .55), transparent); border-bottom: 0; }
+#wbgames .nav { background: linear-gradient(rgba(8, 6, 7, .92), rgba(8, 6, 7, .6) 70%, transparent); border-bottom: 0; }
 #wbgames .photo { border: 0; border-radius: 0; background: none; }
 #wbgames .controls button { border-color: transparent; }
 #wbgames .controls button:hover { border-color: rgba(243, 235, 225, .4); background: none; }
@@ -2749,7 +2750,7 @@ async function buildCase(THREE, host) {
     inPos.set(inTgt.x, inTgt.y + 1.4, inTgt.z + dC + (dO - dC) * camOpen);
     camTgt.lerpVectors(shelfCam.tgt, inTgt, camPull); camPos.lerpVectors(shelfCam.pos, inPos, camPull);
     cam.position.copy(camPos); cam.lookAt(camTgt);
-    dim.material.opacity = 0.72 * camPull; dim.visible = camPull > 0.002;
+    dim.material.opacity = 0.93 * camPull; dim.visible = camPull > 0.002;
 
     /* back cover screenshot: refresh it a few times a second while a live case shows its back */
     const c = cases[active];
