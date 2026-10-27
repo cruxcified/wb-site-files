@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="theme-color" content="#111213" />
     <title>omni</title>
-    <script type="module" crossorigin src="./assets/index-DnIh7NvE.js"></script>
-    <link rel="stylesheet" crossorigin href="./assets/index-BVAPbCQx.css">
+    <script type="module" crossorigin src="./assets/index-Dz1TA5lc.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-DHjnbrTn.css">
   </head>
   <body>
     <canvas id="scene" aria-hidden="true"></canvas>
@@ -66,10 +66,13 @@
           <button type="button" role="radio" data-mood="memory" title="Dark: an old ballroom record, after The Caretaker">memory</button>
         </div>
         <label class="knob layers__density"><span>density</span><input id="density" type="range" min="0" max="1" step="0.01" /></label>
+      </div>
+      <div class="layers__row is-wrapping" role="group" aria-label="Presets">
+        <span class="row-label">start from</span>
+        <button id="preset-haze" class="drift" type="button" title="Swelling guitar, deep reverb, worn tape: after Chihei Hatakeyama">guitar haze</button>
         <button id="preset-fog" class="drift" type="button" title="Thick fog, rusted metal, a radio between stations, warped piano: after Silent Hill">silent fog</button>
         <button id="preset-ballroom" class="drift" type="button" title="A worn 78 of a ballroom waltz in another room: after The Caretaker">old ballroom</button>
-        <button id="preset-haze" class="drift" type="button" title="Swelling guitar, deep reverb, worn tape: after Chihei Hatakeyama">guitar haze</button>
-        <button id="drift" class="drift" type="button" aria-pressed="false" title="Let the mood and density wander on their own">drift</button>
+        <button id="drift" class="drift row-label--push" type="button" aria-pressed="false" title="Let the mood and density wander on their own">drift</button>
       </div>
       <ul class="layer-list" id="layer-list"></ul>
       <div class="freeze">
@@ -85,8 +88,9 @@
           <button type="button" role="radio" data-bars="4">4</button>
           <button type="button" role="radio" data-bars="8">8</button>
           <button type="button" role="radio" data-bars="16">16</button>
-          <button type="button" role="radio" data-bars="32">32 bars</button>
+          <button type="button" role="radio" data-bars="32">32</button>
         </div>
+        <span class="row-label">bars</span>
         <div class="moods" role="radiogroup" aria-label="Instrument">
           <button type="button" role="radio" data-instrument="piano">piano</button>
           <button type="button" role="radio" data-instrument="acoustic">acoustic</button>
