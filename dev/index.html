@@ -1922,7 +1922,7 @@ async function start() {
     const now = performance.now(); const dt = Math.min((now - last) / 1000, 0.1); last = now;
     if (!reduced) clock += dt;
     const t = target();
-    const ease = cur.first || reduced ? 1 : 1 - Math.pow(performance.now() < stepUntil ? 0.06 : 0.0025, dt);
+    const ease = cur.first || reduced ? 1 : 1 - Math.pow(0.00008, dt);
     KEYS.forEach((k) => { cur[k] += (t[k] - cur[k]) * ease; });
     cur.pos.lerp(t.pos, ease); cur.tgt.lerp(t.tgt, ease); cur.tint.lerp(t.tint, reduced ? 1 : 1 - Math.pow(0.08, dt)); cur.first = false;
     burst = Math.max(0, burst - dt * 2.6);
