@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="theme-color" content="#111213" />
     <title>omni</title>
-    <script type="module" crossorigin src="./assets/index-DmWbdopm.js"></script>
+    <script type="module" crossorigin src="./assets/index-DPc5OpIi.js"></script>
     <link rel="stylesheet" crossorigin href="./assets/index-Ceyhh_PK.css">
   </head>
   <body>
@@ -29,7 +29,7 @@
         <p class="quality__note" id="quality-note"></p>
       </div>
       <p class="hint">best with headphones, quietly</p>
-      <p class="credit">piano: Salamander Grand by Alexander Holm, CC BY 3.0</p>
+      <p class="credit">piano: Salamander Grand by Alexander Holm · guitars: tonejs-instruments by Nicholas Brosowsky · both CC BY 3.0</p>
     </main>
 
     <p class="corner-mark" aria-hidden="true">omni</p>
@@ -64,6 +64,7 @@
           <button type="button" role="radio" data-mood="night">night</button>
         </div>
         <label class="knob layers__density"><span>density</span><input id="density" type="range" min="0" max="1" step="0.01" /></label>
+        <button id="preset-haze" class="drift" type="button" title="Swelling guitar, deep reverb, worn tape: after Chihei Hatakeyama">guitar haze</button>
         <button id="drift" class="drift" type="button" aria-pressed="false" title="Let the mood and density wander on their own">drift</button>
       </div>
       <ul class="layer-list" id="layer-list"></ul>
@@ -77,6 +78,11 @@
           <button type="button" role="radio" data-bars="8">8</button>
           <button type="button" role="radio" data-bars="16">16</button>
           <button type="button" role="radio" data-bars="32">32 bars</button>
+        </div>
+        <div class="moods" role="radiogroup" aria-label="Instrument">
+          <button type="button" role="radio" data-instrument="piano">piano</button>
+          <button type="button" role="radio" data-instrument="acoustic">acoustic</button>
+          <button type="button" role="radio" data-instrument="electric">electric</button>
         </div>
         <span class="melody__actions">
           <button id="melody-new" class="drift" type="button" title="omni writes a new melody at this length">new melody</button>
