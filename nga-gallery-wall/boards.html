@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#080809">
+  <title>Boards · Gallery Wall</title>
+  <meta name="description" content="A searchable wall of the National Gallery of Art's open-access, public domain artworks, for finding book cover art.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://api.nga.gov" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;1,6..96,400;1,6..96,500&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap">
+  <link rel="stylesheet" href="css/style.css">
+  <script type="importmap">{ "imports": { "three": "./vendor/three.module.min.js" } }</script>
+  <script type="module" src="js/main.js"></script>
+</head>
+<body>
+  <canvas id="gl" aria-hidden="true"></canvas>
+
+  <header class="top">
+    <a class="mark" href="./" aria-label="Gallery Wall, back to the wall"><em>Gallery</em> Wall</a>
+    <label class="search" for="q">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      <input id="q" type="search" placeholder="Search storm at sea, ravens, moonlight, Turner" autocomplete="off" spellcheck="false">
+      <kbd aria-hidden="true">/</kbd>
+    </label>
+    <nav class="links" aria-label="Sections">
+      <button type="button" class="pill" id="filter-toggle" aria-expanded="false" aria-controls="drawer">Filters<span id="filter-count" class="n"></span></button>
+      <a class="pill" href="./" data-nav="wall">Wall</a>
+      <a class="pill" href="boards.html" data-nav="boards">Boards<span id="saved-count" class="n"></span></a>
+    </nav>
+  </header>
+
+  <div class="drawer" id="drawer" hidden>
+    <div class="drawer-inner">
+      <label for="f-cls"><span>Type</span><select id="f-cls"><option value="">All types</option></select></label>
+      <label for="f-style"><span>Movement</span><select id="f-style"><option value="">Any movement</option></select></label>
+      <label for="f-artist"><span>Artist</span><input id="f-artist" list="artists" placeholder="Any artist" autocomplete="off"></label>
+      <label for="f-medium"><span>Medium has</span><input id="f-medium" placeholder="oil, woodcut, gouache" autocomplete="off"></label>
+      <label for="f-tech"><span>Technique</span><select id="f-tech"><option value="">Any technique</option></select></label>
+      <label for="f-theme"><span>Subject</span><select id="f-theme"><option value="">Any subject</option></select></label>
+      <label for="f-nat"><span>Nationality</span><select id="f-nat"><option value="">Any nationality</option></select></label>
+      <label for="f-orient"><span>Shape</span><select id="f-orient">
+        <option value="">Any shape</option><option value="cover">Book cover, about 2:3</option><option value="portrait">Portrait</option><option value="landscape">Landscape</option><option value="square">Square-ish</option>
+      </select></label>
+      <div class="years">
+        <label for="f-from"><span>From year</span><input id="f-from" inputmode="numeric" placeholder="1400" autocomplete="off"></label>
+        <label for="f-to"><span>To year</span><input id="f-to" inputmode="numeric" placeholder="1928" autocomplete="off"></label>
+      </div>
+      <select id="f-sort" hidden aria-hidden="true" tabindex="-1"><option value="shuffle">Shuffle</option><option value="rel">Best match</option><option value="old">Oldest first</option><option value="new">Newest first</option><option value="big">Largest image</option></select>
+      <button type="button" class="linkish" id="filter-clear" hidden>Clear all</button>
+    </div>
+  </div>
+  <datalist id="artists"></datalist>
+
+  <main data-barba="wrapper">
+    <div data-barba="container" data-barba-namespace="boards"></div>
+  </main>
+
+  <div class="loader" id="loader">
+    <p class="eyebrow"><span>National Gallery of Art</span><span>Open access</span></p>
+    <p class="loader-count"><span id="load-count">0</span><small>works hung</small></p>
+    <div class="loader-bar"><i id="load-bar"></i></div>
+    <p class="loader-note" id="load-note">Loading the collection index, about 12 MB the first time.</p>
+  </div>
+  <div class="cursor" id="cursor" hidden aria-hidden="true"><span>View</span></div>
+  <div class="toast" id="toast" role="status" hidden></div>
+  <noscript><p class="noscript">Gallery Wall needs JavaScript to search the collection.</p></noscript>
+</body>
+</html>
