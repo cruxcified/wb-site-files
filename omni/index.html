@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="theme-color" content="#111213" />
     <title>omni</title>
-    <script type="module" crossorigin src="./assets/index-Bkz5ossc.js"></script>
-    <link rel="stylesheet" crossorigin href="./assets/index-lwR-vA5S.css">
+    <script type="module" crossorigin src="./assets/index-MQqsBOZN.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-BoHeSoKW.css">
   </head>
   <body>
     <canvas id="scene" aria-hidden="true"></canvas>
@@ -48,7 +48,7 @@
       <fieldset class="knobs" id="knobs">
         <legend class="visually-hidden">Sound</legend>
         <label class="knob"><span>tone</span><input type="range" name="tone" min="0" max="1" step="0.01" /></label>
-        <label class="knob"><span>space</span><input type="range" name="space" min="0" max="1" step="0.01" /></label>
+        <label class="knob"><span>reverb</span><input type="range" name="space" min="0" max="1" step="0.01" /></label>
         <label class="knob"><span>tape age</span><input type="range" name="tapeAge" min="0" max="1" step="0.01" /></label>
         <label class="knob"><span>chorus</span><input type="range" name="chorus" min="0" max="1" step="0.01" /></label>
         <label class="knob"><span>speed</span><input type="range" name="speed" min="0" max="1" step="0.01" /></label>
@@ -70,15 +70,8 @@
           <button id="drift" class="drift" type="button" aria-pressed="false" title="Let the mood and density wander on their own">drift</button>
         </span>
       </div>
-      <div class="presets" role="group" aria-labelledby="presets-label">
-        <span class="row-label" id="presets-label">start from</span>
-        <span class="presets__list">
-          <button id="preset-haze" type="button" title="Swelling guitar, deep reverb, worn tape: after Chihei Hatakeyama">guitar haze</button>
-          <button id="preset-fog" type="button" title="Thick fog, rusted metal, a radio between stations, warped piano: after Silent Hill">silent fog</button>
-          <button id="preset-ballroom" type="button" title="A worn 78 of a ballroom waltz in another room: after The Caretaker">old ballroom</button>
-        </span>
-      </div>
       <ul class="layer-list" id="layer-list"></ul>
+      <div class="tweaks" id="tweaks" hidden></div>
       <div class="freeze">
         <button id="freeze" class="freeze__button" type="button" aria-pressed="false" aria-describedby="freeze-note">freeze</button>
         <p class="freeze__note" id="freeze-note">holds the guitar swell you just heard, forever · press F</p>
@@ -100,6 +93,10 @@
           <button type="button" role="radio" data-instrument="acoustic">acoustic</button>
           <button type="button" role="radio" data-instrument="electric">electric</button>
         </div>
+        <div class="moods" role="radiogroup" aria-label="Tapping adds">
+          <button type="button" role="radio" data-tap="note">note</button>
+          <button type="button" role="radio" data-tap="chord">chord</button>
+        </div>
         <span class="melody__actions">
           <button id="melody-new" class="drift" type="button" title="omni writes a new melody at this length">new melody</button>
           <button id="melody-clear" class="drift" type="button">clear</button>
@@ -111,7 +108,7 @@
         <span id="melody-page-label" aria-live="polite"></span>
         <button id="melody-next" class="drift" type="button" aria-label="Later bars">›</button>
       </div>
-      <p class="melody__hint">tap squares to add or remove notes · every note fits the mood</p>
+      <p class="melody__hint">tap squares to add or remove notes, or switch to chord · everything fits the mood</p>
     </section>
 
     <section class="panel room-panel" id="room" aria-label="Room" hidden>
