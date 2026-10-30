@@ -1,6 +1,6 @@
 // One persistent WebGL canvas under the page. Artwork images are drawn as planes that track
 // DOM placeholders (getBoundingClientRect each frame), so layout stays in CSS while the
-// pixels get shader motion. A post pass adds the ink field, pointer glow, grain and the page curtain.
+// pixels get shader motion. A post pass adds the fog field, pointer light, grain and the page curtain.
 import * as THREE from 'three';
 
 const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -62,7 +62,7 @@ void main() {
   uv += (vUv - uMouse) * sin(d * .045 - uTime * 5.) * .012 * uHover * smoothstep(320., 0., d);
   float s = uVel * .01;
   vec3 col = vec3(texture2D(uTex, uv + vec2(0., s)).r, texture2D(uTex, uv).g, texture2D(uTex, uv - vec2(0., s)).b);
-  col = mix(vec3(.075, .072, .068), col, uHas);
+  col = mix(vec3(.86, .83, .79), col, uHas); // steamed-milk placeholder until the image arrives
   col *= 1. + .07 * uHover;
   // diagonal reveal with a soft leading edge
   float w = vUv.x * .35 + (1. - vUv.y) * .65;
@@ -83,18 +83,22 @@ float noise(vec2 p) { vec2 i = floor(p), f = fract(p); vec2 u = f * f * (3. - 2.
 float fbm(vec2 p) { float v = 0., a = .5; for (int i = 0; i < 5; i++) { v += a * noise(p); p *= 2.03; a *= .5; } return v; }
 void main() {
   vec2 uv = vUv, asp = vec2(uRes.x / uRes.y, 1.);
-  // ink field with a slow amber haze that drifts with time and parallaxes with scroll
-  vec2 p = uv * asp * 1.4 + vec2(0., uScroll * .00025);
-  float n = fbm(p + vec2(uTime * .018, -uTime * .012) + fbm(p * 1.4 - uTime * .01));
-  vec3 bg = vec3(.03, .03, .033) + vec3(.11, .075, .035) * smoothstep(.5, 1., n) * uGlow;
+  // London Fog: a steamed-milk ground with banks of lavender-grey mist drifting across it,
+  // parallaxing with scroll, and a pale foam light that follows the pointer
+  vec2 p = uv * asp * 1.2 + vec2(0., uScroll * .00025);
+  float n = fbm(p + vec2(uTime * .02, -uTime * .008) + fbm(p * 1.3 - uTime * .012));
+  float n2 = fbm(p * .6 - vec2(uTime * .01, 0.));
+  vec3 milk = vec3(.91, .89, .86), mist = vec3(.80, .78, .80), tea = vec3(.78, .72, .66);
+  vec3 bg = mix(milk, mist, smoothstep(.35, .85, n) * .9 * uGlow);
+  bg = mix(bg, tea, smoothstep(.55, .95, n2) * .35 * uGlow);
   float md = distance(uv * asp, uMouse * asp);
-  bg += vec3(1., .72, .3) * .07 * exp(-md * md * 7.) * uGlow;
+  bg += vec3(1., .98, .95) * .08 * exp(-md * md * 6.) * uGlow;
   float ca = uVel * .003;
   vec4 s = texture2D(tScene, uv);
   vec3 sc = vec3(texture2D(tScene, uv + vec2(0., ca)).r, s.g, texture2D(tScene, uv - vec2(0., ca)).b);
   vec3 col = bg * (1. - s.a) + sc;
-  float v = smoothstep(1.25, .3, length((uv - .5) * asp * vec2(.85, 1.1)));
-  col *= mix(.7, 1., v);
+  float v = smoothstep(1.3, .35, length((uv - .5) * asp * vec2(.85, 1.1)));
+  col = mix(col * vec3(.9, .88, .87), col, v); // a soft tea-stained edge rather than a dark vignette
   // curtain: 0→1 rises from the bottom, 1→2 leaves through the top, with a ragged amber rim
   float edge = uv.y + (fbm(vec2(uv.x * 3.5, uTime * .4)) - .5) * .16;
   float cov = 0., rim = 0.;
@@ -102,9 +106,9 @@ void main() {
     if (uWipe <= 1.) { float h = mix(-.15, 1.15, uWipe); cov = smoothstep(h + .005, h - .005, edge); rim = exp(-abs(edge - h) * 60.); }
     else { float h = mix(-.15, 1.15, uWipe - 1.); cov = smoothstep(h - .005, h + .005, edge); rim = exp(-abs(edge - h) * 60.); }
   }
-  vec3 curtain = vec3(.045, .043, .045) + vec3(.05, .035, .02) * fbm(uv * asp * 6. + uTime * .05);
-  col = mix(col, curtain, cov) + vec3(1., .66, .25) * rim * .55;
-  col += (hash(uv * uRes + fract(uTime * 7.) * 91.) - .5) * .055;
+  vec3 curtain = mix(vec3(.84, .81, .80), vec3(.72, .69, .74), fbm(uv * asp * 4. + uTime * .05)); // milk swirled into tea
+  col = mix(mix(col, curtain, cov), vec3(.46, .40, .56), rim * .45);
+  col += (hash(uv * uRes + fract(uTime * 7.) * 91.) - .5) * .04;
   gl_FragColor = vec4(col, 1.);
 }`;
 export const post = { wipe: 0, glow: 1 };
@@ -233,7 +237,7 @@ export function init(canvas) {
   renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
   renderer.autoClear = false;
   loader = new THREE.TextureLoader(); loader.setCrossOrigin('anonymous');
-  blank = new THREE.DataTexture(new Uint8Array([20, 19, 18, 255]), 1, 1); blank.needsUpdate = true;
+  blank = new THREE.DataTexture(new Uint8Array([219, 212, 201, 255]), 1, 1); blank.needsUpdate = true;
   geo = new THREE.PlaneGeometry(1, 1, 24, 24);
   camera = new THREE.PerspectiveCamera(35, W / H, 10, 10000);
   scene = new THREE.Scene();
