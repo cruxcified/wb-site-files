@@ -28,20 +28,31 @@ export async function load() {
   await Promise.all(meta.chunks.map(async (fn, i) => {
     const rows = await (await fetch('data/' + fn)).json();
     parts[i] = rows;
-    for (const o of rows) {
-      byId.set(o[0], O.length);
-      O.push(o);
-      hay.push([o[4], artistsOf(o).join(' '), o[10], o[5], o[11].map(s => T.style[s]).join(' '),
-        o[12].map(s => T.school[s]).join(' '), o[13].map(s => T.tech[s]).join(' '), o[14].map(s => T.theme[s]).join(' '),
-        o[15], o[8].map(s => T.nat[s]).join(' '), T.cls[o[9]], o[16]].map(norm).join(' \u0001 '));
-    }
+    for (const o of rows) { byId.set(o[0], O.length); O.push(o) }
     state.loaded += rows.length;
     emit('chunk');
+    indexSoon();
   }));
   state.done = true;
   emit('done');
 }
 function emit(kind) { listeners.forEach(fn => fn(kind)) }
+
+// The search text for each work is built in small slices while the browser is idle, so loading
+// never freezes scrolling; a search that arrives first finishes the remainder on the spot.
+const haystack = o => [o[4], artistsOf(o).join(' '), o[10], o[5], o[11].map(s => T.style[s]).join(' '),
+  o[12].map(s => T.school[s]).join(' '), o[13].map(s => T.tech[s]).join(' '), o[14].map(s => T.theme[s]).join(' '),
+  o[15], o[8].map(s => T.nat[s]).join(' '), T.cls[o[9]], o[16]].map(norm).join(' \u0001 ');
+let indexing = false;
+const idle = window.requestIdleCallback || (fn => setTimeout(() => fn({ timeRemaining: () => 8 }), 16));
+function indexSoon() {
+  if (indexing) return; indexing = true;
+  idle(function step(deadline) {
+    while (hay.length < O.length && deadline.timeRemaining() > 2) for (let k = 0; k < 200 && hay.length < O.length; k++) hay.push(haystack(O[hay.length]));
+    if (hay.length < O.length) idle(step); else indexing = false;
+  });
+}
+function indexNow() { while (hay.length < O.length) hay.push(haystack(O[hay.length])) }
 
 export const get = id => O[byId.get(+id)];
 // resolves once the object is in memory, or null when the whole index has loaded without it
@@ -59,6 +70,7 @@ const rnd = id => { let x = (id ^ seed) >>> 0; x = Math.imul(x ^ x >>> 16, 0x45d
 // f: {q, cls, style, tech, theme, nat, artist, medium, orient, from, to, sort}; returns object ids
 export function search(f) {
   const terms = norm(f.q).split(' ').filter(Boolean).map(t => ' ' + t);
+  if (terms.length) indexNow();
   const num = v => v === '' || v == null ? -1 : +v;
   const cls = num(f.cls), st = num(f.style), te = num(f.tech), th = num(f.theme), na = num(f.nat);
   const artist = (f.artist || '').trim().toLowerCase(), medium = (f.medium || '').trim().toLowerCase();
