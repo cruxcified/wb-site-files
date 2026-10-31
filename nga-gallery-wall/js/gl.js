@@ -6,7 +6,8 @@ import * as THREE from 'three';
 const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 export const gl = { ok: false, imagesOk: false, reduced };
 
-let renderer, rt, camera, scene, postScene, postCam, postMat, geo, blank, loader;
+let renderer, rt, fogRT, camera, scene, postScene, postCam, postMat, fogScene, fogMat, geo, blank, loader;
+let maxRatio = Math.min(devicePixelRatio, 1.5), slow = 0, idleSkip = false;
 let W = innerWidth, H = innerHeight, time = 0, last = performance.now();
 let scrollVel = 0, lastScroll = scrollY, scrollPos = scrollY;
 const mouse = new THREE.Vector2(.5, .5), mouseT = new THREE.Vector2(.5, .5);
@@ -62,7 +63,7 @@ void main() {
   uv += (vUv - uMouse) * sin(d * .045 - uTime * 5.) * .012 * uHover * smoothstep(320., 0., d);
   float s = uVel * .01;
   vec3 col = vec3(texture2D(uTex, uv + vec2(0., s)).r, texture2D(uTex, uv).g, texture2D(uTex, uv - vec2(0., s)).b);
-  col = mix(vec3(.86, .83, .79), col, uHas); // steamed-milk placeholder until the image arrives
+  col = mix(vec3(.80, .83, .86), col, uHas); // fog-grey placeholder until the image arrives
   col *= 1. + .07 * uHover;
   // diagonal reveal with a soft leading edge
   float w = vUv.x * .35 + (1. - vUv.y) * .65;
@@ -72,42 +73,55 @@ void main() {
   gl_FragColor = vec4(col * al, al);
 }`;
 const postVert = `varying vec2 vUv; void main() { vUv = uv; gl_Position = vec4(position.xy, 0., 1.); }`;
-const postFrag = /* glsl */`
-uniform sampler2D tScene;
-uniform vec2 uRes, uMouse;
-uniform float uTime, uVel, uWipe, uScroll, uGlow;
-varying vec2 vUv;
+const NOISE = /* glsl */`
 float hash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
 float noise(vec2 p) { vec2 i = floor(p), f = fract(p); vec2 u = f * f * (3. - 2. * f);
   return mix(mix(hash(i), hash(i + vec2(1, 0)), u.x), mix(hash(i + vec2(0, 1)), hash(i + vec2(1, 1)), u.x), u.y); }
-float fbm(vec2 p) { float v = 0., a = .5; for (int i = 0; i < 5; i++) { v += a * noise(p); p *= 2.03; a *= .5; } return v; }
+float fbm(vec2 p) { float v = 0., a = .5; for (int i = 0; i < 4; i++) { v += a * noise(p); p *= 2.03; a *= .5; } return v; }`;
+// The mist is soft, so it is drawn into a small target (a quarter of the CSS size) and stretched:
+// about a thirtieth of the per-pixel noise work of drawing it at full retina resolution.
+const fogFrag = /* glsl */`
+uniform vec2 uRes;
+uniform float uTime, uScroll, uGlow;
+varying vec2 vUv;
+${NOISE}
 void main() {
   vec2 uv = vUv, asp = vec2(uRes.x / uRes.y, 1.);
-  // London Fog: a steamed-milk ground with banks of lavender-grey mist drifting across it,
-  // parallaxing with scroll, and a pale foam light that follows the pointer
+  // London Fog: a pale blue-grey ground with banks of slate mist drifting across it, parallaxing with scroll
   vec2 p = uv * asp * 1.2 + vec2(0., uScroll * .00025);
   float n = fbm(p + vec2(uTime * .02, -uTime * .008) + fbm(p * 1.3 - uTime * .012));
   float n2 = fbm(p * .6 - vec2(uTime * .01, 0.));
-  vec3 milk = vec3(.91, .89, .86), mist = vec3(.80, .78, .80), tea = vec3(.78, .72, .66);
+  vec3 milk = vec3(.885, .898, .912), mist = vec3(.745, .776, .816), slate = vec3(.66, .70, .755);
   vec3 bg = mix(milk, mist, smoothstep(.35, .85, n) * .9 * uGlow);
-  bg = mix(bg, tea, smoothstep(.55, .95, n2) * .35 * uGlow);
+  bg = mix(bg, slate, smoothstep(.55, .95, n2) * .4 * uGlow);
+  gl_FragColor = vec4(bg, 1.);
+}`;
+const postFrag = /* glsl */`
+uniform sampler2D tScene, tFog;
+uniform vec2 uRes, uMouse;
+uniform float uTime, uVel, uWipe, uGlow;
+varying vec2 vUv;
+${NOISE}
+void main() {
+  vec2 uv = vUv, asp = vec2(uRes.x / uRes.y, 1.);
+  vec3 bg = texture2D(tFog, uv).rgb;
   float md = distance(uv * asp, uMouse * asp);
-  bg += vec3(1., .98, .95) * .08 * exp(-md * md * 6.) * uGlow;
+  bg += vec3(.97, .99, 1.) * .08 * exp(-md * md * 6.) * uGlow; // a pale light that follows the pointer
   float ca = uVel * .003;
   vec4 s = texture2D(tScene, uv);
   vec3 sc = vec3(texture2D(tScene, uv + vec2(0., ca)).r, s.g, texture2D(tScene, uv - vec2(0., ca)).b);
   vec3 col = bg * (1. - s.a) + sc;
   float v = smoothstep(1.3, .35, length((uv - .5) * asp * vec2(.85, 1.1)));
-  col = mix(col * vec3(.9, .88, .87), col, v); // a soft tea-stained edge rather than a dark vignette
-  // curtain: 0→1 rises from the bottom, 1→2 leaves through the top, with a ragged amber rim
-  float edge = uv.y + (fbm(vec2(uv.x * 3.5, uTime * .4)) - .5) * .16;
-  float cov = 0., rim = 0.;
+  col = mix(col * vec3(.87, .89, .92), col, v); // a soft slate edge rather than a dark vignette
+  // curtain: 0→1 rises from the bottom, 1→2 leaves through the top, with a ragged rim.
+  // Its noise is only computed while a page transition is running.
   if (uWipe > 0. && uWipe < 2.) {
+    float edge = uv.y + (fbm(vec2(uv.x * 3.5, uTime * .4)) - .5) * .16, cov, rim;
     if (uWipe <= 1.) { float h = mix(-.15, 1.15, uWipe); cov = smoothstep(h + .005, h - .005, edge); rim = exp(-abs(edge - h) * 60.); }
     else { float h = mix(-.15, 1.15, uWipe - 1.); cov = smoothstep(h - .005, h + .005, edge); rim = exp(-abs(edge - h) * 60.); }
+    vec3 curtain = mix(vec3(.80, .83, .87), vec3(.66, .70, .76), fbm(uv * asp * 4. + uTime * .05)); // fog rolling in
+    col = mix(mix(col, curtain, cov), vec3(.33, .39, .50), rim * .45);
   }
-  vec3 curtain = mix(vec3(.84, .81, .80), vec3(.72, .69, .74), fbm(uv * asp * 4. + uTime * .05)); // milk swirled into tea
-  col = mix(mix(col, curtain, cov), vec3(.46, .40, .56), rim * .45);
   col += (hash(uv * uRes + fract(uTime * 7.) * 91.) - .5) * .04;
   gl_FragColor = vec4(col, 1.);
 }`;
@@ -232,21 +246,28 @@ function onIntersect(entries) {
 /* ---------- boot + loop ---------- */
 export function init(canvas) {
   try {
-    renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
+    renderer = new THREE.WebGLRenderer({ canvas, antialias: false, powerPreference: 'high-performance' });
   } catch { return false }
-  renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+  renderer.setPixelRatio(maxRatio);
   renderer.autoClear = false;
   loader = new THREE.TextureLoader(); loader.setCrossOrigin('anonymous');
-  blank = new THREE.DataTexture(new Uint8Array([219, 212, 201, 255]), 1, 1); blank.needsUpdate = true;
+  blank = new THREE.DataTexture(new Uint8Array([204, 211, 219, 255]), 1, 1); blank.needsUpdate = true;
   geo = new THREE.PlaneGeometry(1, 1, 24, 24);
   camera = new THREE.PerspectiveCamera(35, W / H, 10, 10000);
   scene = new THREE.Scene();
   rt = new THREE.WebGLRenderTarget(1, 1, { depthBuffer: false });
   postMat = new THREE.ShaderMaterial({
     vertexShader: postVert, fragmentShader: postFrag, depthTest: false, depthWrite: false,
-    uniforms: { tScene: { value: rt.texture }, uRes: { value: new THREE.Vector2() }, uMouse: { value: mouse }, uTime: { value: 0 }, uVel: { value: 0 }, uWipe: { value: 0 }, uScroll: { value: 0 }, uGlow: { value: 1 } },
+    uniforms: { tScene: { value: rt.texture }, tFog: { value: null }, uRes: { value: new THREE.Vector2() }, uMouse: { value: mouse }, uTime: { value: 0 }, uVel: { value: 0 }, uWipe: { value: 0 }, uGlow: { value: 1 } },
   });
   postScene = new THREE.Scene(); postScene.add(new THREE.Mesh(new THREE.PlaneGeometry(2, 2), postMat));
+  fogRT = new THREE.WebGLRenderTarget(1, 1, { depthBuffer: false });
+  postMat.uniforms.tFog.value = fogRT.texture;
+  fogMat = new THREE.ShaderMaterial({
+    vertexShader: postVert, fragmentShader: fogFrag, depthTest: false, depthWrite: false,
+    uniforms: { uRes: { value: new THREE.Vector2() }, uTime: { value: 0 }, uScroll: { value: 0 }, uGlow: { value: 1 } },
+  });
+  fogScene = new THREE.Scene(); fogScene.add(new THREE.Mesh(new THREE.PlaneGeometry(2, 2), fogMat));
   postCam = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
   io = new IntersectionObserver(onIntersect, { rootMargin: '900px 0px' });
   resize(); addEventListener('resize', resize);
@@ -272,10 +293,19 @@ function resize() {
   camera.position.z = (H / 2) / Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
   camera.updateProjectionMatrix();
   postMat.uniforms.uRes.value.set(W * pr, H * pr);
+  fogRT.setSize(Math.ceil(W / 4), Math.ceil(H / 4));
+  fogMat.uniforms.uRes.value.set(W, H);
+}
+// if frames keep running long, drop to 1× pixel density; the art loses a little sharpness, the motion stays smooth
+function adapt(raw) {
+  if (maxRatio <= 1) return;
+  slow = raw > .024 ? slow + 1 : Math.max(0, slow - 1);
+  if (slow > 45) { maxRatio = 1; renderer.setPixelRatio(1); resize() }
 }
 function frame(now) {
   requestAnimationFrame(frame);
-  const raw = (now - last) / 1000; last = now;
+  const raw = (now - last) / 1000;
+  last = now; adapt(raw);
   const dt = Math.min(raw, .05); time += dt;
   frameHooks.forEach(fn => fn(now, dt));
   stepTweens(Math.min(raw, .25)); // tweens keep wall-clock time even when frames drop
@@ -299,7 +329,12 @@ function frame(now) {
     p.u.uSize.value.set(r.w, r.h);
   }
   const u = postMat.uniforms;
-  u.uTime.value = time; u.uVel.value = vel; u.uWipe.value = post.wipe; u.uScroll.value = scrollPos; u.uGlow.value = post.glow;
+  u.uTime.value = time; u.uVel.value = vel; u.uWipe.value = post.wipe; u.uGlow.value = post.glow;
+  // when nothing is moving, only the mist is animating: draw every other frame (scroll and the cursor still run every frame)
+  const busy = tweens.size || Math.abs(scrollVel) > .05 || [...planes].some(p => p.hoverT || p.hover > .01 || p.flight);
+  if (!busy && !reduced) { idleSkip = !idleSkip; if (idleSkip) return } else idleSkip = false;
+  const fu = fogMat.uniforms; fu.uTime.value = time; fu.uScroll.value = scrollPos; fu.uGlow.value = post.glow;
+  renderer.setRenderTarget(fogRT); renderer.render(fogScene, postCam);
   renderer.setRenderTarget(rt); renderer.setClearColor(0x000000, 0); renderer.clear(); renderer.render(scene, camera);
   renderer.setRenderTarget(null); renderer.render(postScene, postCam);
 }
