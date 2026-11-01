@@ -51,19 +51,16 @@ void main() {
 }`;
 const tileFrag = /* glsl */`
 uniform sampler2D uTex;
-uniform float uHas, uHover, uReveal, uVel, uAlpha, uRadius, uTime;
-uniform vec2 uSize, uMouse;
+uniform float uHas, uHover, uReveal, uVel, uAlpha, uRadius, uTime, uDark;
+uniform vec2 uSize;
 varying vec2 vUv;
 float sdRound(vec2 p, vec2 b, float r) { vec2 q = abs(p) - b + r; return length(max(q, 0.)) + min(max(q.x, q.y), 0.) - r; }
 void main() {
   vec2 uv = vUv;
   uv = .5 + (uv - .5) * (1. - .05 * uHover);
-  vec2 px = vUv * uSize, mp = uMouse * uSize;
-  float d = distance(px, mp);
-  uv += (vUv - uMouse) * sin(d * .045 - uTime * 5.) * .012 * uHover * smoothstep(320., 0., d);
   float s = uVel * .01;
   vec3 col = vec3(texture2D(uTex, uv + vec2(0., s)).r, texture2D(uTex, uv).g, texture2D(uTex, uv - vec2(0., s)).b);
-  col = mix(vec3(.80, .83, .86), col, uHas); // fog-grey placeholder until the image arrives
+  col = mix(mix(vec3(.80, .83, .86), vec3(.15, .17, .21), uDark), col, uHas); // fog-grey placeholder until the image arrives
   col *= 1. + .07 * uHover;
   // diagonal reveal with a soft leading edge
   float w = vUv.x * .35 + (1. - vUv.y) * .65;
@@ -82,7 +79,7 @@ float fbm(vec2 p) { float v = 0., a = .5; for (int i = 0; i < 4; i++) { v += a *
 // about a thirtieth of the per-pixel noise work of drawing it at full retina resolution.
 const fogFrag = /* glsl */`
 uniform vec2 uRes;
-uniform float uTime, uScroll, uGlow;
+uniform float uTime, uScroll, uGlow, uDark;
 varying vec2 vUv;
 ${NOISE}
 void main() {
@@ -92,6 +89,8 @@ void main() {
   float n = fbm(p + vec2(uTime * .02, -uTime * .008) + fbm(p * 1.3 - uTime * .012));
   float n2 = fbm(p * .6 - vec2(uTime * .01, 0.));
   vec3 milk = vec3(.885, .898, .912), mist = vec3(.745, .776, .816), slate = vec3(.66, .70, .755);
+  // after dark the ground is night slate and the mist is the part that catches lamplight
+  milk = mix(milk, vec3(.071, .086, .110), uDark); mist = mix(mist, vec3(.125, .145, .180), uDark); slate = mix(slate, vec3(.185, .205, .250), uDark);
   vec3 bg = mix(milk, mist, smoothstep(.35, .85, n) * .9 * uGlow);
   bg = mix(bg, slate, smoothstep(.55, .95, n2) * .4 * uGlow);
   gl_FragColor = vec4(bg, 1.);
@@ -99,33 +98,33 @@ void main() {
 const postFrag = /* glsl */`
 uniform sampler2D tScene, tFog;
 uniform vec2 uRes, uMouse;
-uniform float uTime, uVel, uWipe, uGlow;
+uniform float uTime, uVel, uWipe, uGlow, uDark;
 varying vec2 vUv;
 ${NOISE}
 void main() {
   vec2 uv = vUv, asp = vec2(uRes.x / uRes.y, 1.);
   vec3 bg = texture2D(tFog, uv).rgb;
   float md = distance(uv * asp, uMouse * asp);
-  bg += vec3(.97, .99, 1.) * .08 * exp(-md * md * 6.) * uGlow; // a pale light that follows the pointer
+  bg += mix(vec3(.97, .99, 1.) * .08, vec3(.62, .66, .80) * .07, uDark) * exp(-md * md * 6.) * uGlow; // a pale light that follows the pointer
   float ca = uVel * .003;
   vec4 s = texture2D(tScene, uv);
   vec3 sc = vec3(texture2D(tScene, uv + vec2(0., ca)).r, s.g, texture2D(tScene, uv - vec2(0., ca)).b);
   vec3 col = bg * (1. - s.a) + sc;
   float v = smoothstep(1.3, .35, length((uv - .5) * asp * vec2(.85, 1.1)));
-  col = mix(col * vec3(.87, .89, .92), col, v); // a soft slate edge rather than a dark vignette
+  col = mix(col * mix(vec3(.87, .89, .92), vec3(.62, .64, .70), uDark), col, v); // a soft slate edge rather than a dark vignette
   // curtain: 0→1 rises from the bottom, 1→2 leaves through the top, with a ragged rim.
   // Its noise is only computed while a page transition is running.
   if (uWipe > 0. && uWipe < 2.) {
     float edge = uv.y + (fbm(vec2(uv.x * 3.5, uTime * .4)) - .5) * .16, cov, rim;
     if (uWipe <= 1.) { float h = mix(-.15, 1.15, uWipe); cov = smoothstep(h + .005, h - .005, edge); rim = exp(-abs(edge - h) * 60.); }
     else { float h = mix(-.15, 1.15, uWipe - 1.); cov = smoothstep(h - .005, h + .005, edge); rim = exp(-abs(edge - h) * 60.); }
-    vec3 curtain = mix(vec3(.80, .83, .87), vec3(.66, .70, .76), fbm(uv * asp * 4. + uTime * .05)); // fog rolling in
-    col = mix(mix(col, curtain, cov), vec3(.33, .39, .50), rim * .45);
+    vec3 curtain = mix(mix(vec3(.80, .83, .87), vec3(.15, .175, .215), uDark), mix(vec3(.66, .70, .76), vec3(.09, .105, .135), uDark), fbm(uv * asp * 4. + uTime * .05)); // fog rolling in
+    col = mix(mix(col, curtain, cov), mix(vec3(.33, .39, .50), vec3(.52, .56, .74), uDark), rim * .45);
   }
-  col += (hash(uv * uRes + fract(uTime * 7.) * 91.) - .5) * .04;
+  col += (hash(uv * uRes + fract(uTime * 7.) * 91.) - .5) * mix(.04, .03, uDark);
   gl_FragColor = vec4(col, 1.);
 }`;
-export const post = { wipe: 0, glow: 1 };
+export const post = { wipe: 0, glow: 1, dark: document.documentElement.dataset.theme === 'dark' ? 1 : 0 };
 
 /* ---------- textures: shared, reference counted, least-recently-used eviction ---------- */
 const cache = new Map();
@@ -163,7 +162,7 @@ export class Plane {
     this.u = {
       uTex: { value: blank }, uHas: { value: 0 }, uSize: { value: new THREE.Vector2(1, 1) }, uMouse: { value: new THREE.Vector2(.5, .5) },
       uHover: { value: 0 }, uReveal: { value: opts.reveal === false ? 1 : 0 }, uVel: { value: 0 }, uFly: { value: 0 },
-      uAlpha: { value: 1 }, uRadius: { value: opts.radius ?? 4 }, uTime: { value: 0 },
+      uAlpha: { value: 1 }, uRadius: { value: opts.radius ?? 4 }, uTime: { value: 0 }, uDark: { value: post.dark },
     };
     this.mesh = new THREE.Mesh(geo, new THREE.ShaderMaterial({
       uniforms: this.u, vertexShader: tileVert, fragmentShader: tileFrag, transparent: true, depthTest: false, depthWrite: false,
@@ -258,14 +257,14 @@ export function init(canvas) {
   rt = new THREE.WebGLRenderTarget(1, 1, { depthBuffer: false });
   postMat = new THREE.ShaderMaterial({
     vertexShader: postVert, fragmentShader: postFrag, depthTest: false, depthWrite: false,
-    uniforms: { tScene: { value: rt.texture }, tFog: { value: null }, uRes: { value: new THREE.Vector2() }, uMouse: { value: mouse }, uTime: { value: 0 }, uVel: { value: 0 }, uWipe: { value: 0 }, uGlow: { value: 1 } },
+    uniforms: { tScene: { value: rt.texture }, tFog: { value: null }, uRes: { value: new THREE.Vector2() }, uMouse: { value: mouse }, uTime: { value: 0 }, uVel: { value: 0 }, uWipe: { value: 0 }, uGlow: { value: 1 }, uDark: { value: 0 } },
   });
   postScene = new THREE.Scene(); postScene.add(new THREE.Mesh(new THREE.PlaneGeometry(2, 2), postMat));
   fogRT = new THREE.WebGLRenderTarget(1, 1, { depthBuffer: false });
   postMat.uniforms.tFog.value = fogRT.texture;
   fogMat = new THREE.ShaderMaterial({
     vertexShader: postVert, fragmentShader: fogFrag, depthTest: false, depthWrite: false,
-    uniforms: { uRes: { value: new THREE.Vector2() }, uTime: { value: 0 }, uScroll: { value: 0 }, uGlow: { value: 1 } },
+    uniforms: { uRes: { value: new THREE.Vector2() }, uTime: { value: 0 }, uScroll: { value: 0 }, uGlow: { value: 1 }, uDark: { value: 0 } },
   });
   fogScene = new THREE.Scene(); fogScene.add(new THREE.Mesh(new THREE.PlaneGeometry(2, 2), fogMat));
   postCam = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
@@ -325,15 +324,15 @@ function frame(now) {
     p.mesh.scale.set(r.w, r.h, 1);
     p.hover += (p.hoverT - p.hover) * (reduced ? 1 : .09);
     p.u.uMouse.value.lerp(p.mouseT, .15);
-    p.u.uHover.value = p.hover; p.u.uVel.value = p.mode === 'dom' ? vel : 0; p.u.uTime.value = time;
+    p.u.uHover.value = p.hover; p.u.uVel.value = p.mode === 'dom' ? vel : 0; p.u.uTime.value = time; p.u.uDark.value = post.dark;
     p.u.uSize.value.set(r.w, r.h);
   }
   const u = postMat.uniforms;
-  u.uTime.value = time; u.uVel.value = vel; u.uWipe.value = post.wipe; u.uGlow.value = post.glow;
+  u.uTime.value = time; u.uVel.value = vel; u.uWipe.value = post.wipe; u.uGlow.value = post.glow; u.uDark.value = post.dark;
   // when nothing is moving, only the mist is animating: draw every other frame (scroll and the cursor still run every frame)
   const busy = tweens.size || Math.abs(scrollVel) > .05 || [...planes].some(p => p.hoverT || p.hover > .01 || p.flight);
   if (!busy && !reduced) { idleSkip = !idleSkip; if (idleSkip) return } else idleSkip = false;
-  const fu = fogMat.uniforms; fu.uTime.value = time; fu.uScroll.value = scrollPos; fu.uGlow.value = post.glow;
+  const fu = fogMat.uniforms; fu.uTime.value = time; fu.uScroll.value = scrollPos; fu.uGlow.value = post.glow; fu.uDark.value = post.dark;
   renderer.setRenderTarget(fogRT); renderer.render(fogScene, postCam);
   renderer.setRenderTarget(rt); renderer.setClearColor(0x000000, 0); renderer.clear(); renderer.render(scene, camera);
   renderer.setRenderTarget(null); renderer.render(postScene, postCam);

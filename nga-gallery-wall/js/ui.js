@@ -1,7 +1,7 @@
 // Persistent chrome: header search, filter drawer, cursor, toast, loader. Lives outside the barba container.
 import { T, esc, state as dataState, onData } from './data.js';
 import { savedCount, onBoards } from './store.js';
-import { onFrame } from './gl.js';
+import { onFrame, tween, ease, post } from './gl.js';
 
 const $ = id => document.getElementById(id);
 const FIELDS = { q: 'q', cls: 'f-cls', style: 'f-style', tech: 'f-tech', theme: 'f-theme', nat: 'f-nat', artist: 'f-artist', medium: 'f-medium', orient: 'f-orient', from: 'f-from', to: 'f-to', sort: 'f-sort' };
@@ -58,6 +58,7 @@ export function initUI() {
   // header condenses after scrolling
   onFrame(() => document.body.classList.toggle('scrolled', scrollY > 40));
   initCursor();
+  initTheme();
   // fill filter menus once the tables arrive, then restore the last session's filters
   onData(kind => {
     if (kind === 'meta') {
@@ -113,4 +114,27 @@ function initCursor() {
   document.addEventListener('pointerleave', () => c.classList.add('away'));
   document.addEventListener('pointerenter', () => c.classList.remove('away'));
   onFrame(() => { cx += (x - cx) * .2; cy += (y - cy) * .2; c.style.transform = `translate3d(${cx}px, ${cy}px, 0)` });
+}
+
+/* light and dark: the choice is saved; with none saved the page follows the system setting.
+   CSS colours cross-fade, and the WebGL fog and curtain tween between their day and night palettes. */
+function initTheme() {
+  const root = document.documentElement, btn = $('theme-toggle'), meta = document.querySelector('meta[name="theme-color"]');
+  const sys = matchMedia('(prefers-color-scheme: dark)');
+  const label = () => btn.setAttribute('aria-label', root.dataset.theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode');
+  let fadeT;
+  const apply = (t, { save = false } = {}) => {
+    if (t === root.dataset.theme) return;
+    root.classList.add('theme-fade'); clearTimeout(fadeT); fadeT = setTimeout(() => root.classList.remove('theme-fade'), 700);
+    root.dataset.theme = t; meta.content = t === 'dark' ? '#12161c' : '#e1e5ea';
+    tween(post, 'dark', t === 'dark' ? 1 : 0, .9, ease.inOut);
+    if (save) try { ls.setItem('gw-theme', t) } catch {}
+    label();
+  };
+  label();
+  btn.addEventListener('click', () => {
+    btn.classList.remove('spin'); void btn.offsetWidth; btn.classList.add('spin');
+    apply(root.dataset.theme === 'dark' ? 'light' : 'dark', { save: true });
+  });
+  sys.addEventListener?.('change', e => { let saved = null; try { saved = ls.getItem('gw-theme') } catch {} if (!saved) apply(e.matches ? 'dark' : 'light') });
 }
