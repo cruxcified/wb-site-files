@@ -4,6 +4,11 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#e1e5ea">
+  <script>/* pick the theme before first paint so the page never flashes the wrong one */
+    (function () { var t; try { t = localStorage.getItem('gw-theme') } catch (e) {}
+      if (t !== 'light' && t !== 'dark') t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      document.documentElement.dataset.theme = t;
+      if (t === 'dark') document.querySelector('meta[name="theme-color"]').content = '#12161c'; })();</script>
   <title>Gallery Wall</title>
   <meta name="description" content="A searchable wall of the National Gallery of Art's open-access, public domain artworks, for finding book cover art.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -20,7 +25,10 @@
   <canvas id="gl" aria-hidden="true"></canvas>
 
   <header class="top">
-    <a class="mark" href="./" aria-label="Gallery Wall, back to the wall"><em>Gallery</em> Wall</a>
+    <div class="brand">
+      <a class="crumb" href="../" data-barba-prevent="self">Lab</a><span class="slash" aria-hidden="true">/</span>
+      <a class="mark" href="./" aria-label="Gallery Wall, back to the wall"><em>Gallery</em> Wall</a>
+    </div>
     <label class="search" for="q">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
       <input id="q" type="search" placeholder="Search storm at sea, ravens, moonlight, Turner" autocomplete="off" spellcheck="false">
@@ -30,6 +38,10 @@
       <button type="button" class="pill" id="filter-toggle" aria-expanded="false" aria-controls="drawer">Filters<span id="filter-count" class="n"></span></button>
       <a class="pill" href="./" data-nav="wall">Wall</a>
       <a class="pill" href="boards.html" data-nav="boards">Boards<span id="saved-count" class="n"></span></a>
+      <button type="button" class="pill icon" id="theme-toggle" aria-label="Switch to dark mode">
+        <svg class="moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M20.5 14.5A8.5 8.5 0 0 1 9.5 3.5a8.5 8.5 0 1 0 11 11Z"/></svg>
+        <svg class="sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M5.3 18.7l1.6-1.6M17.1 6.9l1.6-1.6"/></svg>
+      </button>
     </nav>
   </header>
 

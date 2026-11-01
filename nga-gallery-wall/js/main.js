@@ -82,7 +82,7 @@ function lift(p) {
 barba.init({
   timeout: 8000,
   debug: /[?&]debug\b/.test(location.search),
-  prevent: ({ el }) => el.closest('.save') || el.hasAttribute('download'),
+  prevent: ({ el }) => el.closest('.save') || el.hasAttribute('download') || el.classList.contains('crumb'),
   transitions: [
     {
       name: 'into-artwork',
