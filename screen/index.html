@@ -87,13 +87,15 @@ body.focus #marks{opacity:.4}
   #indicator{left:0 !important;right:0;top:auto !important;bottom:calc(14px + env(safe-area-inset-bottom, 0px));text-align:center}
 }
 
-/* summon button: invisible until the mouse moves; always faintly there on touch screens */
-#summon{position:fixed;right:max(14px, env(safe-area-inset-right, 0px));bottom:calc(12px + env(safe-area-inset-bottom, 0px));z-index:3;
-  font:12px/1 var(--font);letter-spacing:.08em;color:var(--faint);background:none;border:0;padding:10px;cursor:pointer;
-  opacity:0;transition:opacity .6s}
-#summon.on{opacity:1}
-#summon:focus-visible{opacity:1;outline:1px solid var(--faint)}
-@media (hover:none){ #summon{opacity:.7} }
+/* menu button: a faint ☰ in the top-left that opens the command menu (same as Cmd/Ctrl+K).
+   It rests almost invisible and wakes up when the mouse moves or it's hovered. */
+#summon{position:fixed;left:max(10px, env(safe-area-inset-left, 0px));top:calc(10px + env(safe-area-inset-top, 0px));z-index:3;
+  width:40px;height:40px;display:grid;place-content:center;gap:5px;background:none;border:0;border-radius:4px;padding:0;cursor:pointer;
+  opacity:.28;transition:opacity .5s, background .2s}
+#summon span{display:block;width:18px;height:1.5px;background:var(--ink)}
+#summon.on{opacity:.6}
+#summon:hover,#summon:focus-visible{opacity:1;background:var(--hi);outline:none}
+@media (hover:none){ #summon{opacity:.55} }
 
 /* command palette */
 #palette{position:fixed;inset:0;z-index:10;display:flex;justify-content:center;align-items:flex-start;
@@ -150,7 +152,7 @@ body.focus #marks{opacity:.4}
 </main>
 
 <div id="indicator" aria-live="polite"></div>
-<button id="summon" type="button" aria-label="Open commands">⌘K</button>
+<button id="summon" type="button" aria-label="Menu" title="Menu"><span></span><span></span><span></span></button>
 
 <div id="palette" hidden>
   <div class="pal" role="dialog" aria-label="Commands">
@@ -246,7 +248,7 @@ const script = $('script'), sheet = $('sheet'), marks = $('marks'), ghostEl = $(
 const indicator = $('indicator'), summon = $('summon');
 const palette = $('palette'), palInput = $('pal-input'), palList = $('pal-list'), palMeta = $('pal-meta');
 const touchOnly = matchMedia('(hover: none)').matches;
-summon.textContent = touchOnly ? '⋯' : isMac ? '⌘K' : 'Ctrl K';
+summon.title = touchOnly ? 'Menu' : 'Menu (' + (isMac ? '⌘K' : 'Ctrl+K') + ')';
 
 /* =====================================================================
    3. DOCUMENT MODEL
@@ -1121,9 +1123,10 @@ document.addEventListener('selectionchange', () => {
 });
 window.addEventListener('resize', () => { clearTimeout(markTimer); markTimer = setTimeout(drawMarks, 120); hideSuggest(); });
 
-// the faint summon hint shows up only when the mouse moves
+// the menu button brightens a little while the mouse moves, then settles back
 let summonTimer = 0;
 document.addEventListener('mousemove', () => { summon.classList.add('on'); clearTimeout(summonTimer); summonTimer = setTimeout(() => summon.classList.remove('on'), 1600); });
+summon.addEventListener('mousedown', e => e.preventDefault());   // keep the caret in the script
 summon.addEventListener('click', () => openPalette());
 
 /* =====================================================================
@@ -1152,7 +1155,7 @@ function commands(){
     { label: 'Save', hint: MOD + 'S', run: () => { closePalette(); save(); flash(store.ok ? 'Saved in this browser' : 'Not saving: storage is off'); } },
     { label: 'Back up all scripts (.json)', run: () => backupAll() },
     { label: 'Open a file or restore a backup', run: () => { closePalette(); $('file').click(); } },
-    { group: 'View' },
+    { group: 'Settings' },
     { label: 'Toggle dark mode', hint: isDark() ? 'on' : 'off', run: () => { closePalette(); toggleDark(); } },
     { label: 'Toggle focus mode', hint: prefs.focus ? 'on' : 'off', run: () => { closePalette(); toggleFocus(); } },
     { label: 'Keyboard shortcuts', run: () => showHelp() },
@@ -1308,7 +1311,7 @@ function boot(){
     openScript(index.some(x => x.id === last) ? last : index.slice().sort((a, b) => b.updated - a.updated)[0].id);
   }
   if (!store.ok) setTimeout(() => flash('Storage is off here, so nothing will be saved', 3200), 600);
-  else setTimeout(() => flash(touchOnly ? 'Tap ⋯ for commands' : MOD + 'K for commands', 2200), 500);
+  else setTimeout(() => flash(touchOnly ? 'Tap ☰ for the menu' : MOD + 'K for commands', 2200), 500);
   // fonts can arrive after first paint and nudge line heights
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => drawMarks());
 }

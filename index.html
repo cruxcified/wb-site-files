@@ -92,6 +92,22 @@ main.col{margin-top:28px}
 }
 @media (prefers-reduced-motion:reduce){ body::after{animation:none} }
 .no-gl .fig,.no-gl .spacer{display:none}
+
+/* Desktop: the whole index fits in one screen. Spacing and the entry names scale
+   with the window's height, and on shorter screens each description keeps to one line. */
+@media (min-width:1001px){
+  .hub{gap:clamp(10px, 2.6vh, 28px);padding-block:clamp(12px, 2.8vh, 28px) clamp(12px, 2.4vh, 24px)}
+  .title{margin-top:clamp(6px, 1.4vh, 14px)}
+  main.col{margin-top:clamp(0px, 2vh, 28px)}
+  .intro{margin-bottom:clamp(8px, 2vh, 22px);max-width:62ch}
+  .row{padding-block:clamp(3px, calc(1.6vh - 6px), 12px)}
+  .name{font-size:clamp(18px, min(2.1vw, 3.6vh), 40px);line-height:1.05}
+  .menu-head{padding-bottom:clamp(3px, .6vh, 6px)}
+}
+@media (min-width:1001px) and (max-height:1150px){
+  .desc{margin-top:1px;font-size:13px;max-width:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .row{grid-template-columns:2.6em minmax(0, 1fr) auto}
+}
 </style>
 </head>
 <body>
@@ -131,7 +147,7 @@ main.col{margin-top:28px}
       </a></li>
       <li><a class="row" href="/screen/" data-shape="page">
         <span class="key">[6]</span><span class="name">Screen</span><span class="dest">/screen</span>
-        <span class="desc">A quiet screenwriting page. Tab and Enter do the formatting, and it prints to a proper script PDF.</span>
+        <span class="desc">A quiet screenwriting page that prints a proper script PDF.</span>
       </a></li>
       <li><a class="row" href="https://wboechler.com/" data-shape="lens">
         <span class="key">[7]</span><span class="name">Creative Portfolio</span><span class="dest">wboechler.com</span>
