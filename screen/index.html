@@ -161,7 +161,7 @@ body.focus #marks{opacity:.4}
 </div>
 
 <div id="print" aria-hidden="true"></div>
-<input id="file" type="file" accept=".fountain,.txt,.md,.text,text/plain" hidden>
+<input id="file" type="file" accept=".fountain,.txt,.md,.text,.json,text/plain,application/json" hidden>
 
 <script>
 (() => {
@@ -893,14 +893,104 @@ function parseText(src){
   return lines.length >= 3 && deep / lines.length > .25 ? parseIndented(src) : parseFountain(src);
 }
 
-function download(name, text){
+// Inside a claude.ai preview the page can't start downloads itself, so it asks the
+// viewer through the "downloads" capability. On the Lab site it's a normal download.
+let viewerDownloads = null;
+const inPreview = !!(window.claude && window.claude.use);
+if (inPreview) window.claude.use('downloads').then(d => { viewerDownloads = d; }, () => {});
+
+async function download(name, data, mime = 'text/plain;charset=utf-8'){
   closePalette();
+  if (inPreview){
+    if (!viewerDownloads) return flash('Downloads are off in this preview');
+    try { await viewerDownloads.save({ filename: name.replace(/\.fountain$/, '.fountain.txt'), data }); flash('Saved ' + name); }
+    catch (e){ flash(e && e.code === 'declined' ? 'Download cancelled' : 'Downloads are off in this preview'); }
+    return;
+  }
   try {
-    const url = URL.createObjectURL(new Blob([text], { type: 'text/plain;charset=utf-8' }));
+    const url = URL.createObjectURL(new Blob([data], { type: mime }));
     const a = document.createElement('a'); a.href = url; a.download = name; document.body.appendChild(a); a.click(); a.remove();
-    setTimeout(() => URL.revokeObjectURL(url), 2000);
-    flash('Exported ' + name);
+    setTimeout(() => URL.revokeObjectURL(url), 4000);
+    flash('Saved ' + name);
   } catch (e){ flash('Download blocked here. Try "Copy as Fountain"'); }
+}
+
+/* ---------- Direct PDF: writes the paginated pages straight into a PDF file ----------
+   No print dialog and no browser settings involved, so margins and page breaks are exact
+   in every browser. It uses PDF's built-in Courier (the same 10-characters-per-inch
+   metrics as Courier Prime), so nothing has to be embedded and the file stays tiny.
+   Coordinates are PDF points (72 per inch) measured from the BOTTOM-left of the page. */
+const WIN_ANSI = { '‘': 0x91, '’': 0x92, '“': 0x93, '”': 0x94, '–': 0x96, '—': 0x97, '…': 0x85, '•': 0x95, '€': 0x80, ' ': 0x20 };
+function pdfString(s){
+  let out = '';
+  for (const ch of s){
+    let c = ch.codePointAt(0);
+    if (WIN_ANSI[ch]) c = WIN_ANSI[ch]; else if (c > 255 || (c < 32)) c = 63;   // anything else becomes "?"
+    const t = String.fromCharCode(c);
+    out += (t === '(' || t === ')' || t === '\\') ? '\\' + t : t;
+  }
+  return '(' + out + ')';
+}
+function makePDF(pages, title){
+  const PT = 72, H = PAGE.h * PT, LH = PT / LPI, CHAR = PT / CPI;  // 12pt line, 7.2pt character
+  const BASE = 9;                                                    // baseline sits 9pt into each 12pt line
+  const textRight = (PAGE.w - PAGE.right) * PT;                      // 7.5in
+  const objs = [];                                                   // objs[n-1] = body of object n
+  const add = body => { objs.push(body); return objs.length; };
+  const catalog = add(null), pagesObj = add(null);
+  const font = add('<< /Type /Font /Subtype /Type1 /BaseFont /Courier /Encoding /WinAnsiEncoding >>');
+  const kids = [];
+  pages.forEach((pg, n) => {
+    const ops = ['BT', '/F1 12 Tf'];
+    const put = (x, topY, str) => ops.push(`1 0 0 1 ${x.toFixed(2)} ${(H - topY - BASE).toFixed(2)} Tm ${pdfString(str)} Tj`);
+    if (n) { const num = (n + 1) + '.'; put(textRight - num.length * CHAR, .5 * PT, num); }
+    pg.forEach((l, k) => {
+      if (l.t === 'blank' || !l.s) return;
+      const top = PAGE.top * PT + k * LH;
+      const cfg = l.t === 'more' ? EL.character : EL[l.t];
+      const x = cfg.right ? textRight - l.s.length * CHAR : cfg.left * PT;
+      put(x, top, l.s);
+    });
+    ops.push('ET');
+    const stream = ops.join('\n');
+    const content = add(`<< /Length ${stream.length} >>\nstream\n${stream}\nendstream`);
+    kids.push(add(`<< /Type /Page /Parent ${pagesObj} 0 R /MediaBox [0 0 ${PAGE.w * PT} ${H}] /Resources << /Font << /F1 ${font} 0 R >> >> /Contents ${content} 0 R >>`));
+  });
+  objs[catalog - 1] = `<< /Type /Catalog /Pages ${pagesObj} 0 R >>`;
+  objs[pagesObj - 1] = `<< /Type /Pages /Kids [${kids.map(k => k + ' 0 R').join(' ')}] /Count ${kids.length} >>`;
+  const info = add(`<< /Title ${pdfString(title || 'Screenplay')} /Creator (Screen, lab.wboechler.com) >>`);
+  let out = '%PDF-1.4\n%âãÏÓ\n';
+  const offsets = objs.map((body, i) => { const at = out.length; out += `${i + 1} 0 obj\n${body}\nendobj\n`; return at; });
+  const xref = out.length;
+  out += `xref\n0 ${objs.length + 1}\n0000000000 65535 f \n` + offsets.map(o => String(o).padStart(10, '0') + ' 00000 n \n').join('');
+  out += `trailer\n<< /Size ${objs.length + 1} /Root ${catalog} 0 R /Info ${info} 0 R >>\nstartxref\n${xref}\n%%EOF\n`;
+  const bytes = new Uint8Array(out.length);                          // every character is one byte
+  for (let i = 0; i < out.length; i++) bytes[i] = out.charCodeAt(i) & 255;
+  return bytes;
+}
+function downloadPDF(){
+  const pages = paginate(serialize());
+  download(fileName('.pdf'), new Blob([makePDF(pages, cur && cur.title)], { type: 'application/pdf' }), 'application/pdf');
+}
+
+/* ---------- Backups: every script in one .json file, and back again ---------- */
+function backupAll(){
+  save(); syncIndex();
+  const scripts = index.map(m => ({ title: m.title, created: m.created, updated: m.updated, els: (readDoc(m.id) || { els: [] }).els }));
+  const stamp = new Date().toISOString().slice(0, 10);
+  download(`Screen backup ${stamp}.json`, JSON.stringify({ app: 'screen', version: 1, saved: Date.now(), scripts }, null, 1), 'application/json');
+}
+function restoreBackup(data){
+  const list = (data.scripts || []).filter(x => x && Array.isArray(x.els));
+  if (!list.length) return flash('No scripts in that backup');
+  let first = null;
+  for (const x of list){
+    const id = newId(), meta = { id, title: uniqueTitle(String(x.title || 'Restored')), created: x.created || Date.now(), updated: x.updated || Date.now(), pages: 1 };
+    writeDoc(id, { els: x.els.filter(e => Array.isArray(e) && EL[e[0]]).map(e => [e[0], String(e[1] || '')]) });
+    updIndex(l => l.push(meta)); first = first || id;
+  }
+  openScript(first, true);
+  flash(`Restored ${list.length} ${list.length === 1 ? 'script' : 'scripts'}`, 2400);
 }
 const fileName = ext => (cur ? cur.title : 'script').replace(/[\\/:*?"<>|]+/g, '').trim().replace(/\s+/g, ' ') + ext;
 
@@ -1053,11 +1143,15 @@ function commands(){
     { label: 'Delete script', run: () => confirmDelete() },
     { label: 'Clear script', hint: MOD + '⇧⌫', run: () => { restoreCaret(); clearScript(); } },
     { group: 'Export' },
-    { label: 'Export PDF (print)', hint: MOD + 'P', run: () => { closePalette(); exportPDF(); } },
-    { label: 'Export Markdown (.md)', run: () => download(fileName('.md'), toFountain(serialize(), cur.title, true)) },
-    { label: 'Export Fountain (.fountain)', run: () => download(fileName('.fountain'), toFountain(serialize(), cur.title)) },
+    { label: 'Download PDF', run: () => downloadPDF() },
+    ...(inPreview ? [] : [{ label: 'Print, or save as PDF in Courier Prime', hint: MOD + 'P', run: () => { closePalette(); exportPDF(); } }]),
+    { label: 'Download Fountain (.fountain)', run: () => download(fileName('.fountain'), toFountain(serialize(), cur.title)) },
+    { label: 'Download Markdown (.md)', run: () => download(fileName('.md'), toFountain(serialize(), cur.title, true)) },
     { label: 'Copy as Fountain', run: () => copyText(toFountain(serialize(), cur.title)) },
-    { label: 'Import Fountain or text file', run: () => { closePalette(); $('file').click(); } },
+    { group: 'Saving' },
+    { label: 'Save', hint: MOD + 'S', run: () => { closePalette(); save(); flash(store.ok ? 'Saved in this browser' : 'Not saving: storage is off'); } },
+    { label: 'Back up all scripts (.json)', run: () => backupAll() },
+    { label: 'Open a file or restore a backup', run: () => { closePalette(); $('file').click(); } },
     { group: 'View' },
     { label: 'Toggle dark mode', hint: isDark() ? 'on' : 'off', run: () => { closePalette(); toggleDark(); } },
     { label: 'Toggle focus mode', hint: prefs.focus ? 'on' : 'off', run: () => { closePalette(); toggleFocus(); } },
@@ -1133,7 +1227,8 @@ function showHelp(){
     ['→', 'accept the faint suggestion'],
     ['↑ ↓ then Enter', 'pick from several suggestions'],
     [MOD + 'K', 'commands'],
-    [MOD + 'P', 'print or save as PDF'],
+    [MOD + 'P', 'print, or save as PDF from the print dialog'],
+    [MOD + 'S', 'save (it also saves as you type)'],
     [MOD + 'Z / ' + MOD + '⇧Z', 'undo / redo'],
     [MOD + '⇧⌫', 'clear the script'],
   ];
@@ -1166,13 +1261,17 @@ palette.addEventListener('mousedown', e => { if (e.target === palette){ e.preven
 document.addEventListener('keydown', e => {
   const mod = e.metaKey || e.ctrlKey;
   if (mod && e.key.toLowerCase() === 'k'){ e.preventDefault(); return openPalette(); }
-  if (mod && e.key.toLowerCase() === 's'){ e.preventDefault(); save(); return flash(store.ok ? 'Saved' : 'Not saving: storage is off'); }
+  if (mod && e.key.toLowerCase() === 's'){ e.preventDefault(); save(); return flash(store.ok ? 'Saved in this browser' : 'Not saving: storage is off'); }
   if (mod && e.key.toLowerCase() === 'p'){ buildPrint(); }
 });
 
 $('file').addEventListener('change', async e => {
   const f = e.target.files[0]; e.target.value = ''; if (!f) return;
-  const text = await f.text(), parsed = parseText(text);
+  const text = await f.text();
+  if (/\.json$/i.test(f.name) || /^\s*\{/.test(text)){
+    try { const data = JSON.parse(text); if (data && data.app === 'screen') return restoreBackup(data); } catch (err) {}
+  }
+  const parsed = parseText(text);
   if (!parsed.els.length) return flash('Nothing to import in that file');
   createScript(uniqueTitle(parsed.title || f.name.replace(/\.[^.]+$/, '')), parsed.els);
   flash('Imported ' + f.name);
@@ -1200,6 +1299,9 @@ function sample(){
 
 function boot(){
   applyPrefs();
+  // Ask the browser to treat this site's storage as "persistent" so it isn't cleared
+  // to free up space. Clearing site data by hand still erases it: back up with Cmd/Ctrl+K.
+  try { if (store.ok && navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(() => {}); } catch (e) {}
   if (!index.length) createScript('Sample Scene', sample(), { sample: true });
   else {
     const last = store.get(KEY.last);
