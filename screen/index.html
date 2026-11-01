@@ -87,13 +87,15 @@ body.focus #marks{opacity:.4}
   #indicator{left:0 !important;right:0;top:auto !important;bottom:calc(14px + env(safe-area-inset-bottom, 0px));text-align:center}
 }
 
-/* summon button: invisible until the mouse moves; always faintly there on touch screens */
-#summon{position:fixed;right:max(14px, env(safe-area-inset-right, 0px));bottom:calc(12px + env(safe-area-inset-bottom, 0px));z-index:3;
-  font:12px/1 var(--font);letter-spacing:.08em;color:var(--faint);background:none;border:0;padding:10px;cursor:pointer;
-  opacity:0;transition:opacity .6s}
-#summon.on{opacity:1}
-#summon:focus-visible{opacity:1;outline:1px solid var(--faint)}
-@media (hover:none){ #summon{opacity:.7} }
+/* menu button: a faint ☰ in the top-left that opens the command menu (same as Cmd/Ctrl+K).
+   It rests almost invisible and wakes up when the mouse moves or it's hovered. */
+#summon{position:fixed;left:max(10px, env(safe-area-inset-left, 0px));top:calc(10px + env(safe-area-inset-top, 0px));z-index:3;
+  width:40px;height:40px;display:grid;place-content:center;gap:5px;background:none;border:0;border-radius:4px;padding:0;cursor:pointer;
+  opacity:.28;transition:opacity .5s, background .2s}
+#summon span{display:block;width:18px;height:1.5px;background:var(--ink)}
+#summon.on{opacity:.6}
+#summon:hover,#summon:focus-visible{opacity:1;background:var(--hi);outline:none}
+@media (hover:none){ #summon{opacity:.55} }
 
 /* command palette */
 #palette{position:fixed;inset:0;z-index:10;display:flex;justify-content:center;align-items:flex-start;
@@ -115,6 +117,38 @@ body.focus #marks{opacity:.4}
 #pal-list li.note{cursor:default;color:var(--faint)}
 #pal-list li.key .l{white-space:normal}
 
+/* title page editor: a sheet of paper laid out like the printed title page */
+#tp{position:fixed;inset:0;z-index:9;display:flex;justify-content:center;align-items:center;background:var(--paper);
+  padding:calc(56px + env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) calc(16px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px));overflow-y:auto}
+#tp[hidden]{display:none}
+.tp-sheet{position:relative;width:min(100%, calc((100vh - 120px) * 8.5 / 11), 680px);aspect-ratio:8.5 / 11;margin:auto;
+  border:1px solid var(--panel-line);background:var(--panel);box-shadow:0 10px 40px rgba(0,0,0,.07);
+  font-size:clamp(12px, 1.9vh, 15px)}
+/* the inner box is the 6x9in text area: 1in top/bottom, 1.5in left, 1in right of an 8.5x11 sheet */
+.tp-inner{position:absolute;top:9.09%;bottom:9.09%;left:17.65%;right:11.76%}
+.tp-sheet input,.tp-sheet textarea{font:inherit;color:var(--ink);background:transparent;border:0;border-radius:2px;padding:2px 4px;outline:none;width:100%}
+.tp-sheet input:focus,.tp-sheet textarea:focus{background:var(--hi)}
+.tp-sheet ::placeholder{color:var(--ghost)}
+.tp-mid{position:absolute;left:0;right:0;top:33.3%;display:flex;flex-direction:column;align-items:stretch;gap:.3em;text-align:center}
+.tp-mid input{text-align:center}
+#tp-title{text-transform:uppercase;font-weight:700}
+.tp-gap{height:1.4em}
+.tp-foot{position:absolute;left:0;right:0;bottom:0;display:flex;gap:16px;align-items:flex-end}
+#tp-contact{resize:none;min-height:5.4em;line-height:1.35;flex:1}
+#tp-date{width:12ch;text-align:right;flex:none}
+.tp-bar{position:fixed;left:0;right:0;top:0;display:flex;justify-content:center;gap:22px;align-items:center;flex-wrap:wrap;
+  padding:calc(14px + env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) 8px max(16px, env(safe-area-inset-left, 0px));
+  font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}
+.tp-bar label{display:flex;gap:8px;align-items:center;cursor:pointer}
+.tp-bar input{accent-color:var(--ink)}
+.tp-bar button{font:inherit;letter-spacing:inherit;text-transform:inherit;color:var(--ink);background:none;border:1px solid var(--panel-line);border-radius:3px;padding:6px 10px;cursor:pointer}
+.tp-bar button:hover,.tp-bar button:focus-visible{background:var(--hi);outline:none}
+@media (max-width:600px){
+  .tp-sheet{aspect-ratio:auto;min-height:72vh;padding:24px 16px;display:flex}
+  .tp-inner{position:static;display:flex;flex-direction:column;flex:1}
+  .tp-mid{position:static;margin-top:16vh} .tp-foot{position:static;margin-top:auto;padding-top:32px}
+}
+
 /* print copy of the script: hidden on screen, built by the paginator before printing */
 #print{display:none}
 
@@ -128,7 +162,7 @@ body.focus #marks{opacity:.4}
 @page{size:8.5in 11in;margin:0}
 @media print{
   html,body{background:#fff !important;color:#000 !important;padding:0 !important}
-  #sheet,#indicator,#summon,#palette{display:none !important}
+  #sheet,#indicator,#summon,#palette,#tp{display:none !important}
   #print{display:block}
   .pp{position:relative;width:8.5in;height:10.99in;overflow:hidden;break-after:page;page-break-after:always;
     font-family:var(--font);font-size:12pt;color:#000}
@@ -136,6 +170,7 @@ body.focus #marks{opacity:.4}
   .pb{position:absolute;top:1in;left:1.5in;width:6in}
   .pl{height:calc(1in / 6);line-height:calc(1in / 6);white-space:pre;overflow:visible}
   .pn{position:absolute;top:.5in;right:1in;line-height:calc(1in / 6)}
+  .tl{position:absolute;left:1.5in;width:6in;height:calc(1in / 6);line-height:calc(1in / 6);white-space:pre}
 }
 </style>
 <style id="el-css"></style>
@@ -150,7 +185,7 @@ body.focus #marks{opacity:.4}
 </main>
 
 <div id="indicator" aria-live="polite"></div>
-<button id="summon" type="button" aria-label="Open commands">⌘K</button>
+<button id="summon" type="button" aria-label="Menu" title="Menu"><span></span><span></span><span></span></button>
 
 <div id="palette" hidden>
   <div class="pal" role="dialog" aria-label="Commands">
@@ -158,6 +193,27 @@ body.focus #marks{opacity:.4}
     <div id="pal-meta"></div>
     <ul id="pal-list" role="listbox"></ul>
   </div>
+</div>
+
+<div id="tp" hidden role="dialog" aria-label="Title page">
+  <div class="tp-bar">
+    <label><input type="checkbox" id="tp-on"> Include in PDF and exports</label>
+    <button type="button" id="tp-done">Back to script (Esc)</button>
+  </div>
+  <div class="tp-sheet"><div class="tp-inner">
+    <div class="tp-mid">
+      <input id="tp-title" placeholder="TITLE" aria-label="Title">
+      <div class="tp-gap"></div>
+      <input id="tp-credit" placeholder="Written by" aria-label="Credit">
+      <input id="tp-author" placeholder="Your name" aria-label="Author">
+      <div class="tp-gap"></div>
+      <input id="tp-source" placeholder="Based on… (optional)" aria-label="Source">
+    </div>
+    <div class="tp-foot">
+      <textarea id="tp-contact" placeholder="Contact: name, email, phone" aria-label="Contact"></textarea>
+      <input id="tp-date" placeholder="Draft date" aria-label="Draft date">
+    </div>
+  </div></div>
 </div>
 
 <div id="print" aria-hidden="true"></div>
@@ -246,7 +302,7 @@ const script = $('script'), sheet = $('sheet'), marks = $('marks'), ghostEl = $(
 const indicator = $('indicator'), summon = $('summon');
 const palette = $('palette'), palInput = $('pal-input'), palList = $('pal-list'), palMeta = $('pal-meta');
 const touchOnly = matchMedia('(hover: none)').matches;
-summon.textContent = touchOnly ? '⋯' : isMac ? '⌘K' : 'Ctrl K';
+summon.title = touchOnly ? 'Menu' : 'Menu (' + (isMac ? '⌘K' : 'Ctrl+K') + ')';
 
 /* =====================================================================
    3. DOCUMENT MODEL
@@ -763,6 +819,31 @@ function paginate(list){
   return pages;
 }
 
+/* ---------- title page ----------
+   Laid out on the same 54-row grid as script pages (row 0 = 1in from the top):
+   the title centred at row 18 (4in down), the credit 4 rows below, the author
+   2 below that, the source 3 further; contact bottom-left and the draft date
+   bottom-right, both ending on the last row. Returns [{row, s, align}]. */
+let titlePage = null;                       // the open script's title page
+const TP_FIELDS = ['title', 'credit', 'author', 'source', 'date', 'contact'];
+const hasTitlePage = tp => !!(tp && tp.on && TP_FIELDS.some(k => (tp[k] || '').trim()));
+function titlePageLines(tp){
+  const out = [], W = Math.round(EL.action.width * CPI);
+  const center = (row, text, caps) => { wrap(printable('action', caps ? text.toUpperCase() : text), 'action').forEach((l, k) => out.push({ row: row + k, s: l.slice(0, W), align: 'center' })); return row + Math.max(1, wrap(text, 'action').length); };
+  let row = 18;
+  if ((tp.title || '').trim()) row = center(row, tp.title, true);
+  row += 3;
+  if ((tp.credit || '').trim()) row = center(row, tp.credit) + 1;
+  if ((tp.author || '').trim()) row = center(row, tp.author);
+  row += 2;
+  if ((tp.source || '').trim()) center(row, tp.source);
+  const contact = (tp.contact || '').split('\n').map(x => x.trim()).filter(Boolean).slice(0, 8);
+  const last = LINES_PER_PAGE - 1;
+  contact.forEach((c, k) => out.push({ row: last - contact.length + 1 + k, s: c.slice(0, 40), align: 'left' }));
+  if ((tp.date || '').trim()) out.push({ row: last, s: tp.date.trim().slice(0, 24), align: 'right' });
+  return out;
+}
+
 /* ---------- on-screen page marks ---------- */
 let pageCount = 1;
 function drawMarks(){
@@ -785,7 +866,9 @@ function drawMarks(){
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 function buildPrint(){
   const pages = paginate(serialize());
-  $('print').innerHTML = pages.map((pg, n) =>
+  const tpHTML = hasTitlePage(titlePage) ? `<section class="pp">${titlePageLines(titlePage).map(l =>
+    `<div class="tl" style="top:${(PAGE.top + l.row / LPI).toFixed(4)}in;text-align:${l.align}">${esc(l.s)}</div>`).join('')}</section>` : '';
+  $('print').innerHTML = tpHTML + pages.map((pg, n) =>
     `<section class="pp">${n ? `<div class="pn">${n + 1}.</div>` : ''}<div class="pb">${
       pg.map(l => l.t === 'blank' ? '<div class="pl"> </div>' : `<div class="pl k-${l.t}">${esc(l.s)}</div>`).join('')
     }</div></section>`).join('');
@@ -801,9 +884,15 @@ function exportPDF(){
 /* =====================================================================
    9. FOUNTAIN / MARKDOWN
    ===================================================================== */
-function toFountain(list, title, md){
+function toFountain(list, title, md, tp){
   const out = [];
-  if (title) out.push(md ? '# ' + title : 'Title: ' + title);
+  if (hasTitlePage(tp)){                      // Fountain title page block
+    const kv = [['Title', tp.title], ['Credit', tp.credit], ['Author', tp.author], ['Source', tp.source], ['Draft date', tp.date]]
+      .filter(([, v]) => (v || '').trim()).map(([k, v]) => `${k}: ${v.trim()}`);
+    const contact = (tp.contact || '').split('\n').map(x => x.trim()).filter(Boolean);
+    if (contact.length) kv.push('Contact:\n' + contact.map(c => '    ' + c).join('\n'));
+    out.push(kv.join('\n'));
+  } else if (title) out.push(md ? '# ' + title : 'Title: ' + title);
   let speech = null;
   const flush = () => { if (speech){ out.push(speech.join('\n')); speech = null; } };
   for (const [t, raw] of list){
@@ -828,9 +917,18 @@ function toFountain(list, title, md){
 // Fountain-ish parser; also does the job for plain pasted text that uses caps for cues.
 function parseFountain(src){
   let text = src.replace(/\r\n?/g, '\n').replace(/\/\*[\s\S]*?\*\//g, '').replace(/\[\[[\s\S]*?\]\]/g, '');
-  const L = text.split('\n'), out = []; let i = 0, title = null;
+  const L = text.split('\n'), out = []; let i = 0, title = null, tp = null;
   if (/^\s*(title|credit|author|authors|source|draft date|date|contact|notes|copyright)\s*:/i.test(L[0] || '')){
-    for (; i < L.length && L[i].trim() !== ''; i++){ const m = L[i].match(/^\s*title\s*:\s*(.*)$/i); if (m && m[1].trim()) title = m[1].trim().replace(/[_*]/g, ''); }
+    // title page: "Key: value", with indented lines continuing the previous key
+    const KEYS = { title: 'title', credit: 'credit', author: 'author', authors: 'author', source: 'source', 'draft date': 'date', date: 'date', contact: 'contact' };
+    tp = { on: true }; let key = null;
+    for (; i < L.length && L[i].trim() !== ''; i++){
+      const m = L[i].match(/^\s*([A-Za-z ]+?)\s*:\s*(.*)$/);
+      const clean = v => v.trim().replace(/[_*]/g, '');
+      if (m && !/^\s{2,}|^\t/.test(L[i])){ key = KEYS[m[1].toLowerCase()] || null; if (key && clean(m[2])) tp[key] = (tp[key] ? tp[key] + '\n' : '') + clean(m[2]); }
+      else if (key) tp[key] = (tp[key] ? tp[key] + (key === 'contact' ? '\n' : ' ') : '') + clean(L[i]);
+    }
+    title = tp.title ? tp.title.replace(/\n/g, ' ') : null;
   }
   const caps = s => { const b = s.replace(/\(.*?\)/g, ''); return /[A-Z]/.test(b) && !/[a-z]/.test(b); };
   let inSpeech = false;
@@ -860,7 +958,7 @@ function parseFountain(src){
     }
     push('action', line);
   }
-  return { title, els: out.map(e => [e[0], e[1]]) };
+  return { title, tp, els: out.map(e => [e[0], e[1]]) };
 }
 
 // Plain text with screenplay indentation (e.g. a .txt export): infer types from the indent.
@@ -931,7 +1029,7 @@ function pdfString(s){
   }
   return '(' + out + ')';
 }
-function makePDF(pages, title){
+function makePDF(pages, title, tp){
   const PT = 72, H = PAGE.h * PT, LH = PT / LPI, CHAR = PT / CPI;  // 12pt line, 7.2pt character
   const BASE = 9;                                                    // baseline sits 9pt into each 12pt line
   const textRight = (PAGE.w - PAGE.right) * PT;                      // 7.5in
@@ -940,6 +1038,20 @@ function makePDF(pages, title){
   const catalog = add(null), pagesObj = add(null);
   const font = add('<< /Type /Font /Subtype /Type1 /BaseFont /Courier /Encoding /WinAnsiEncoding >>');
   const kids = [];
+  const pageObj = ops => {
+    ops.push('ET'); const stream = ops.join('\n');
+    const content = add(`<< /Length ${stream.length} >>\nstream\n${stream}\nendstream`);
+    kids.push(add(`<< /Type /Page /Parent ${pagesObj} 0 R /MediaBox [0 0 ${PAGE.w * PT} ${H}] /Resources << /Font << /F1 ${font} 0 R >> >> /Contents ${content} 0 R >>`));
+  };
+  if (hasTitlePage(tp)){                                             // unnumbered title page first
+    const ops = ['BT', '/F1 12 Tf'];
+    for (const l of titlePageLines(tp)){
+      const w = l.s.length * CHAR, left = PAGE.left * PT;
+      const x = l.align === 'center' ? left + (EL.action.width * PT - w) / 2 : l.align === 'right' ? textRight - w : left;
+      ops.push(`1 0 0 1 ${x.toFixed(2)} ${(H - PAGE.top * PT - l.row * LH - BASE).toFixed(2)} Tm ${pdfString(l.s)} Tj`);
+    }
+    pageObj(ops);
+  }
   pages.forEach((pg, n) => {
     const ops = ['BT', '/F1 12 Tf'];
     const put = (x, topY, str) => ops.push(`1 0 0 1 ${x.toFixed(2)} ${(H - topY - BASE).toFixed(2)} Tm ${pdfString(str)} Tj`);
@@ -951,10 +1063,7 @@ function makePDF(pages, title){
       const x = cfg.right ? textRight - l.s.length * CHAR : cfg.left * PT;
       put(x, top, l.s);
     });
-    ops.push('ET');
-    const stream = ops.join('\n');
-    const content = add(`<< /Length ${stream.length} >>\nstream\n${stream}\nendstream`);
-    kids.push(add(`<< /Type /Page /Parent ${pagesObj} 0 R /MediaBox [0 0 ${PAGE.w * PT} ${H}] /Resources << /Font << /F1 ${font} 0 R >> >> /Contents ${content} 0 R >>`));
+    pageObj(ops);
   });
   objs[catalog - 1] = `<< /Type /Catalog /Pages ${pagesObj} 0 R >>`;
   objs[pagesObj - 1] = `<< /Type /Pages /Kids [${kids.map(k => k + ' 0 R').join(' ')}] /Count ${kids.length} >>`;
@@ -970,13 +1079,13 @@ function makePDF(pages, title){
 }
 function downloadPDF(){
   const pages = paginate(serialize());
-  download(fileName('.pdf'), new Blob([makePDF(pages, cur && cur.title)], { type: 'application/pdf' }), 'application/pdf');
+  download(fileName('.pdf'), new Blob([makePDF(pages, (hasTitlePage(titlePage) && titlePage.title) || (cur && cur.title), titlePage)], { type: 'application/pdf' }), 'application/pdf');
 }
 
 /* ---------- Backups: every script in one .json file, and back again ---------- */
 function backupAll(){
   save(); syncIndex();
-  const scripts = index.map(m => ({ title: m.title, created: m.created, updated: m.updated, els: (readDoc(m.id) || { els: [] }).els }));
+  const scripts = index.map(m => ({ title: m.title, created: m.created, updated: m.updated, els: (readDoc(m.id) || { els: [] }).els, tp: (readDoc(m.id) || {}).tp }));
   const stamp = new Date().toISOString().slice(0, 10);
   download(`Screen backup ${stamp}.json`, JSON.stringify({ app: 'screen', version: 1, saved: Date.now(), scripts }, null, 1), 'application/json');
 }
@@ -986,7 +1095,8 @@ function restoreBackup(data){
   let first = null;
   for (const x of list){
     const id = newId(), meta = { id, title: uniqueTitle(String(x.title || 'Restored')), created: x.created || Date.now(), updated: x.updated || Date.now(), pages: 1 };
-    writeDoc(id, { els: x.els.filter(e => Array.isArray(e) && EL[e[0]]).map(e => [e[0], String(e[1] || '')]) });
+    const tp = x.tp && typeof x.tp === 'object' ? Object.fromEntries(TP_FIELDS.map(k => [k, String(x.tp[k] || '')]).concat([['on', !!x.tp.on]])) : undefined;
+    writeDoc(id, { els: x.els.filter(e => Array.isArray(e) && EL[e[0]]).map(e => [e[0], String(e[1] || '')]), tp });
     updIndex(l => l.push(meta)); first = first || id;
   }
   openScript(first, true);
@@ -1026,7 +1136,7 @@ let saveTimer = 0;
 function save(){
   clearTimeout(saveTimer); if (!cur) return;
   const s = span();
-  writeDoc(cur.id, { els: serialize(), c: s ? s.b : null });
+  writeDoc(cur.id, { els: serialize(), c: s ? s.b : null, tp: titlePage || undefined });
   updIndex(l => { const e = curEntry(l); e.updated = Date.now(); e.pages = pageCount; });
 }
 const saveSoon = () => { clearTimeout(saveTimer); saveTimer = setTimeout(save, 400); };
@@ -1038,16 +1148,16 @@ function openScript(id, focusEnd){
   syncIndex();
   const meta = index.find(x => x.id === id); if (!meta) return;
   const doc = readDoc(id) || { els: [['scene', '']] };
-  cur = meta; store.set(KEY.last, id);
+  cur = meta; store.set(KEY.last, id); titlePage = doc.tp || null;
   render(doc.els); undoStack = []; redoStack = []; grouping = false;
   document.title = meta.title + ' · Screen';
   script.focus({ preventScroll: true });
   if (doc.c && !focusEnd) placeAt(doc.c); else { const l = els()[els().length - 1]; place(l, txt(l).length); }
   after(true);
 }
-function createScript(title, list, extra){
+function createScript(title, list, extra, tp){
   const id = newId(), meta = { id, title, created: Date.now(), updated: Date.now(), pages: 1, ...(extra || {}) };
-  writeDoc(id, { els: list }); updIndex(l => l.unshift(meta));
+  writeDoc(id, { els: list, tp: tp || undefined }); updIndex(l => l.unshift(meta));
   openScript(id, true);
   return meta;
 }
@@ -1121,9 +1231,10 @@ document.addEventListener('selectionchange', () => {
 });
 window.addEventListener('resize', () => { clearTimeout(markTimer); markTimer = setTimeout(drawMarks, 120); hideSuggest(); });
 
-// the faint summon hint shows up only when the mouse moves
+// the menu button brightens a little while the mouse moves, then settles back
 let summonTimer = 0;
 document.addEventListener('mousemove', () => { summon.classList.add('on'); clearTimeout(summonTimer); summonTimer = setTimeout(() => summon.classList.remove('on'), 1600); });
+summon.addEventListener('mousedown', e => e.preventDefault());   // keep the caret in the script
 summon.addEventListener('click', () => openPalette());
 
 /* =====================================================================
@@ -1139,20 +1250,21 @@ function commands(){
     { group: 'Script' },
     { label: 'New script', run: () => askTitle('Name the new script', uniqueTitle('Untitled'), t => createScript(t, [['scene', '']])) },
     { label: 'Rename script', run: () => askTitle('Rename "' + cur.title + '"', cur.title, t => { updIndex(l => { const e = curEntry(l); e.title = t; delete e.sample; }); document.title = t + ' · Screen'; flash('Renamed'); }) },
-    { label: 'Duplicate script', run: () => { save(); closePalette(); createScript(uniqueTitle(cur.title + ' copy'), serialize()); flash('Duplicated'); } },
+    { label: 'Duplicate script', run: () => { save(); closePalette(); createScript(uniqueTitle(cur.title + ' copy'), serialize(), null, titlePage && { ...titlePage }); flash('Duplicated'); } },
     { label: 'Delete script', run: () => confirmDelete() },
+    { label: 'Edit title page', hint: hasTitlePage(titlePage) ? 'on' : 'off', run: () => openTitlePage() },
     { label: 'Clear script', hint: MOD + '⇧⌫', run: () => { restoreCaret(); clearScript(); } },
     { group: 'Export' },
     { label: 'Download PDF', run: () => downloadPDF() },
     ...(inPreview ? [] : [{ label: 'Print, or save as PDF in Courier Prime', hint: MOD + 'P', run: () => { closePalette(); exportPDF(); } }]),
-    { label: 'Download Fountain (.fountain)', run: () => download(fileName('.fountain'), toFountain(serialize(), cur.title)) },
-    { label: 'Download Markdown (.md)', run: () => download(fileName('.md'), toFountain(serialize(), cur.title, true)) },
-    { label: 'Copy as Fountain', run: () => copyText(toFountain(serialize(), cur.title)) },
+    { label: 'Download Fountain (.fountain)', run: () => download(fileName('.fountain'), toFountain(serialize(), cur.title, false, titlePage)) },
+    { label: 'Download Markdown (.md)', run: () => download(fileName('.md'), toFountain(serialize(), cur.title, true, titlePage)) },
+    { label: 'Copy as Fountain', run: () => copyText(toFountain(serialize(), cur.title, false, titlePage)) },
     { group: 'Saving' },
     { label: 'Save', hint: MOD + 'S', run: () => { closePalette(); save(); flash(store.ok ? 'Saved in this browser' : 'Not saving: storage is off'); } },
     { label: 'Back up all scripts (.json)', run: () => backupAll() },
     { label: 'Open a file or restore a backup', run: () => { closePalette(); $('file').click(); } },
-    { group: 'View' },
+    { group: 'Settings' },
     { label: 'Toggle dark mode', hint: isDark() ? 'on' : 'off', run: () => { closePalette(); toggleDark(); } },
     { label: 'Toggle focus mode', hint: prefs.focus ? 'on' : 'off', run: () => { closePalette(); toggleFocus(); } },
     { label: 'Keyboard shortcuts', run: () => showHelp() },
@@ -1265,6 +1377,27 @@ document.addEventListener('keydown', e => {
   if (mod && e.key.toLowerCase() === 'p'){ buildPrint(); }
 });
 
+/* ---------- title page editor ---------- */
+const tpEl = $('tp');
+function openTitlePage(){
+  palette.hidden = true;
+  if (!titlePage) titlePage = { title: cur ? cur.title : '', credit: 'Written by', author: '', source: '', date: '', contact: '', on: true };
+  for (const k of TP_FIELDS) $('tp-' + k).value = titlePage[k] || '';
+  $('tp-on').checked = !!titlePage.on;
+  tpEl.hidden = false; $('tp-title').focus();
+}
+function closeTitlePage(){ if (tpEl.hidden) return; tpEl.hidden = true; save(); restoreCaret(); flash(hasTitlePage(titlePage) ? 'Title page on' : 'No title page'); }
+for (const k of TP_FIELDS) $('tp-' + k).addEventListener('input', e => { titlePage[k] = e.target.value; saveSoon(); });
+$('tp-on').addEventListener('change', e => { titlePage.on = e.target.checked; saveSoon(); });
+$('tp-done').addEventListener('click', closeTitlePage);
+tpEl.addEventListener('keydown', e => {
+  if (e.key === 'Escape'){ e.preventDefault(); closeTitlePage(); }
+  else if (e.key === 'Enter' && e.target.tagName === 'INPUT' && e.target.type !== 'checkbox'){   // Enter moves down the page
+    e.preventDefault(); const order = ['tp-title', 'tp-credit', 'tp-author', 'tp-source', 'tp-contact', 'tp-date'];
+    const n = order.indexOf(e.target.id); if (n >= 0 && n < order.length - 1) $(order[n + 1]).focus(); else closeTitlePage();
+  }
+});
+
 $('file').addEventListener('change', async e => {
   const f = e.target.files[0]; e.target.value = ''; if (!f) return;
   const text = await f.text();
@@ -1273,7 +1406,7 @@ $('file').addEventListener('change', async e => {
   }
   const parsed = parseText(text);
   if (!parsed.els.length) return flash('Nothing to import in that file');
-  createScript(uniqueTitle(parsed.title || f.name.replace(/\.[^.]+$/, '')), parsed.els);
+  createScript(uniqueTitle(parsed.title || f.name.replace(/\.[^.]+$/, '')), parsed.els, null, parsed.tp);
   flash('Imported ' + f.name);
 });
 
@@ -1308,7 +1441,7 @@ function boot(){
     openScript(index.some(x => x.id === last) ? last : index.slice().sort((a, b) => b.updated - a.updated)[0].id);
   }
   if (!store.ok) setTimeout(() => flash('Storage is off here, so nothing will be saved', 3200), 600);
-  else setTimeout(() => flash(touchOnly ? 'Tap ⋯ for commands' : MOD + 'K for commands', 2200), 500);
+  else setTimeout(() => flash(touchOnly ? 'Tap ☰ for the menu' : MOD + 'K for commands', 2200), 500);
   // fonts can arrive after first paint and nudge line heights
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => drawMarks());
 }
