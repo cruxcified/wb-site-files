@@ -48,7 +48,7 @@ function render(o) {
     <div class="art-info">
       <p class="eyebrow reveal"><span>${esc(T.cls[o[9]])}</span><span class="mono">${esc(o[17])}</span></p>
       <h1 class="art-title reveal">${esc(o[4])}</h1>
-      <p class="art-by reveal">${artists.map(a => `<button type="button" class="linkish" data-artist="${esc(a)}">${esc(a)}</button>`).join(', ') || 'Unknown artist'}${o[5] ? `<span class="date">${esc(o[5])}</span>` : ''}</p>
+      <p class="art-by reveal"><span>${artists.map(a => `<button type="button" class="linkish" data-artist="${esc(a)}">${esc(a)}</button>`).join(', ') || 'Unknown artist'}</span>${o[5] ? `<span class="date">${esc(o[5])}</span>` : ''}</p>
       <div class="art-actions reveal">
         <a class="btn primary" href="${fullUrl(o[1])}" target="_blank" rel="noopener">Full resolution</a>
         <a class="btn" href="https://www.nga.gov/collection/art-object-page.${o[0]}.html" target="_blank" rel="noopener">nga.gov</a>
