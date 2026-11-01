@@ -129,8 +129,12 @@ main.col{margin-top:28px}
         <span class="key">[5]</span><span class="name">omni</span><span class="dest">/omni</span>
         <span class="desc">Endless ambient music for empty rooms. Walk a quiet 3D room while piano and guitar drift.</span>
       </a></li>
+      <li><a class="row" href="/screen/" data-shape="page">
+        <span class="key">[6]</span><span class="name">Screen</span><span class="dest">/screen</span>
+        <span class="desc">A quiet screenwriting page. Tab and Enter do the formatting, and it prints to a proper script PDF.</span>
+      </a></li>
       <li><a class="row" href="https://wboechler.com/" data-shape="lens">
-        <span class="key">[6]</span><span class="name">Creative Portfolio</span><span class="dest">wboechler.com</span>
+        <span class="key">[7]</span><span class="name">Creative Portfolio</span><span class="dest">wboechler.com</span>
         <span class="desc">Photography, short films, teaching and writing.</span>
       </a></li>
     </ul>
@@ -350,6 +354,28 @@ S.ripple = rotate(build((i, r) => {    // ripples spreading across still water
   return [x, Math.sin(rad*9)*.12*(1.35 - rad) + (r() - .5)*.01, z];
 }, 8), .55, 0);
 
+S.page = (() => {                      // a screenplay page: text lines at the real indents
+  // [left, right] of each line in page inches (1.5in margin to 7.5in); null = blank line
+  const A = [1.5, 7.5], rows = [
+    [1.5, 4.1], null, A, A, [1.5, 5.2], null, [3.7, 4.5], [2.5, 5.8], [2.5, 4.9], null,
+    [3.7, 4.7], [3.1, 4.6], [2.5, 5.7], [2.5, 5.5], [2.5, 3.9], null, A, [1.5, 6.3], null,
+    [3.7, 4.5], [2.5, 5.6], null, [6.7, 7.5], null, [1.5, 4.4], null, A, [1.5, 3.4],
+  ];
+  const lines = rows.map((r, k) => r && { y: k, x0: r[0], x1: r[1] }).filter(Boolean);
+  const W = 8.5, H = 11, s = 2.1 / H, top = .6;
+  return rotate(build((i, r) => {
+    if (r() < .22){                        // the sheet's edge
+      const e = r() * 2 * (W + H); let x, y;
+      if (e < W){ x = e; y = 0; } else if (e < W + H){ x = W; y = e - W; } else if (e < 2*W + H){ x = e - W - H; y = H; } else { x = 0; y = e - 2*W - H; }
+      return [(x - W/2) * s, (H/2 - y) * s, (r() - .5) * .01];
+    }
+    const L = lines[(r() * lines.length) | 0];
+    let x = L.x0 + r() * (L.x1 - L.x0);
+    if (Math.floor(x * 3.3) % 4 === 3) x = L.x0 + r() * (L.x1 - L.x0);   // little word gaps
+    return [(x - W/2) * s, (H/2 - (1 + top + L.y * .27)) * s, (r() - .5) * .02];
+  }, 9), .25, -.4);
+})();
+
 const META = {
   idle:    ['Standby', 'Sphere'],
   apps:    ['Productivity Apps', 'Nine icons, 3 × 3'],
@@ -357,6 +383,7 @@ const META = {
   lattice: ['PSX Engine', 'Voxel lattice, 3 × 3 × 3'],
   dog:     ['Dog Days', 'Pixel dog, 20 × 12'],
   ripple:  ['omni', 'Ripples on still water'],
+  page:    ['Screen', 'Script page, 8.5 × 11 in'],
   lens:    ['Creative Portfolio', 'Six-blade aperture'],
 };
 for (const k in S) S[k] = sortX(S[k]);

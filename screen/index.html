@@ -1,0 +1,1319 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Screen</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Screen: a quiet, keyboard-first screenwriting page by Will Boechler. Tab and Enter do the formatting; prints to an industry-standard PDF.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400&display=swap">
+<style>
+/* =====================================================================
+   SCREEN: one sheet of paper, one typeface, nothing else on screen.
+   Element indents and widths are NOT set here: they come from the EL table
+   in the script (search "MARGIN MATH") and are injected as CSS at boot,
+   so screen and print always share one source of truth.
+   ===================================================================== */
+:root{
+  --paper:#f6f3ec;          /* warm off-white */
+  --ink:#1d1b18;            /* near-black */
+  --faint:rgba(29,27,24,.34);
+  --ghost:rgba(29,27,24,.30);
+  --rule:rgba(29,27,24,.10);
+  --panel:#fbf9f4;
+  --panel-line:rgba(29,27,24,.12);
+  --hi:rgba(29,27,24,.07);
+  --sel:rgba(120,100,60,.18);
+  --font:"Courier Prime", "Courier New", Courier, monospace;
+
+  /* --in is one inch of paper on screen. The text column is 6in (the Action width). */
+  --in:min(104px, calc((100vw - 32px) / 6));
+  --fs:max(14px, calc(var(--in) / 6));   /* 12pt = 1/6in; floors at 14px on phones */
+  --lh:calc(var(--fs) * 1.5);            /* screen gets more air than print */
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#1b1a18; --ink:#dcd6ca; --faint:rgba(220,214,202,.34); --ghost:rgba(220,214,202,.30);
+    --rule:rgba(220,214,202,.10); --panel:#232220; --panel-line:rgba(220,214,202,.12);
+    --hi:rgba(220,214,202,.07); --sel:rgba(200,180,130,.22); color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#1b1a18; --ink:#dcd6ca; --faint:rgba(220,214,202,.34); --ghost:rgba(220,214,202,.30);
+  --rule:rgba(220,214,202,.10); --panel:#232220; --panel-line:rgba(220,214,202,.12);
+  --hi:rgba(220,214,202,.07); --sel:rgba(200,180,130,.22); color-scheme:dark;
+}
+
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--paper);color:var(--ink);font-family:var(--font);-webkit-font-smoothing:antialiased;
+  padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));
+  transition:background .3s, color .3s}
+::selection{background:var(--sel)}
+
+#sheet{position:relative;width:calc(var(--in) * 6);max-width:100%;margin:0 auto;
+  padding-block:16vh 48vh;font-size:var(--fs);line-height:var(--lh)}
+#script{outline:none;caret-color:var(--ink);min-height:40vh;overflow-wrap:break-word}
+.el{white-space:pre-wrap;min-height:var(--lh);transition:opacity .35s}
+.el:first-child{margin-top:0 !important}
+.t-scene,.t-character,.t-transition{text-transform:uppercase}
+.t-transition{text-align:right}
+
+/* Focus mode: everything but the line you're on steps back */
+body.focus .el{opacity:.2}
+body.focus .el.cur{opacity:1}
+body.focus #marks{opacity:.4}
+
+/* page-break marks, drawn from the same paginator the PDF uses */
+#marks{position:absolute;inset:0;pointer-events:none;transition:opacity .35s}
+.mark{position:absolute;left:calc(var(--in) * -.35);right:calc(var(--in) * -.35);height:0;border-top:1px dashed var(--rule)}
+.mark span{position:absolute;right:0;top:2px;font-size:max(11px, calc(var(--fs) * .7));line-height:1;color:var(--faint)}
+
+/* autocomplete: ghost text after the caret, and a quiet list when there's a choice */
+#ghost{position:absolute;pointer-events:none;color:var(--ghost);white-space:pre;text-transform:uppercase;display:none}
+#suggest{position:absolute;margin:0;padding:4px 0;list-style:none;background:var(--panel);border:1px solid var(--panel-line);
+  border-radius:3px;font-size:max(12px, calc(var(--fs) * .8));line-height:1.6;min-width:12ch;z-index:4;display:none;
+  box-shadow:0 6px 24px rgba(0,0,0,.08)}
+#suggest li{padding:0 12px;color:var(--faint);text-transform:uppercase;cursor:pointer;white-space:nowrap}
+#suggest li.on{color:var(--ink);background:var(--hi)}
+
+/* the one piece of UI: a faint label that names the element, then fades */
+#indicator{position:fixed;z-index:3;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);
+  pointer-events:none;opacity:0;transition:opacity .9s ease;white-space:nowrap;text-align:right}
+#indicator.on{opacity:1;transition:opacity .15s ease}
+@media (max-width:899px){
+  #indicator{left:0 !important;right:0;top:auto !important;bottom:calc(14px + env(safe-area-inset-bottom, 0px));text-align:center}
+}
+
+/* summon button: invisible until the mouse moves; always faintly there on touch screens */
+#summon{position:fixed;right:max(14px, env(safe-area-inset-right, 0px));bottom:calc(12px + env(safe-area-inset-bottom, 0px));z-index:3;
+  font:12px/1 var(--font);letter-spacing:.08em;color:var(--faint);background:none;border:0;padding:10px;cursor:pointer;
+  opacity:0;transition:opacity .6s}
+#summon.on{opacity:1}
+#summon:focus-visible{opacity:1;outline:1px solid var(--faint)}
+@media (hover:none){ #summon{opacity:.7} }
+
+/* command palette */
+#palette{position:fixed;inset:0;z-index:10;display:flex;justify-content:center;align-items:flex-start;
+  padding:14vh max(16px, env(safe-area-inset-right, 0px)) 16px max(16px, env(safe-area-inset-left, 0px));background:rgba(0,0,0,.06)}
+#palette[hidden]{display:none}
+.pal{width:min(560px, 100%);background:var(--panel);border:1px solid var(--panel-line);border-radius:4px;
+  box-shadow:0 18px 60px rgba(0,0,0,.16);overflow:hidden;font-size:14px}
+#pal-input{display:block;width:100%;border:0;border-bottom:1px solid var(--panel-line);background:transparent;color:var(--ink);
+  font:15px/1.4 var(--font);padding:14px 16px;outline:none}
+#pal-input::placeholder{color:var(--faint)}
+#pal-meta{padding:8px 16px 0;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint)}
+#pal-meta:empty{display:none}
+#pal-list{list-style:none;margin:0;padding:6px 0;max-height:min(52vh, 440px);overflow-y:auto}
+#pal-list li{display:flex;gap:12px;justify-content:space-between;align-items:baseline;padding:7px 16px;cursor:pointer;line-height:1.35}
+#pal-list li .l{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#pal-list li .h{flex:none;color:var(--faint);font-size:12px}
+#pal-list li.on{background:var(--hi)}
+#pal-list li.group{cursor:default;padding:10px 16px 3px;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint)}
+#pal-list li.note{cursor:default;color:var(--faint)}
+#pal-list li.key .l{white-space:normal}
+
+/* print copy of the script: hidden on screen, built by the paginator before printing */
+#print{display:none}
+
+@media (prefers-reduced-motion: reduce){ *{transition:none !important} }
+
+/* =====================================================================
+   PRINT: exact US Letter pages. Each .pp is one 8.5x11in sheet; the
+   browser's own page margins are zeroed and we place everything ourselves,
+   so the PDF matches the paginator line for line.
+   ===================================================================== */
+@page{size:8.5in 11in;margin:0}
+@media print{
+  html,body{background:#fff !important;color:#000 !important;padding:0 !important}
+  #sheet,#indicator,#summon,#palette{display:none !important}
+  #print{display:block}
+  .pp{position:relative;width:8.5in;height:10.99in;overflow:hidden;break-after:page;page-break-after:always;
+    font-family:var(--font);font-size:12pt;color:#000}
+  .pp:last-child{break-after:auto;page-break-after:auto}
+  .pb{position:absolute;top:1in;left:1.5in;width:6in}
+  .pl{height:calc(1in / 6);line-height:calc(1in / 6);white-space:pre;overflow:visible}
+  .pn{position:absolute;top:.5in;right:1in;line-height:calc(1in / 6)}
+}
+</style>
+<style id="el-css"></style>
+</head>
+<body>
+
+<main id="sheet">
+  <div id="script" contenteditable="true" spellcheck="true" autocapitalize="sentences" role="textbox" aria-multiline="true" aria-label="Screenplay"></div>
+  <div id="marks" aria-hidden="true"></div>
+  <div id="ghost" aria-hidden="true"></div>
+  <ul id="suggest" aria-hidden="true"></ul>
+</main>
+
+<div id="indicator" aria-live="polite"></div>
+<button id="summon" type="button" aria-label="Open commands">⌘K</button>
+
+<div id="palette" hidden>
+  <div class="pal" role="dialog" aria-label="Commands">
+    <input id="pal-input" type="text" autocomplete="off" spellcheck="false" placeholder="Type a command or a script name">
+    <div id="pal-meta"></div>
+    <ul id="pal-list" role="listbox"></ul>
+  </div>
+</div>
+
+<div id="print" aria-hidden="true"></div>
+<input id="file" type="file" accept=".fountain,.txt,.md,.text,.json,text/plain,application/json" hidden>
+
+<script>
+(() => {
+'use strict';
+
+/* =====================================================================
+   1. MARGIN MATH
+   ---------------------------------------------------------------------
+   Everything is in inches, measured from the LEFT EDGE OF THE PAGE.
+   Courier at 12pt has a fixed advance of 7.2pt = 0.1in, so it sets exactly
+   10 characters per inch (CPI). That lets the paginator word-wrap every
+   element itself and know, to the line, where each page ends.
+   12pt type on 12pt leading = 6 lines per inch.
+
+     page              8.5 x 11 in (US Letter)
+     margins           left 1.5, right 1.0, top 1.0, bottom 1.0
+     text area         6.0in wide (1.5 -> 7.5), 9.0in tall
+     lines per page    9.0in x 6 lines/in = 54  (the "~55" rule of thumb)
+     page number       top-right, 0.5in from the top, right edge on 7.5in
+   ===================================================================== */
+const PAGE = { w: 8.5, h: 11, top: 1, bottom: 1, left: 1.5, right: 1 };
+const LPI = 6;                                                   // lines per inch
+const CPI = 10;                                                  // characters per inch
+const LINES_PER_PAGE = Math.round((PAGE.h - PAGE.top - PAGE.bottom) * LPI);   // 54
+
+// Each element: where its text starts (from the page's left edge), how wide it may run,
+// how many blank lines go above it, and whether it renders in caps.
+//   Action / Scene     1.5in, 6.0in wide  -> 60 characters a line
+//   Dialogue           2.5in, 3.3in wide  -> 33 characters
+//   Parenthetical      3.1in, 2.0in wide  -> 20 characters (wrapped lines hang 1 char in)
+//   Character cue      3.7in, to 7.5in
+//   Transition         right-aligned so it ends on the 7.5in mark
+const EL = {
+  scene:      { name: 'Scene Heading', left: 1.5, width: 6.0, before: 1, caps: true },   // set before:2 for double-spaced sluglines
+  action:     { name: 'Action',        left: 1.5, width: 6.0, before: 1 },
+  character:  { name: 'Character',     left: 3.7, width: 3.8, before: 1, caps: true },
+  paren:      { name: 'Parenthetical', left: 3.1, width: 2.0, before: 0 },
+  dialogue:   { name: 'Dialogue',      left: 2.5, width: 3.3, before: 0 },
+  transition: { name: 'Transition',    left: 1.5, width: 6.0, before: 1, caps: true, right: true },
+};
+const TYPES = Object.keys(EL);
+
+// Inject the element geometry as CSS: on screen in units of --in, in print in real inches.
+(function injectGeometry(){
+  let css = '';
+  for (const t of TYPES){
+    const c = EL[t], off = (c.left - PAGE.left).toFixed(2);
+    css += `.t-${t}{margin-left:calc(var(--in) * ${off});width:calc(var(--in) * ${c.width});max-width:calc(100% - var(--in) * ${off});margin-top:calc(var(--lh) * ${c.before})}\n`;
+    css += `@media print{.k-${t}{margin-left:${off}in;width:${c.width}in${c.right ? ';text-align:right' : ''}}}\n`;
+  }
+  css += `@media print{.k-more{margin-left:${(EL.character.left - PAGE.left).toFixed(2)}in}}\n`;
+  document.getElementById('el-css').textContent = css;
+})();
+
+/* =====================================================================
+   2. ELEMENT FLOW
+   ---------------------------------------------------------------------
+   Enter at the end of a line makes the next element:
+       Scene Heading -> Action -> Character -> Dialogue -> Character -> ...
+       Parenthetical -> Dialogue,  Transition -> Scene Heading
+   Enter on an EMPTY line changes that line instead of adding one:
+       anything -> Action (an empty Parenthetical goes back to Dialogue).
+   Tab / Shift+Tab cycle the current line through TAB_ORDER.
+   Shortcuts while typing:
+       "INT. " / "EXT. " at the start of Action or Character -> Scene Heading
+       "(" on an empty Dialogue line -> Parenthetical
+       an all-caps line ending in "TO:" -> Transition when you press Enter
+   ===================================================================== */
+const NEXT = { scene: 'action', action: 'character', character: 'dialogue', paren: 'dialogue', dialogue: 'character', transition: 'scene' };
+const TAB_ORDER = ['scene', 'action', 'character', 'paren', 'dialogue', 'transition'];
+const SCENE_RE = /^(INT\.\/EXT\.?|INT\/EXT\.?|I\/E\.?|INT\.|EXT\.|EST\.)\s/i;
+const TRANSITIONS = ['CUT TO:', 'FADE OUT.', 'FADE IN:', 'FADE TO BLACK.', 'DISSOLVE TO:', 'SMASH CUT TO:', 'MATCH CUT TO:', 'JUMP CUT TO:', 'BACK TO:', 'INTERCUT WITH:'];
+const SCENE_PREFIXES = ['INT. ', 'EXT. ', 'INT./EXT. '];
+const TIMES = ['DAY', 'NIGHT', 'CONTINUOUS', 'LATER', 'MORNING', 'EVENING', 'MOMENTS LATER'];
+
+const isMac = /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent);
+const MOD = isMac ? '⌘' : 'Ctrl+';
+
+/* ---------- DOM handles ---------- */
+const $ = id => document.getElementById(id);
+const script = $('script'), sheet = $('sheet'), marks = $('marks'), ghostEl = $('ghost'), suggestEl = $('suggest');
+const indicator = $('indicator'), summon = $('summon');
+const palette = $('palette'), palInput = $('pal-input'), palList = $('pal-list'), palMeta = $('pal-meta');
+const touchOnly = matchMedia('(hover: none)').matches;
+summon.textContent = touchOnly ? '⋯' : isMac ? '⌘K' : 'Ctrl K';
+
+/* =====================================================================
+   3. DOCUMENT MODEL
+   The DOM is the document: #script holds one <div class="el t-TYPE"> per
+   element, each holding a single text node. serialize() turns it into
+   [[type, text], ...] for saving, pagination and export.
+   ===================================================================== */
+const els = () => script.children;
+function mk(t, x = ''){ const d = document.createElement('div'); d.className = 'el t-' + t; d.dataset.t = t; setText(d, x); return d; }
+function setText(el, x){ if (x) el.textContent = x; else el.innerHTML = '<br>'; }
+const txt = el => el.textContent;
+const typeOf = el => el.dataset.t;
+function isEmpty(el){ const x = txt(el); return typeOf(el) === 'paren' ? x.replace(/[()\s]/g, '') === '' : x.trim() === ''; }
+function serialize(){ return Array.from(els(), e => [typeOf(e), txt(e)]); }
+function render(list){
+  script.replaceChildren(...(list && list.length ? list : [['scene', '']]).map(([t, x]) => mk(EL[t] ? t : 'action', x)));
+}
+function indexOf(el){ return Array.prototype.indexOf.call(els(), el); }
+function elOf(node){
+  while (node && node !== script){ if (node.nodeType === 1 && node.parentNode === script) return node; node = node.parentNode; }
+  return null;
+}
+
+// Change an element's type. Parentheticals wrap/unwrap their ( ). Returns the caret shift.
+function setType(el, t){
+  const was = typeOf(el); if (was === t) return 0;
+  let x = txt(el), shift = 0;
+  if (was === 'paren' && /^\(.*\)$/s.test(x)){ x = x.slice(1, -1); shift = -1; }
+  if (t === 'paren'){ if (!x.startsWith('(')){ x = '(' + x; shift += 1; } if (!x.endsWith(')')) x += ')'; }
+  el.dataset.t = t; el.className = 'el t-' + t + (el.classList.contains('cur') ? ' cur' : '');
+  setText(el, x);
+  return shift;
+}
+
+/* ---------- caret helpers: positions are {i: element index, o: character offset} ---------- */
+function offsetIn(el, node, off){ const r = document.createRange(); r.selectNodeContents(el); try { r.setEnd(node, off); } catch (e) { return txt(el).length; } return r.toString().length; }
+function posOf(node, off){
+  if (node === script){
+    const n = els().length; if (!n) return null;
+    if (off >= n) return { i: n - 1, o: txt(els()[n - 1]).length };
+    return { i: off, o: 0 };
+  }
+  const el = elOf(node); if (!el) return null;
+  return { i: indexOf(el), o: offsetIn(el, node, off) };
+}
+function span(){
+  const s = getSelection(); if (!s.rangeCount) return null;
+  const r = s.getRangeAt(0);
+  if (!script.contains(r.startContainer) && r.startContainer !== script) return null;
+  const a = posOf(r.startContainer, r.startOffset), b = posOf(r.endContainer, r.endOffset);
+  if (!a || !b) return null;
+  return { a, b, collapsed: r.collapsed || (a.i === b.i && a.o === b.o), multi: a.i !== b.i };
+}
+function caret(){ const s = span(); if (!s) return null; const el = els()[s.b.i]; return { el, i: s.b.i, o: s.b.o }; }
+function place(el, o){
+  if (!el) return;
+  const n = el.firstChild, r = document.createRange(), s = getSelection();
+  if (n && n.nodeType === 3) r.setStart(n, Math.max(0, Math.min(o, n.length))); else r.setStart(el, 0);
+  r.collapse(true); s.removeAllRanges(); s.addRange(r);
+}
+function placeAt(p){ const e = els()[Math.min(p.i, els().length - 1)]; if (e) place(e, p.o); }
+
+// Delete everything in the selection (possibly across elements) and leave the caret at its start.
+function removeSpan(sel){
+  const A = els()[sel.a.i], B = els()[sel.b.i];
+  const keep = txt(A).slice(0, sel.a.o) + txt(B).slice(sel.b.o);
+  for (let k = sel.b.i; k > sel.a.i; k--) els()[k].remove();
+  setText(A, keep); place(A, sel.a.o);
+}
+function insertText(str){
+  const c = caret(); if (!c) return;
+  const x = txt(c.el); setText(c.el, x.slice(0, c.o) + str + x.slice(c.o)); place(c.el, c.o + str.length);
+}
+
+// Keep the structure clean: one text node per element, nothing but elements in #script.
+function tidy(){
+  const c = caret();
+  let changed = false;
+  for (const node of Array.from(script.childNodes)){
+    if (node.nodeType !== 1 || !node.classList.contains('el') || !EL[node.dataset.t]){
+      const t = node.nodeType === 1 && EL[node.dataset && node.dataset.t] ? node.dataset.t : 'action';
+      const x = node.textContent; if (node.nodeType === 3 && !x.trim()){ node.remove(); changed = true; continue; }
+      node.replaceWith(mk(t, x.replace(/\n/g, ' '))); changed = true;
+    }
+  }
+  for (const el of els()){
+    const kids = el.childNodes;
+    const clean = (kids.length === 1 && kids[0].nodeType === 3) || (kids.length === 1 && kids[0].nodeName === 'BR');
+    if (!clean){ setText(el, txt(el).replace(/\n/g, ' ')); changed = true; }
+  }
+  if (!els().length){ script.appendChild(mk('action')); changed = true; }
+  if (changed && c) placeAt({ i: c.i, o: c.o });
+}
+
+/* =====================================================================
+   4. UNDO / REDO
+   Our Enter/Tab handling rewrites the DOM, which breaks the browser's own
+   undo, so we keep snapshots. Typing is grouped into ~1.2s runs.
+   ===================================================================== */
+let undoStack = [], redoStack = [], grouping = false, lastTypeAt = 0;
+function snapshot(){ const s = span(); return { els: serialize(), c: s ? s.b : { i: 0, o: 0 } }; }
+function checkpoint(kind){
+  const now = Date.now();
+  if (kind === 'type' && grouping && now - lastTypeAt < 1200){ lastTypeAt = now; return; }
+  undoStack.push(snapshot()); if (undoStack.length > 400) undoStack.shift();
+  redoStack.length = 0; grouping = kind === 'type'; lastTypeAt = now;
+}
+function restore(st){ render(st.els); placeAt(st.c); grouping = false; after(true); }
+function undo(){ if (!undoStack.length) return flash('Nothing to undo'); redoStack.push(snapshot()); restore(undoStack.pop()); }
+function redo(){ if (!redoStack.length) return flash('Nothing to redo'); undoStack.push(snapshot()); restore(redoStack.pop()); }
+
+/* =====================================================================
+   5. KEYBOARD: Enter, Tab, Backspace
+   ===================================================================== */
+function enter(shift){
+  let sel = span(); if (!sel) return;
+  checkpoint('struct');
+  if (!sel.collapsed) removeSpan(sel);
+  const c = caret(); if (!c) return;
+  const el = c.el, x = txt(el), o = c.o; let t = typeOf(el);
+  const tail = x.slice(o);
+  const atEnd = tail.trim() === '' || (t === 'paren' && tail === ')');
+
+  if (shift){                           // Shift+Enter: new paragraph of the same type
+    if (!atEnd) setText(el, x.slice(0, o));
+    const n = mk(t, atEnd ? '' : tail); el.after(n);
+    if (t === 'paren'){ setType(n, 'dialogue'); setType(n, 'paren'); }
+    place(n, t === 'paren' ? 1 : 0); return after();
+  }
+  if (isEmpty(el)){                     // empty line: change it instead of adding a new one
+    if (t === 'action'){ flash('Action'); return; }
+    setType(el, t === 'paren' ? 'dialogue' : 'action'); place(el, 0); return after();
+  }
+  if (atEnd){
+    // commit-time shortcuts: CUT TO: becomes a Transition, INT./EXT. a Scene Heading
+    if ((t === 'action' || t === 'character') && looksLikeTransition(x, t)){ setType(el, 'transition'); t = 'transition'; }
+    else if ((t === 'action' || t === 'character') && SCENE_RE.test(x + ' ')){ setType(el, 'scene'); t = 'scene'; }
+    if (t === 'paren' && !x.trimEnd().endsWith(')')) setText(el, x.trimEnd() + ')');
+    if (t !== 'paren' && tail) setText(el, x.slice(0, o));
+    const n = mk(NEXT[t]); el.after(n); place(n, 0);
+  } else if (o === 0){                  // at the very start: open an Action line above
+    const n = mk('action'); el.before(n); place(n, 0);
+  } else {                              // mid-line: split, the second half keeps the type
+    setText(el, x.slice(0, o)); const n = mk(t, tail); el.after(n); place(n, 0);
+  }
+  after();
+}
+function looksLikeTransition(x, t){
+  const s = x.trim(), up = s.toUpperCase();
+  if (t === 'action' && s !== up) return false;          // action must actually be typed in caps
+  return /[A-Z]/.test(up) && (/ TO:$/.test(up) || TRANSITIONS.includes(up));
+}
+function cycle(dir){
+  const c = caret(); if (!c) return;
+  checkpoint('struct');
+  const t = typeOf(c.el), n = TAB_ORDER[(TAB_ORDER.indexOf(t) + dir + TAB_ORDER.length) % TAB_ORDER.length];
+  const shift = setType(c.el, n);
+  place(c.el, isEmpty(c.el) ? (n === 'paren' ? 1 : 0) : c.o + shift);
+  after();
+}
+function backspaceAtStart(el){
+  const prev = el.previousElementSibling;
+  checkpoint('struct');
+  if (!prev){ if (typeOf(el) !== 'action' && isEmpty(el)){ setType(el, 'action'); place(el, 0); } return after(); }
+  if (isEmpty(el)){ el.remove(); place(prev, txt(prev).length); }
+  else if (isEmpty(prev)){ prev.remove(); place(el, 0); }
+  else { const pl = txt(prev).length; setText(prev, txt(prev) + txt(el)); el.remove(); place(prev, pl); }
+  after();
+}
+function deleteAtEnd(el){
+  const next = el.nextElementSibling; if (!next) return;
+  checkpoint('struct');
+  const l = txt(el).length;
+  if (isEmpty(el)){ el.remove(); place(next, 0); }
+  else { setText(el, txt(el) + txt(next)); next.remove(); place(el, l); }
+  after();
+}
+
+let composing = false;
+script.addEventListener('compositionstart', () => { composing = true; });
+script.addEventListener('compositionend', () => { composing = false; tidy(); after(); });
+
+script.addEventListener('beforeinput', e => {
+  const it = e.inputType;
+  if (it === 'historyUndo'){ e.preventDefault(); return undo(); }
+  if (it === 'historyRedo'){ e.preventDefault(); return redo(); }
+  if (it === 'insertFromDrop' || it === 'deleteByDrag' || /^format/.test(it)){ e.preventDefault(); return; }
+  if (it === 'insertParagraph' || it === 'insertLineBreak'){ e.preventDefault(); return enter(it === 'insertLineBreak'); }
+  if (composing || it === 'insertCompositionText') return;
+  const sel = span(); if (!sel) return;
+  if (sel.multi){                         // edits across elements: do them ourselves
+    e.preventDefault(); checkpoint('struct'); removeSpan(sel);
+    if (it.startsWith('insert') && e.data) insertText(e.data);
+    return after();
+  }
+  const el = els()[sel.a.i], x = txt(el);
+  if (sel.collapsed){
+    if (/^delete.*Backward$/.test(it)){
+      if (sel.a.o === 0){ e.preventDefault(); return backspaceAtStart(el); }
+      if (typeOf(el) === 'paren' && x === '()' && sel.a.o === 1){ e.preventDefault(); checkpoint('struct'); setType(el, 'dialogue'); place(el, 0); return after(); }
+    }
+    if (/^delete.*Forward$/.test(it) && sel.a.o >= x.length){ e.preventDefault(); return deleteAtEnd(el); }
+    if (it === 'insertText' && e.data === ')' && typeOf(el) === 'paren' && x[sel.a.o] === ')'){ e.preventDefault(); return place(el, sel.a.o + 1); }
+    if (it === 'insertText' && e.data === '(' && typeOf(el) === 'dialogue' && isEmpty(el)){
+      e.preventDefault(); checkpoint('struct'); setType(el, 'paren'); place(el, 1); return after();
+    }
+  }
+  checkpoint('type');
+});
+
+script.addEventListener('input', () => {
+  if (composing) return;
+  tidy();
+  // typing "INT. " or "EXT. " at the start of Action or Character turns the line into a Scene Heading
+  const c = caret();
+  if (c && (typeOf(c.el) === 'action' || typeOf(c.el) === 'character') && SCENE_RE.test(txt(c.el)) && c.o === txt(c.el).length){
+    setType(c.el, 'scene'); place(c.el, c.o);
+  }
+  sugDismissed = false;
+  after();
+});
+
+script.addEventListener('keydown', e => {
+  const mod = e.metaKey || e.ctrlKey, k = e.key;
+  if (mod && !e.altKey && k.toLowerCase() === 'z'){ e.preventDefault(); return e.shiftKey ? redo() : undo(); }
+  if (mod && k.toLowerCase() === 'y'){ e.preventDefault(); return redo(); }
+  if (mod && e.shiftKey && (k === 'Backspace' || k === 'Delete')){ e.preventDefault(); return clearScript(); }
+  if (mod && ['b', 'i', 'u'].includes(k.toLowerCase())){ e.preventDefault(); return; }
+
+  // autocomplete keys
+  if (sug && !e.isComposing){
+    if (k === 'ArrowDown' && sug.list.length > 1){ e.preventDefault(); sug.sel = (sug.sel + 1) % sug.list.length; return drawSuggest(); }
+    if (k === 'ArrowUp' && sug.list.length > 1){ e.preventDefault(); sug.sel = (sug.sel - 1 + sug.list.length) % sug.list.length; return drawSuggest(); }
+    if (k === 'Escape'){ e.preventDefault(); sugDismissed = true; return hideSuggest(); }
+    if (k === 'ArrowRight' && !e.shiftKey && !mod){ e.preventDefault(); return accept(false); }
+    if (k === 'Enter' && !e.shiftKey && sug.typed){ e.preventDefault(); return accept(true); }
+  }
+  if (k === 'Tab' && !mod && !e.altKey){ e.preventDefault(); return cycle(e.shiftKey ? -1 : 1); }
+  if (k === 'Enter' && !e.isComposing && !mod){ e.preventDefault(); return enter(e.shiftKey); }
+});
+
+/* ---------- clipboard: copy/cut as Fountain text, paste with element inference ---------- */
+function selectionEls(sel){
+  const out = [];
+  for (let i = sel.a.i; i <= sel.b.i; i++){
+    const e = els()[i]; let x = txt(e);
+    if (i === sel.b.i) x = x.slice(0, sel.b.o);
+    if (i === sel.a.i) x = x.slice(sel.a.o);
+    out.push([typeOf(e), x]);
+  }
+  return out;
+}
+script.addEventListener('copy', e => {
+  const sel = span(); if (!sel || !sel.multi) return;
+  e.preventDefault(); e.clipboardData.setData('text/plain', toFountain(selectionEls(sel)));
+});
+script.addEventListener('cut', e => {
+  const sel = span(); if (!sel || sel.collapsed) return;
+  e.preventDefault();
+  e.clipboardData.setData('text/plain', sel.multi ? toFountain(selectionEls(sel)) : getSelection().toString());
+  checkpoint('struct'); removeSpan(sel); after();
+});
+script.addEventListener('paste', e => {
+  e.preventDefault();
+  const raw = (e.clipboardData || window.clipboardData).getData('text/plain'); if (!raw) return;
+  checkpoint('struct');
+  const sel = span(); if (sel && !sel.collapsed) removeSpan(sel);
+  if (!/\n/.test(raw.trim())){ insertText(raw.replace(/\s+/g, ' ')); return after(); }
+  insertEls(parseText(raw).els);
+  after();
+});
+script.addEventListener('drop', e => e.preventDefault());
+
+function insertEls(list){
+  if (!list.length) return;
+  const c = caret(); if (!c) return;
+  const el = c.el, x = txt(el), left = x.slice(0, c.o), right = x.slice(c.o);
+  const nodes = list.map(([t, s]) => mk(t, s));
+  if (!left.trim()) el.before(...nodes); else { setText(el, left); el.after(...nodes); }
+  const last = nodes[nodes.length - 1];
+  if (!left.trim() && !right.trim()) el.remove();
+  else if (left.trim() && right.trim()) last.after(mk(typeOf(el), right));
+  else if (!left.trim()) setText(el, right);
+  place(last, txt(last).length);
+}
+
+/* =====================================================================
+   6. AUTOCOMPLETE
+   Scene Headings: INT. / EXT. / INT./EXT., then locations already used,
+   then DAY / NIGHT / CONTINUOUS... after " - ".
+   Character: names already in the script. On an empty cue it offers the
+   person who spoke before the last speaker, so two-hander scenes flow.
+   Right Arrow accepts the faint ghost text. Enter accepts when you've
+   typed part of it (and moves on to Dialogue for a character name).
+   Up/Down choose when there's more than one. Esc dismisses.
+   ===================================================================== */
+let sug = null, sugDismissed = false;
+function baseName(s){ return s.toUpperCase().replace(/\(.*?\)/g, '').replace(/\^\s*$/, '').trim(); }
+function characterNames(skip){
+  const count = new Map();
+  for (const e of els()){ if (e === skip || typeOf(e) !== 'character') continue; const n = baseName(txt(e)); if (n) count.set(n, (count.get(n) || 0) + 1); }
+  return [...count.entries()].sort((a, b) => b[1] - a[1]).map(a => a[0]);
+}
+function nextSpeaker(el){            // who probably talks next: the speaker before the last one
+  let last = null;
+  for (let e = el.previousElementSibling; e; e = e.previousElementSibling){
+    const t = typeOf(e); if (t === 'scene') break;
+    if (t !== 'character') continue;
+    const n = baseName(txt(e)); if (!n) continue;
+    if (!last) last = n; else if (n !== last) return n;
+  }
+  return null;
+}
+function sceneLocations(skip){
+  const seen = [];
+  for (const e of els()){
+    if (e === skip || typeOf(e) !== 'scene') continue;
+    const m = txt(e).toUpperCase().match(SCENE_RE); if (!m) continue;
+    const loc = txt(e).toUpperCase().slice(m[0].length).split(' - ')[0].trim();
+    if (loc && !seen.includes(loc)) seen.push(loc);
+  }
+  return seen;
+}
+function candidates(el){
+  const t = typeOf(el), x = txt(el), X = x.toUpperCase();
+  if (t === 'character'){
+    if (!x.trim()){ const n = nextSpeaker(el); return n ? [n] : []; }
+    return characterNames(el).filter(n => n.startsWith(X) && n !== X);
+  }
+  if (t === 'scene'){
+    const m = X.match(/^(INT\.\/EXT\.|INT\.|EXT\.|EST\.|I\/E\.?)\s+/);
+    if (!m) return SCENE_PREFIXES.filter(p => p.startsWith(X) && p !== X);
+    const rest = X.slice(m[0].length), head = X.slice(0, m[0].length), dash = rest.lastIndexOf(' - ');
+    if (dash < 0) return sceneLocations(el).filter(l => l.startsWith(rest) && l !== rest).map(l => head + l);
+    const time = rest.slice(dash + 3), pre = head + rest.slice(0, dash + 3);
+    return TIMES.filter(tm => tm.startsWith(time) && tm !== time).map(tm => pre + tm);
+  }
+  if (t === 'transition'){ if (!x.trim()) return []; return TRANSITIONS.filter(tr => tr.startsWith(X) && tr !== X); }
+  return [];
+}
+function updateSuggest(){
+  const s = span();
+  if (!s || !s.collapsed || sugDismissed || palette.hidden === false){ return hideSuggest(); }
+  const el = els()[s.b.i]; if (!el || s.b.o !== txt(el).length){ return hideSuggest(); }
+  const list = candidates(el).slice(0, 6);
+  if (!list.length) return hideSuggest();
+  const keep = sug && sug.el === el ? list.indexOf(sug.list[sug.sel]) : -1;
+  sug = { el, list, sel: keep >= 0 ? keep : 0, typed: txt(el).trim() !== '' };
+  drawSuggest();
+}
+function caretRect(el){
+  const n = el.firstChild, sr = sheet.getBoundingClientRect();
+  if (n && n.nodeType === 3 && n.length){
+    const r = document.createRange(); r.setStart(n, n.length); r.collapse(true);
+    let b = r.getBoundingClientRect();
+    if (!b.height){ r.setStart(n, n.length - 1); r.setEnd(n, n.length); const q = r.getBoundingClientRect(); b = { left: q.right, top: q.top, bottom: q.bottom, height: q.height }; }
+    return { x: b.left - sr.left, y: b.top - sr.top, h: b.height || b.bottom - b.top };
+  }
+  const b = el.getBoundingClientRect();
+  return { x: b.left - sr.left, y: b.top - sr.top, h: b.height };
+}
+function drawSuggest(){
+  if (!sug) return hideSuggest();
+  const el = sug.el, x = txt(el), pick = sug.list[sug.sel], r = caretRect(el);
+  const lineH = parseFloat(getComputedStyle(el).lineHeight) || r.h;
+  // ghost: only when the choice continues what you typed and the line isn't right-aligned
+  if (typeOf(el) !== 'transition' && pick.toUpperCase().startsWith(x.toUpperCase())){
+    ghostEl.textContent = pick.slice(x.length); ghostEl.style.display = 'block';
+    ghostEl.style.left = r.x + 'px'; ghostEl.style.top = (r.y + (r.h - lineH) / 2) + 'px'; ghostEl.style.lineHeight = lineH + 'px';
+  } else ghostEl.style.display = 'none';
+  if (sug.list.length > 1 || typeOf(el) === 'transition'){
+    suggestEl.innerHTML = sug.list.map((s, i) => `<li class="${i === sug.sel ? 'on' : ''}" data-i="${i}">${esc(s.trim())}</li>`).join('');
+    const elLeft = el.getBoundingClientRect().left - sheet.getBoundingClientRect().left;
+    suggestEl.style.display = 'block'; suggestEl.style.left = elLeft + 'px'; suggestEl.style.top = (r.y + lineH + 4) + 'px';
+  } else suggestEl.style.display = 'none';
+}
+function hideSuggest(){ sug = null; ghostEl.style.display = 'none'; suggestEl.style.display = 'none'; }
+function accept(andEnter){
+  if (!sug) return;
+  const el = sug.el, pick = sug.list[sug.sel];
+  checkpoint('struct');
+  setText(el, pick); place(el, pick.length); hideSuggest();
+  if (andEnter && typeOf(el) === 'character') return enter(false);
+  after();
+}
+suggestEl.addEventListener('mousedown', e => {
+  const li = e.target.closest('li'); if (!li || !sug) return;
+  e.preventDefault(); sug.sel = +li.dataset.i; accept(false);
+});
+
+/* =====================================================================
+   7. PAGINATION
+   Wraps every element at its exact character width, then fills 54-line
+   pages with these rules:
+     - blank lines above an element are dropped at the top of a page
+     - a Scene Heading never sits alone at the bottom of a page
+     - a Character cue never leaves its Dialogue: the cue, any opening
+       Parenthetical and at least 2 lines of dialogue stay together
+     - long speeches split between dialogue lines with (MORE) at the
+       bottom and "NAME (CONT'D)" at the top of the next page
+     - Action paragraphs split only with 2+ lines on each side
+   The same result draws the faint page marks on screen and builds the PDF.
+   ===================================================================== */
+const MIN_DIALOGUE_BEFORE_BREAK = 2, MIN_AFTER_BREAK = 2, MIN_ACTION_SPLIT = 2;
+
+function wrap(text, t){
+  const c = EL[t], width = Math.round(c.width * CPI);
+  const words = text.split(' '), lines = [];
+  let line = '', w = width;
+  const push = () => { lines.push(line); line = ''; if (t === 'paren') w = width - 1; };   // parentheticals hang one space
+  for (let word of words){
+    while (word.length > w){                     // a word longer than the line: hard-break it
+      if (line){ push(); }
+      lines.push(word.slice(0, w)); word = word.slice(w); if (t === 'paren') w = width - 1;
+    }
+    if (!line) line = word;
+    else if (line.length + 1 + word.length <= w) line += ' ' + word;
+    else { push(); line = word; }
+  }
+  if (line || !lines.length) lines.push(line);
+  return t === 'paren' ? lines.map((l, k) => k ? ' ' + l : l) : lines;
+}
+function printable(t, x){ x = x.replace(/\s+/g, ' ').trim(); return EL[t].caps ? x.toUpperCase() : x; }
+
+function paginate(list){
+  // 1. blocks with wrapped lines; empty elements take no space
+  const blocks = [];
+  list.forEach(([t, x], i) => { const s = printable(t, x); if (s && (t !== 'paren' || s.replace(/[()\s]/g, ''))) blocks.push({ t, i, lines: wrap(s, t) }); });
+  // 2. units: a speech is a cue plus the parentheticals and dialogue under it
+  const units = [];
+  for (let k = 0; k < blocks.length; k++){
+    const b = blocks[k];
+    if (b.t === 'character' || b.t === 'paren' || b.t === 'dialogue'){
+      const sp = { kind: 'speech', name: b.t === 'character' ? b.lines.join(' ') : null, lines: [] };
+      let j = k;
+      do {
+        const bj = blocks[j];
+        bj.lines.forEach((s, l) => sp.lines.push({ t: bj.t, s, src: { i: bj.i, l } }));
+        j++;
+      } while (j < blocks.length && (blocks[j].t === 'paren' || blocks[j].t === 'dialogue'));
+      units.push(sp); k = j - 1;
+    } else units.push({ kind: 'block', t: b.t, lines: b.lines.map((s, l) => ({ t: b.t, s, src: { i: b.i, l } })) });
+  }
+  // 3. fill pages
+  const pages = []; let page = [];
+  const used = () => page.length;
+  const room = () => LINES_PER_PAGE - used();
+  const gapFor = t => used() === 0 ? 0 : EL[t].before;
+  const newPage = () => { if (page.length) pages.push(page); page = []; };
+  const add = (lines, t) => { const g = gapFor(t); for (let n = 0; n < g; n++) page.push({ t: 'blank' }); page.push(...lines); };
+  // the least of a unit that must land on the same page as a scene heading before it
+  const headOf = u => u.kind === 'speech'
+    ? Math.min(u.lines.length, 1 + u.lines.slice(1).findIndex(l => l.t === 'dialogue') + 1 || u.lines.length) + 1
+    : Math.min(u.lines.length, 2) + EL[u.t].before;
+  const sentenceEnd = s => /[.!?…]["'”’)]*$/.test(s) || /--$/.test(s);
+
+  function placeSpeech(lines, name){
+    const g = gapFor(lines[0].t), r = room() - g;
+    if (lines.length <= r) return add(lines, lines[0].t);
+    // find a split point k (lines kept here), leaving one line for (MORE)
+    let best = -1;
+    for (let k = Math.min(lines.length - MIN_AFTER_BREAK, r - 1); k > 0; k--){
+      if (lines[k - 1].t !== 'dialogue') continue;
+      const dlg = lines.slice(0, k).filter(l => l.t === 'dialogue').length;
+      if (dlg < MIN_DIALOGUE_BEFORE_BREAK) break;
+      if (best < 0) best = k;
+      if (sentenceEnd(lines[k - 1].s)){ best = k; break; }
+      if (best - k > 3) break;                  // don't give up more than a few lines hunting for a full stop
+    }
+    if (best > 0 && name){
+      add(lines.slice(0, best), lines[0].t);
+      page.push({ t: 'more', s: '(MORE)' });
+      newPage();
+      const cont = /\(CONT['’]D\)/i.test(name) ? name : name + " (CONT'D)";
+      return placeSpeech([{ t: 'character', s: cont, src: lines[best].src }, ...lines.slice(best)], name);
+    }
+    if (used() === 0){                           // taller than a whole page and no clean split: cut it
+      const k = Math.max(1, r - 1); add(lines.slice(0, k), lines[0].t); newPage(); return placeSpeech(lines.slice(k), name);
+    }
+    newPage(); placeSpeech(lines, name);
+  }
+  function placeBlock(u, next){
+    const lines = u.lines, g = gapFor(u.t), r = room() - g;
+    let need = lines.length;
+    if (u.t === 'scene' && next) need += headOf(next);          // keep the heading with what follows
+    if (need <= r) return add(lines, u.t);
+    if (u.t === 'action' && r >= MIN_ACTION_SPLIT && lines.length - r >= MIN_ACTION_SPLIT){
+      let k = r; for (let q = r; q >= Math.max(MIN_ACTION_SPLIT, r - 3); q--) if (sentenceEnd(lines[q - 1].s)){ k = q; break; }
+      add(lines.slice(0, k), u.t); newPage(); return placeBlock({ ...u, lines: lines.slice(k) }, next);
+    }
+    if (used() === 0){                           // a block taller than the page
+      add(lines.slice(0, r), u.t); newPage(); return placeBlock({ ...u, lines: lines.slice(r) }, next);
+    }
+    newPage(); placeBlock(u, next);
+  }
+  const placeUnit = (u, next) => u.kind === 'speech' ? placeSpeech(u.lines, u.name) : placeBlock(u, next);
+  // Place unit k (and, for a scene heading, what follows it). Returns the next unplaced index.
+  // If a heading still ends up alone at the bottom of a page, because the unit after it
+  // moved on, rewind and push the heading over with it.
+  function placeFrom(k){
+    const u = units[k], next = units[k + 1];
+    if (!(u.kind === 'block' && u.t === 'scene' && next && used() > 0)){ placeUnit(u, next); return k + 1; }
+    const keepPages = pages.length, keepPage = page.slice();
+    placeBlock(u, next); let j = placeFrom(k + 1);
+    const done = pages[keepPages], lastLine = done && [...done].reverse().find(l => l.t !== 'blank');
+    if (lastLine && lastLine.t === 'scene' && lastLine.src.i === u.lines[0].src.i){
+      pages.length = keepPages; page = keepPage; newPage(); placeBlock(u, next); j = placeFrom(k + 1);
+    }
+    return j;
+  }
+  for (let k = 0; k < units.length;) k = placeFrom(k);
+  newPage();
+  if (!pages.length) pages.push([]);
+  return pages;
+}
+
+/* ---------- on-screen page marks ---------- */
+let pageCount = 1;
+function drawMarks(){
+  const pages = paginate(serialize());
+  pageCount = pages.length;
+  const list = els(), html = [];
+  for (let p = 1; p < pages.length; p++){
+    const first = pages[p].find(l => l.src); if (!first) continue;
+    const el = list[first.src.i]; if (!el) continue;
+    const lh = parseFloat(getComputedStyle(el).lineHeight) || 24;
+    const y = el.offsetTop + first.src.l * lh - Math.max(4, (parseFloat(getComputedStyle(el).marginTop) || lh) / 2);
+    html.push(`<div class="mark" style="top:${Math.round(y)}px"><span>${p + 1}.</span></div>`);
+  }
+  marks.innerHTML = html.join('');
+}
+
+/* =====================================================================
+   8. PRINT / PDF
+   ===================================================================== */
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+function buildPrint(){
+  const pages = paginate(serialize());
+  $('print').innerHTML = pages.map((pg, n) =>
+    `<section class="pp">${n ? `<div class="pn">${n + 1}.</div>` : ''}<div class="pb">${
+      pg.map(l => l.t === 'blank' ? '<div class="pl"> </div>' : `<div class="pl k-${l.t}">${esc(l.s)}</div>`).join('')
+    }</div></section>`).join('');
+}
+window.addEventListener('beforeprint', buildPrint);
+function exportPDF(){
+  buildPrint();
+  flash('Choose "Save as PDF" · margins Default · scale 100%', 4200);
+  const go = () => setTimeout(() => window.print(), 60);
+  (document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve()).then(go, go);
+}
+
+/* =====================================================================
+   9. FOUNTAIN / MARKDOWN
+   ===================================================================== */
+function toFountain(list, title, md){
+  const out = [];
+  if (title) out.push(md ? '# ' + title : 'Title: ' + title);
+  let speech = null;
+  const flush = () => { if (speech){ out.push(speech.join('\n')); speech = null; } };
+  for (const [t, raw] of list){
+    const x = raw.replace(/\s+/g, ' ').trim(); if (!x || (t === 'paren' && !x.replace(/[()\s]/g, ''))) continue;
+    if (t === 'character'){ flush(); let s = x.toUpperCase(); if (!/[A-Z]/.test(s)) s = '@' + s; speech = [s]; continue; }
+    if (t === 'paren' || t === 'dialogue'){
+      const s = t === 'paren' ? (/^\(.*\)$/.test(x) ? x : '(' + x.replace(/^\(|\)$/g, '') + ')') : x;
+      if (speech) speech.push(s); else out.push(s); continue;
+    }
+    flush();
+    if (t === 'scene'){ const s = x.toUpperCase(); out.push(SCENE_RE.test(s + ' ') ? s : '.' + s); }
+    else if (t === 'transition'){ const s = x.toUpperCase(); out.push(/TO:$/.test(s) ? s : '> ' + s); }
+    else {   // action: force it with ! where Fountain would read it as something else
+      const caps = /[A-Z]/.test(x) && !/[a-z]/.test(x);
+      out.push((/^[.>@~=#!]|^\[\[/.test(x) || SCENE_RE.test(x + ' ') || (caps && / TO:$/.test(x)) ? '!' : '') + x);
+    }
+  }
+  flush();
+  return out.join('\n\n') + '\n';
+}
+
+// Fountain-ish parser; also does the job for plain pasted text that uses caps for cues.
+function parseFountain(src){
+  let text = src.replace(/\r\n?/g, '\n').replace(/\/\*[\s\S]*?\*\//g, '').replace(/\[\[[\s\S]*?\]\]/g, '');
+  const L = text.split('\n'), out = []; let i = 0, title = null;
+  if (/^\s*(title|credit|author|authors|source|draft date|date|contact|notes|copyright)\s*:/i.test(L[0] || '')){
+    for (; i < L.length && L[i].trim() !== ''; i++){ const m = L[i].match(/^\s*title\s*:\s*(.*)$/i); if (m && m[1].trim()) title = m[1].trim().replace(/[_*]/g, ''); }
+  }
+  const caps = s => { const b = s.replace(/\(.*?\)/g, ''); return /[A-Z]/.test(b) && !/[a-z]/.test(b); };
+  let inSpeech = false;
+  const push = (t, x) => {
+    const last = out[out.length - 1];
+    if (t === 'action' && last && last[0] === 'action' && last.glue){ last[1] += ' ' + x; return; }
+    const e = [t, x]; e.glue = t === 'action'; out.push(e);
+  };
+  for (; i < L.length; i++){
+    const line = L[i].trim(), prevBlank = i === 0 || !L[i - 1].trim(), nextBlank = i + 1 >= L.length || !L[i + 1].trim();
+    if (!line){ inSpeech = false; if (out.length) out[out.length - 1].glue = false; continue; }
+    if (inSpeech){
+      if (/^\(.*\)$/.test(line)) out.push(['paren', line]);
+      else if (/^\(/.test(line) && !/\)$/.test(line)){ let s = line; while (i + 1 < L.length && L[i + 1].trim() && !/\)$/.test(s)) s += ' ' + L[++i].trim(); out.push(['paren', s]); }
+      else out.push(['dialogue', line]);
+      continue;
+    }
+    if (/^#/.test(line) || /^=(?!=)/.test(line) || /^={3,}$/.test(line)) continue;      // sections, synopses, page breaks
+    if (/^!/.test(line)){ push('action', line.slice(1).trim()); continue; }
+    if (/^\.[^.]/.test(line)){ out.push(['scene', line.slice(1).trim()]); continue; }
+    if (prevBlank && SCENE_RE.test(line + ' ')){ out.push(['scene', line.replace(/\s*#[^#]*#\s*$/, '')]); continue; }
+    if (/^>.*<$/.test(line)){ push('action', line.slice(1, -1).trim()); continue; }
+    if (/^>/.test(line)){ out.push(['transition', line.slice(1).trim()]); continue; }
+    if (prevBlank && nextBlank && caps(line) && (/TO:$/.test(line) || TRANSITIONS.includes(line))){ out.push(['transition', line]); continue; }
+    if (prevBlank && !nextBlank && (/^@/.test(line) || caps(line)) && !/^(FADE IN:?|THE END\.?)$/.test(line)){
+      out.push(['character', line.replace(/^@/, '').replace(/\s*\^$/, '').trim()]); inSpeech = true; continue;
+    }
+    push('action', line);
+  }
+  return { title, els: out.map(e => [e[0], e[1]]) };
+}
+
+// Plain text with screenplay indentation (e.g. a .txt export): infer types from the indent.
+function parseIndented(src){
+  const L = src.replace(/\r\n?/g, '\n').replace(/\t/g, '    ').split('\n');
+  const ind = l => l.match(/^ */)[0].length;
+  const base = Math.min(...L.filter(l => l.trim()).map(ind));
+  const caps = s => { const b = s.replace(/\(.*?\)/g, ''); return /[A-Z]/.test(b) && !/[a-z]/.test(b); };
+  const out = []; let joinable = false;
+  for (const raw of L){
+    const s = raw.trim();
+    if (!s){ joinable = false; continue; }
+    if (/^\d+\.?$/.test(s) || /^\(MORE\)$/i.test(s)) continue;          // page numbers, (MORE)
+    const rel = ind(raw) - base;
+    let t;
+    if (rel >= 30 && caps(s)) t = 'transition';
+    else if (rel >= 18 && caps(s)) t = 'character';
+    else if (rel >= 6) t = /^\(/.test(s) || (joinable && out[out.length - 1][0] === 'paren' && !/\)$/.test(out[out.length - 1][1])) ? 'paren' : 'dialogue';
+    else t = SCENE_RE.test(s + ' ') ? 'scene' : (caps(s) && / TO:$/.test(s) ? 'transition' : 'action');
+    const last = out[out.length - 1];
+    if (joinable && last && last[0] === t && (t === 'action' || t === 'dialogue' || (t === 'paren' && !/\)$/.test(last[1])))){ last[1] += ' ' + s; }
+    else out.push([t, s.replace(/\s*\(CONT['’]D\)\s*$/i, t === 'character' ? '' : '$&')]);
+    joinable = true;
+  }
+  return { title: null, els: out };
+}
+function parseText(src){
+  const lines = src.split(/\r?\n/).filter(l => l.trim());
+  const deep = lines.filter(l => /^( {8,}|\t{2,})\S/.test(l)).length;
+  return lines.length >= 3 && deep / lines.length > .25 ? parseIndented(src) : parseFountain(src);
+}
+
+// Inside a claude.ai preview the page can't start downloads itself, so it asks the
+// viewer through the "downloads" capability. On the Lab site it's a normal download.
+let viewerDownloads = null;
+const inPreview = !!(window.claude && window.claude.use);
+if (inPreview) window.claude.use('downloads').then(d => { viewerDownloads = d; }, () => {});
+
+async function download(name, data, mime = 'text/plain;charset=utf-8'){
+  closePalette();
+  if (inPreview){
+    if (!viewerDownloads) return flash('Downloads are off in this preview');
+    try { await viewerDownloads.save({ filename: name.replace(/\.fountain$/, '.fountain.txt'), data }); flash('Saved ' + name); }
+    catch (e){ flash(e && e.code === 'declined' ? 'Download cancelled' : 'Downloads are off in this preview'); }
+    return;
+  }
+  try {
+    const url = URL.createObjectURL(new Blob([data], { type: mime }));
+    const a = document.createElement('a'); a.href = url; a.download = name; document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 4000);
+    flash('Saved ' + name);
+  } catch (e){ flash('Download blocked here. Try "Copy as Fountain"'); }
+}
+
+/* ---------- Direct PDF: writes the paginated pages straight into a PDF file ----------
+   No print dialog and no browser settings involved, so margins and page breaks are exact
+   in every browser. It uses PDF's built-in Courier (the same 10-characters-per-inch
+   metrics as Courier Prime), so nothing has to be embedded and the file stays tiny.
+   Coordinates are PDF points (72 per inch) measured from the BOTTOM-left of the page. */
+const WIN_ANSI = { '‘': 0x91, '’': 0x92, '“': 0x93, '”': 0x94, '–': 0x96, '—': 0x97, '…': 0x85, '•': 0x95, '€': 0x80, ' ': 0x20 };
+function pdfString(s){
+  let out = '';
+  for (const ch of s){
+    let c = ch.codePointAt(0);
+    if (WIN_ANSI[ch]) c = WIN_ANSI[ch]; else if (c > 255 || (c < 32)) c = 63;   // anything else becomes "?"
+    const t = String.fromCharCode(c);
+    out += (t === '(' || t === ')' || t === '\\') ? '\\' + t : t;
+  }
+  return '(' + out + ')';
+}
+function makePDF(pages, title){
+  const PT = 72, H = PAGE.h * PT, LH = PT / LPI, CHAR = PT / CPI;  // 12pt line, 7.2pt character
+  const BASE = 9;                                                    // baseline sits 9pt into each 12pt line
+  const textRight = (PAGE.w - PAGE.right) * PT;                      // 7.5in
+  const objs = [];                                                   // objs[n-1] = body of object n
+  const add = body => { objs.push(body); return objs.length; };
+  const catalog = add(null), pagesObj = add(null);
+  const font = add('<< /Type /Font /Subtype /Type1 /BaseFont /Courier /Encoding /WinAnsiEncoding >>');
+  const kids = [];
+  pages.forEach((pg, n) => {
+    const ops = ['BT', '/F1 12 Tf'];
+    const put = (x, topY, str) => ops.push(`1 0 0 1 ${x.toFixed(2)} ${(H - topY - BASE).toFixed(2)} Tm ${pdfString(str)} Tj`);
+    if (n) { const num = (n + 1) + '.'; put(textRight - num.length * CHAR, .5 * PT, num); }
+    pg.forEach((l, k) => {
+      if (l.t === 'blank' || !l.s) return;
+      const top = PAGE.top * PT + k * LH;
+      const cfg = l.t === 'more' ? EL.character : EL[l.t];
+      const x = cfg.right ? textRight - l.s.length * CHAR : cfg.left * PT;
+      put(x, top, l.s);
+    });
+    ops.push('ET');
+    const stream = ops.join('\n');
+    const content = add(`<< /Length ${stream.length} >>\nstream\n${stream}\nendstream`);
+    kids.push(add(`<< /Type /Page /Parent ${pagesObj} 0 R /MediaBox [0 0 ${PAGE.w * PT} ${H}] /Resources << /Font << /F1 ${font} 0 R >> >> /Contents ${content} 0 R >>`));
+  });
+  objs[catalog - 1] = `<< /Type /Catalog /Pages ${pagesObj} 0 R >>`;
+  objs[pagesObj - 1] = `<< /Type /Pages /Kids [${kids.map(k => k + ' 0 R').join(' ')}] /Count ${kids.length} >>`;
+  const info = add(`<< /Title ${pdfString(title || 'Screenplay')} /Creator (Screen, lab.wboechler.com) >>`);
+  let out = '%PDF-1.4\n%âãÏÓ\n';
+  const offsets = objs.map((body, i) => { const at = out.length; out += `${i + 1} 0 obj\n${body}\nendobj\n`; return at; });
+  const xref = out.length;
+  out += `xref\n0 ${objs.length + 1}\n0000000000 65535 f \n` + offsets.map(o => String(o).padStart(10, '0') + ' 00000 n \n').join('');
+  out += `trailer\n<< /Size ${objs.length + 1} /Root ${catalog} 0 R /Info ${info} 0 R >>\nstartxref\n${xref}\n%%EOF\n`;
+  const bytes = new Uint8Array(out.length);                          // every character is one byte
+  for (let i = 0; i < out.length; i++) bytes[i] = out.charCodeAt(i) & 255;
+  return bytes;
+}
+function downloadPDF(){
+  const pages = paginate(serialize());
+  download(fileName('.pdf'), new Blob([makePDF(pages, cur && cur.title)], { type: 'application/pdf' }), 'application/pdf');
+}
+
+/* ---------- Backups: every script in one .json file, and back again ---------- */
+function backupAll(){
+  save(); syncIndex();
+  const scripts = index.map(m => ({ title: m.title, created: m.created, updated: m.updated, els: (readDoc(m.id) || { els: [] }).els }));
+  const stamp = new Date().toISOString().slice(0, 10);
+  download(`Screen backup ${stamp}.json`, JSON.stringify({ app: 'screen', version: 1, saved: Date.now(), scripts }, null, 1), 'application/json');
+}
+function restoreBackup(data){
+  const list = (data.scripts || []).filter(x => x && Array.isArray(x.els));
+  if (!list.length) return flash('No scripts in that backup');
+  let first = null;
+  for (const x of list){
+    const id = newId(), meta = { id, title: uniqueTitle(String(x.title || 'Restored')), created: x.created || Date.now(), updated: x.updated || Date.now(), pages: 1 };
+    writeDoc(id, { els: x.els.filter(e => Array.isArray(e) && EL[e[0]]).map(e => [e[0], String(e[1] || '')]) });
+    updIndex(l => l.push(meta)); first = first || id;
+  }
+  openScript(first, true);
+  flash(`Restored ${list.length} ${list.length === 1 ? 'script' : 'scripts'}`, 2400);
+}
+const fileName = ext => (cur ? cur.title : 'script').replace(/[\\/:*?"<>|]+/g, '').trim().replace(/\s+/g, ' ') + ext;
+
+/* =====================================================================
+   10. STORAGE: everything stays in this browser's localStorage
+   ===================================================================== */
+const store = {
+  ok: (() => { try { const k = '__screen'; localStorage.setItem(k, '1'); localStorage.removeItem(k); return true; } catch (e) { return false; } })(),
+  get(k){ try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } },
+  set(k, v){ try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch (e) { return false; } },
+  del(k){ try { localStorage.removeItem(k); } catch (e) {} },
+};
+const KEY = { index: 'screen:index', doc: id => 'screen:doc:' + id, last: 'screen:last', prefs: 'screen:prefs' };
+let index = store.get(KEY.index) || [];
+let mem = {};                                    // fallback when storage is off
+let cur = null;
+const newId = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+function readDoc(id){ return store.ok ? store.get(KEY.doc(id)) : mem[id]; }
+function writeDoc(id, doc){ if (store.ok){ if (!store.set(KEY.doc(id), doc)) flash('Storage is full. Export a copy'); } else mem[id] = doc; }
+// The stored list is the source of truth (another tab may have changed it), so every
+// change re-reads it, applies fn(list), and writes it back.
+function updIndex(fn){
+  let list = store.ok ? (store.get(KEY.index) || []) : index;
+  if (cur && !list.some(x => x.id === cur.id)) list.unshift(cur);     // keep the open script listed
+  if (fn) fn(list);
+  index = list; if (store.ok) store.set(KEY.index, list);
+  if (cur) cur = list.find(x => x.id === cur.id) || null;
+}
+const curEntry = l => l.find(x => x.id === cur.id) || {};
+function syncIndex(){ if (store.ok) index = store.get(KEY.index) || index; }
+
+let saveTimer = 0;
+function save(){
+  clearTimeout(saveTimer); if (!cur) return;
+  const s = span();
+  writeDoc(cur.id, { els: serialize(), c: s ? s.b : null });
+  updIndex(l => { const e = curEntry(l); e.updated = Date.now(); e.pages = pageCount; });
+}
+const saveSoon = () => { clearTimeout(saveTimer); saveTimer = setTimeout(save, 400); };
+document.addEventListener('visibilitychange', () => { if (document.hidden) save(); });
+window.addEventListener('pagehide', save);
+
+function openScript(id, focusEnd){
+  if (cur) save();
+  syncIndex();
+  const meta = index.find(x => x.id === id); if (!meta) return;
+  const doc = readDoc(id) || { els: [['scene', '']] };
+  cur = meta; store.set(KEY.last, id);
+  render(doc.els); undoStack = []; redoStack = []; grouping = false;
+  document.title = meta.title + ' · Screen';
+  script.focus({ preventScroll: true });
+  if (doc.c && !focusEnd) placeAt(doc.c); else { const l = els()[els().length - 1]; place(l, txt(l).length); }
+  after(true);
+}
+function createScript(title, list, extra){
+  const id = newId(), meta = { id, title, created: Date.now(), updated: Date.now(), pages: 1, ...(extra || {}) };
+  writeDoc(id, { els: list }); updIndex(l => l.unshift(meta));
+  openScript(id, true);
+  return meta;
+}
+function uniqueTitle(t){ let n = t, k = 2; while (index.some(x => x.title === n)) n = t + ' ' + k++; return n; }
+
+function clearScript(){
+  checkpoint('struct');
+  render([['scene', '']]); place(els()[0], 0);
+  if (cur && cur.sample){ const t = uniqueTitle('Untitled'); updIndex(l => { const e = curEntry(l); e.title = t; delete e.sample; }); document.title = t + ' · Screen'; }
+  flash('Cleared · ' + MOD + 'Z to undo', 2600);
+  after();
+}
+
+/* ---------- preferences: theme and focus mode ---------- */
+const prefs = Object.assign({ theme: null, focus: false }, store.get(KEY.prefs) || {});
+function applyPrefs(){
+  if (prefs.theme) document.documentElement.dataset.theme = prefs.theme; else delete document.documentElement.dataset.theme;
+  document.body.classList.toggle('focus', !!prefs.focus);
+}
+const isDark = () => prefs.theme ? prefs.theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+function toggleDark(){ prefs.theme = isDark() ? 'light' : 'dark'; store.set(KEY.prefs, prefs); applyPrefs(); flash(isDark() ? 'Dark' : 'Light'); }
+function toggleFocus(){ prefs.focus = !prefs.focus; store.set(KEY.prefs, prefs); applyPrefs(); flash(prefs.focus ? 'Focus on' : 'Focus off'); after(true); }
+
+/* =====================================================================
+   11. AFTER EVERY CHANGE: current line, indicator, autocomplete, marks, save
+   ===================================================================== */
+let curEl = null, lastShownType = null, markTimer = 0;
+function after(structural){
+  trackCurrent();
+  updateSuggest();
+  clearTimeout(markTimer); markTimer = setTimeout(drawMarks, structural ? 0 : 250);
+  saveSoon();
+  keepInView();
+}
+function trackCurrent(){
+  const c = caret(), el = c ? c.el : null;
+  if (el !== curEl){ if (curEl) curEl.classList.remove('cur'); if (el) el.classList.add('cur'); curEl = el; }
+  if (el && typeOf(el) !== lastShownType){ lastShownType = typeOf(el); showType(el); }
+}
+let flashTimer = 0;
+function flash(msg, ms = 1300){
+  indicator.textContent = msg; positionIndicator(curEl);
+  indicator.classList.add('on'); clearTimeout(flashTimer);
+  flashTimer = setTimeout(() => indicator.classList.remove('on'), ms);
+}
+function showType(el){ flash(EL[typeOf(el)].name); }
+function positionIndicator(el){
+  if (!el || innerWidth < 900){ indicator.style.top = ''; indicator.style.left = ''; return; }
+  const r = el.getBoundingClientRect(), sr = sheet.getBoundingClientRect();
+  indicator.style.right = 'auto';
+  indicator.style.left = Math.max(8, sr.left - 230) + 'px';
+  indicator.style.width = Math.min(200, sr.left - 30) + 'px';
+  indicator.style.top = (r.top + (parseFloat(getComputedStyle(el).lineHeight) - 14) / 2) + 'px';
+}
+function keepInView(){
+  const s = getSelection(); if (!s.rangeCount || document.activeElement !== script) return;
+  const c = caret(); if (!c) return;
+  const r = c.el.getBoundingClientRect();
+  if (prefs.focus){                                   // typewriter: keep the line near the middle
+    const target = innerHeight * .42, d = r.top - target;
+    if (Math.abs(d) > 4) window.scrollBy({ top: d, behavior: 'auto' });
+  } else if (r.bottom > innerHeight - 90) window.scrollBy({ top: r.bottom - innerHeight + 160 });
+  else if (r.top < 40) window.scrollBy({ top: r.top - 80 });
+}
+document.addEventListener('selectionchange', () => {
+  if (document.activeElement !== script) return;
+  trackCurrent();
+  if (sug && (!span() || !span().collapsed || caret().el !== sug.el)) sugDismissed = false;
+  updateSuggest();
+  if (prefs.focus) keepInView();
+});
+window.addEventListener('resize', () => { clearTimeout(markTimer); markTimer = setTimeout(drawMarks, 120); hideSuggest(); });
+
+// the faint summon hint shows up only when the mouse moves
+let summonTimer = 0;
+document.addEventListener('mousemove', () => { summon.classList.add('on'); clearTimeout(summonTimer); summonTimer = setTimeout(() => summon.classList.remove('on'), 1600); });
+summon.addEventListener('click', () => openPalette());
+
+/* =====================================================================
+   12. COMMAND PALETTE (Cmd/Ctrl+K)
+   ===================================================================== */
+let palItems = [], palSel = 0, palMode = 'commands', palPrompt = null, savedCaret = null;
+const ago = t => { const s = (Date.now() - t) / 1000; return s < 60 ? 'just now' : s < 3600 ? Math.round(s / 60) + 'm ago' : s < 86400 ? Math.round(s / 3600) + 'h ago' : Math.round(s / 86400) + 'd ago'; };
+
+function commands(){
+  const onLab = /wboechler\.com$/.test(location.hostname);
+  const elCmds = TAB_ORDER.map(t => ({ label: 'Make this line ' + EL[t].name, hint: '', run: () => { restoreCaret(); const c = caret(); if (c){ checkpoint('struct'); const sh = setType(c.el, t); place(c.el, c.o + sh); after(); } } }));
+  return [
+    { group: 'Script' },
+    { label: 'New script', run: () => askTitle('Name the new script', uniqueTitle('Untitled'), t => createScript(t, [['scene', '']])) },
+    { label: 'Rename script', run: () => askTitle('Rename "' + cur.title + '"', cur.title, t => { updIndex(l => { const e = curEntry(l); e.title = t; delete e.sample; }); document.title = t + ' · Screen'; flash('Renamed'); }) },
+    { label: 'Duplicate script', run: () => { save(); closePalette(); createScript(uniqueTitle(cur.title + ' copy'), serialize()); flash('Duplicated'); } },
+    { label: 'Delete script', run: () => confirmDelete() },
+    { label: 'Clear script', hint: MOD + '⇧⌫', run: () => { restoreCaret(); clearScript(); } },
+    { group: 'Export' },
+    { label: 'Download PDF', run: () => downloadPDF() },
+    ...(inPreview ? [] : [{ label: 'Print, or save as PDF in Courier Prime', hint: MOD + 'P', run: () => { closePalette(); exportPDF(); } }]),
+    { label: 'Download Fountain (.fountain)', run: () => download(fileName('.fountain'), toFountain(serialize(), cur.title)) },
+    { label: 'Download Markdown (.md)', run: () => download(fileName('.md'), toFountain(serialize(), cur.title, true)) },
+    { label: 'Copy as Fountain', run: () => copyText(toFountain(serialize(), cur.title)) },
+    { group: 'Saving' },
+    { label: 'Save', hint: MOD + 'S', run: () => { closePalette(); save(); flash(store.ok ? 'Saved in this browser' : 'Not saving: storage is off'); } },
+    { label: 'Back up all scripts (.json)', run: () => backupAll() },
+    { label: 'Open a file or restore a backup', run: () => { closePalette(); $('file').click(); } },
+    { group: 'View' },
+    { label: 'Toggle dark mode', hint: isDark() ? 'on' : 'off', run: () => { closePalette(); toggleDark(); } },
+    { label: 'Toggle focus mode', hint: prefs.focus ? 'on' : 'off', run: () => { closePalette(); toggleFocus(); } },
+    { label: 'Keyboard shortcuts', run: () => showHelp() },
+    { group: 'Element' },
+    ...elCmds,
+    ...(onLab ? [{ group: 'Lab' }, { label: 'Back to lab.wboechler.com', run: () => { save(); location.href = '/'; } }] : []),
+  ];
+}
+function scriptItems(){
+  return index.slice().sort((a, b) => b.updated - a.updated).map(s => ({
+    label: s.title, hint: (s.id === cur.id ? 'open · ' : '') + (s.pages || 1) + ' pp · ' + ago(s.updated), script: true,
+    run: () => { closePalette(); if (s.id !== cur.id) openScript(s.id); else restoreCaret(); },
+  }));
+}
+function buildList(){
+  const q = palInput.value.trim().toLowerCase();
+  if (palMode === 'prompt'){ palItems = [{ note: true, label: 'Enter to save · Esc to cancel' }]; return; }
+  if (palMode === 'help' || palMode === 'confirm') return;
+  const words = q.split(/\s+/).filter(Boolean);
+  const match = it => !words.length || words.every(w => it.label.toLowerCase().includes(w));
+  const scripts = scriptItems().filter(match), cmds = commands();
+  const out = [];
+  if (scripts.length) out.push({ group: 'Scripts' }, ...(words.length ? scripts : scripts.slice(0, 6)));
+  let group = null;
+  for (const c of cmds){ if (c.group){ group = c; continue; } if (match(c)){ if (group){ out.push(group); group = null; } out.push(c); } }
+  palItems = out;
+}
+function drawPalette(){
+  buildList();
+  if (palSel >= palItems.length || palItems[palSel] && (palItems[palSel].group || palItems[palSel].note)) palSel = palItems.findIndex(i => !i.group && !i.note);
+  palList.innerHTML = palItems.map((it, i) => it.group ? `<li class="group">${esc(it.group)}</li>`
+    : `<li class="${it.note ? 'note' : ''}${it.key ? ' key' : ''}${i === palSel ? ' on' : ''}" data-i="${i}" role="option"><span class="l">${esc(it.label)}</span>${it.hint ? `<span class="h">${esc(it.hint)}</span>` : ''}</li>`).join('');
+  const on = palList.querySelector('.on'); if (on) on.scrollIntoView({ block: 'nearest' });
+}
+function openPalette(){
+  if (!palette.hidden) return closePalette();
+  const s = span(); savedCaret = s ? s.b : savedCaret;
+  syncIndex();
+  palMode = 'commands'; palInput.value = ''; palSel = 0;
+  palInput.placeholder = 'Type a command or a script name';
+  palMeta.textContent = cur ? `${cur.title} · ${pageCount} ${pageCount === 1 ? 'page' : 'pages'}${store.ok ? '' : ' · not saving: storage is off'}` : '';
+  hideSuggest(); palette.hidden = false; drawPalette(); palInput.focus();
+}
+function closePalette(){ if (palette.hidden) return; palette.hidden = true; restoreCaret(); }
+function restoreCaret(){ palette.hidden = true; script.focus({ preventScroll: true }); if (savedCaret) placeAt(savedCaret); trackCurrent(); }
+function askTitle(label, value, done){
+  palMode = 'prompt'; palPrompt = done; palMeta.textContent = label; palInput.value = value; palInput.placeholder = 'Script name';
+  drawPalette(); palInput.focus(); palInput.select();
+}
+function confirmDelete(){
+  palMode = 'confirm'; palMeta.textContent = 'Delete "' + cur.title + '"? This can’t be undone.'; palInput.value = '';
+  palItems = [
+    { label: 'Yes, delete it', run: () => {
+      const id = cur.id; store.del(KEY.doc(id)); delete mem[id];
+      updIndex(l => { const k = l.findIndex(x => x.id === id); if (k >= 0) l.splice(k, 1); }); cur = null;
+      if (index.length) openScript(index.sort((a, b) => b.updated - a.updated)[0].id); else createScript('Untitled', [['scene', '']]);
+      closePalette(); flash('Deleted');
+    } },
+    { label: 'Cancel', run: () => { palMode = 'commands'; palMeta.textContent = ''; drawPalette(); } },
+  ];
+  palSel = 1; drawPalette();
+}
+function showHelp(){
+  palMode = 'help'; palMeta.textContent = 'Keyboard'; palInput.value = '';
+  const rows = [
+    ['Enter', 'next element: Scene → Action → Character → Dialogue → Character…'],
+    ['Enter on an empty line', 'back to Action'],
+    ['Tab / Shift+Tab', 'change the current line’s element'],
+    ['Shift+Enter', 'new paragraph of the same element'],
+    ['(', 'on an empty Dialogue line starts a Parenthetical'],
+    ['INT. / EXT.', 'at the start of a line makes a Scene Heading'],
+    ['→', 'accept the faint suggestion'],
+    ['↑ ↓ then Enter', 'pick from several suggestions'],
+    [MOD + 'K', 'commands'],
+    [MOD + 'P', 'print, or save as PDF from the print dialog'],
+    [MOD + 'S', 'save (it also saves as you type)'],
+    [MOD + 'Z / ' + MOD + '⇧Z', 'undo / redo'],
+    [MOD + '⇧⌫', 'clear the script'],
+  ];
+  palItems = rows.map(([k, v]) => ({ note: true, key: true, label: v, hint: k }));
+  palSel = -1; drawPalette();
+}
+async function copyText(t){
+  try { await navigator.clipboard.writeText(t); flash('Copied as Fountain'); closePalette(); }
+  catch (e){ flash('Copy was blocked by the browser'); }
+}
+palInput.addEventListener('input', () => { if (palMode === 'help' || palMode === 'confirm'){ palMode = 'commands'; palMeta.textContent = ''; } palSel = 0; drawPalette(); });
+palInput.addEventListener('keydown', e => {
+  const k = e.key;
+  if (k === 'Escape'){ e.preventDefault(); if (palMode !== 'commands'){ palMode = 'commands'; palMeta.textContent = ''; palInput.value = ''; drawPalette(); } else closePalette(); return; }
+  if (palMode === 'prompt'){
+    if (k === 'Enter'){ e.preventDefault(); const v = palInput.value.trim(); if (!v) return; const done = palPrompt; palPrompt = null; closePalette(); done(v); }
+    return;
+  }
+  const move = d => { if (!palItems.length) return; let i = palSel; for (let n = 0; n < palItems.length; n++){ i = (i + d + palItems.length) % palItems.length; if (!palItems[i].group && !palItems[i].note) break; } palSel = i; drawPalette(); };
+  if (k === 'ArrowDown'){ e.preventDefault(); move(1); }
+  else if (k === 'ArrowUp'){ e.preventDefault(); move(-1); }
+  else if (k === 'Enter'){ e.preventDefault(); const it = palItems[palSel]; if (it && it.run) it.run(); }
+});
+palList.addEventListener('mousedown', e => {
+  const li = e.target.closest('li[data-i]'); if (!li) return; e.preventDefault();
+  const it = palItems[+li.dataset.i]; if (it && it.run) it.run();
+});
+palette.addEventListener('mousedown', e => { if (e.target === palette){ e.preventDefault(); closePalette(); } });
+
+document.addEventListener('keydown', e => {
+  const mod = e.metaKey || e.ctrlKey;
+  if (mod && e.key.toLowerCase() === 'k'){ e.preventDefault(); return openPalette(); }
+  if (mod && e.key.toLowerCase() === 's'){ e.preventDefault(); save(); return flash(store.ok ? 'Saved in this browser' : 'Not saving: storage is off'); }
+  if (mod && e.key.toLowerCase() === 'p'){ buildPrint(); }
+});
+
+$('file').addEventListener('change', async e => {
+  const f = e.target.files[0]; e.target.value = ''; if (!f) return;
+  const text = await f.text();
+  if (/\.json$/i.test(f.name) || /^\s*\{/.test(text)){
+    try { const data = JSON.parse(text); if (data && data.app === 'screen') return restoreBackup(data); } catch (err) {}
+  }
+  const parsed = parseText(text);
+  if (!parsed.els.length) return flash('Nothing to import in that file');
+  createScript(uniqueTitle(parsed.title || f.name.replace(/\.[^.]+$/, '')), parsed.els);
+  flash('Imported ' + f.name);
+});
+
+/* =====================================================================
+   13. FIRST RUN: a sample scene that uses every element
+   ===================================================================== */
+function sample(){
+  return [
+    ['scene', 'INT. EMPTY PAGE - NIGHT'],
+    ['action', 'Warm paper. One cursor, blinking. Nothing else is here, and nothing else needs to be.'],
+    ['character', 'THE WRITER'],
+    ['paren', '(to the page)'],
+    ['dialogue', 'Where are the buttons?'],
+    ['character', 'THE PAGE'],
+    ['dialogue', 'Press Enter and I guess what comes next. Tab changes what a line is. ' + MOD + 'K opens everything else.'],
+    ['character', 'THE WRITER'],
+    ['dialogue', 'And when I’m ready to start?'],
+    ['character', 'THE PAGE'],
+    ['dialogue', MOD + 'Shift+Backspace. I’ll be gone.'],
+    ['transition', 'CUT TO:'],
+  ];
+}
+
+function boot(){
+  applyPrefs();
+  // Ask the browser to treat this site's storage as "persistent" so it isn't cleared
+  // to free up space. Clearing site data by hand still erases it: back up with Cmd/Ctrl+K.
+  try { if (store.ok && navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(() => {}); } catch (e) {}
+  if (!index.length) createScript('Sample Scene', sample(), { sample: true });
+  else {
+    const last = store.get(KEY.last);
+    openScript(index.some(x => x.id === last) ? last : index.slice().sort((a, b) => b.updated - a.updated)[0].id);
+  }
+  if (!store.ok) setTimeout(() => flash('Storage is off here, so nothing will be saved', 3200), 600);
+  else setTimeout(() => flash(touchOnly ? 'Tap ⋯ for commands' : MOD + 'K for commands', 2200), 500);
+  // fonts can arrive after first paint and nudge line heights
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => drawMarks());
+}
+boot();
+})();
+</script>
+</body>
+</html>
