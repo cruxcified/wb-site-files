@@ -14,21 +14,33 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://api.nga.gov" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500&family=Geist+Mono:wght@400;500&display=swap">
   <link rel="preload" href="fonts/jenson-display-regular.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="fonts/jenson-text-regular.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="css/style.css">
-  <script type="importmap">{ "imports": { "three": "./vendor/three.module.min.js" } }</script>
-  <script type="module" src="js/main.js"></script>
+  <link rel="stylesheet" href="css/style.css?v=660e0926">
+  <script type="importmap">{
+    "imports": {
+      "three": "./vendor/three.module.min.js",
+      "./js/data.js": "./js/data.js?v=779a3871",
+      "./js/gl.js": "./js/gl.js?v=62e73345",
+      "./js/main.js": "./js/main.js?v=f4ff170d",
+      "./js/store.js": "./js/store.js?v=f165e099",
+      "./js/ui.js": "./js/ui.js?v=a3022125",
+      "./js/views/artwork.js": "./js/views/artwork.js?v=b6e30803",
+      "./js/views/boards.js": "./js/views/boards.js?v=ca4be254",
+      "./js/views/tiles.js": "./js/views/tiles.js?v=908b0de4",
+      "./js/views/wall.js": "./js/views/wall.js?v=a37db679",
+      "./vendor/barba.mjs": "./vendor/barba.mjs?v=a2c4e662",
+      "./vendor/lenis.mjs": "./vendor/lenis.mjs?v=bd0c2d8c"
+    }
+  }</script>
+  <script type="module" src="js/main.js?v=f4ff170d"></script>
 </head>
 <body>
   <canvas id="gl" aria-hidden="true"></canvas>
 
   <header class="top">
-    <div class="brand">
-      <a class="crumb" href="../" data-barba-prevent="self">Lab</a><span class="slash" aria-hidden="true">/</span>
-      <a class="mark" href="./" aria-label="Gallery Wall, back to the wall"><em>Gallery</em> Wall</a>
-    </div>
+    <a class="mark" href="./" aria-label="Gallery Wall, back to the wall"><em>Gallery</em> Wall</a>
     <label class="search" for="q">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
       <input id="q" type="search" placeholder="Search storm at sea, ravens, moonlight, Turner" autocomplete="off" spellcheck="false">
@@ -42,6 +54,7 @@
         <svg class="moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M20.5 14.5A8.5 8.5 0 0 1 9.5 3.5a8.5 8.5 0 1 0 11 11Z"/></svg>
         <svg class="sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M5.3 18.7l1.6-1.6M17.1 6.9l1.6-1.6"/></svg>
       </button>
+      <a class="home" href="../" data-barba-prevent="self">← Lab</a>
     </nav>
   </header>
 

@@ -46,7 +46,7 @@ void main() {
   vec4 wp = modelMatrix * vec4(position, 1.);
   float sx = sin(uv.x * 3.14159), sy = sin(uv.y * 3.14159);
   wp.y -= sx * uVel * 20.;                       // the middle of a tile lags fast scrolling
-  wp.z += sx * sy * (uFly * 160. + uHover * 14.); // bulge toward the camera in flight and on hover
+  wp.z += sx * sy * uFly * 160.;                 // bulge toward the camera in flight (hover leaves the image still)
   gl_Position = projectionMatrix * viewMatrix * wp;
 }`;
 const tileFrag = /* glsl */`
@@ -57,11 +57,9 @@ varying vec2 vUv;
 float sdRound(vec2 p, vec2 b, float r) { vec2 q = abs(p) - b + r; return length(max(q, 0.)) + min(max(q.x, q.y), 0.) - r; }
 void main() {
   vec2 uv = vUv;
-  uv = .5 + (uv - .5) * (1. - .05 * uHover);
   float s = uVel * .01;
   vec3 col = vec3(texture2D(uTex, uv + vec2(0., s)).r, texture2D(uTex, uv).g, texture2D(uTex, uv - vec2(0., s)).b);
   col = mix(mix(vec3(.80, .83, .86), vec3(.15, .17, .21), uDark), col, uHas); // fog-grey placeholder until the image arrives
-  col *= 1. + .07 * uHover;
   // diagonal reveal with a soft leading edge
   float w = vUv.x * .35 + (1. - vUv.y) * .65;
   float m = smoothstep(w - .18, w, uReveal * 1.2);

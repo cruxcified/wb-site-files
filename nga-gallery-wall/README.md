@@ -8,6 +8,7 @@ Live at https://lab.wboechler.com/nga-gallery-wall/
 - Type is Adobe Jenson Pro (fonts/, from Will's own files). Images stream from NGA's IIIF server (`api.nga.gov/iiif`). If the browser can't read them into WebGL (CORS), the page falls back to plain `<img>` tiles.
 - Light and dark themes: the head script picks one before first paint (saved choice in `gw-theme`, else the system setting). CSS tokens switch on `html[data-theme]`; the shaders tween a `uDark` uniform.
 - Boards are kept in localStorage. Export/import on the Boards page moves them between browsers.
+- After changing anything in js/ or css/, run `python3 tools/version.py`. It stamps content hashes into each page's import map so visitors don't get stale cached code after a deploy.
 - Vendored: three.js 0.180.0, @barba/core 2.10.3, lenis 1.1.20. No build step.
 - Add `?debug` to a URL to see barba's transition logs. `window.__gw` exposes the renderer state.
 

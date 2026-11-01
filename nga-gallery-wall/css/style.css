@@ -26,6 +26,7 @@
   --display: "GW Jenson Display", "GW Jenson", Georgia, serif;
   --body: "GW Jenson", Georgia, serif;
   --caption: "GW Jenson Caption", "GW Jenson", Georgia, serif;
+  --sans: "Geist", "Helvetica Neue", Arial, sans-serif;
   --mono: "Geist Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
   --gutter-l: max(20px, env(safe-area-inset-left, 0px));
   --gutter-r: max(20px, env(safe-area-inset-right, 0px));
@@ -69,10 +70,6 @@ button { cursor: pointer }
   transition: background .5s var(--ease), padding .5s var(--ease);
 }
 .scrolled .top { background: var(--glass); border-bottom: 1px solid var(--line) }
-.brand { display: flex; align-items: baseline; gap: 9px; min-width: 0; white-space: nowrap }
-.crumb { font: 500 11px var(--mono); letter-spacing: .16em; text-transform: uppercase; color: var(--steep); text-decoration: none; transition: color .25s }
-.crumb:hover { color: var(--lavender) }
-.slash { font: 300 20px/1 var(--display); color: rgb(var(--ink-c) / .28) }
 .mark { font: 400 25px/1 var(--display); text-decoration: none; white-space: nowrap }
 .mark em { font-style: italic; font-weight: 300; color: var(--lavender) }
 .search { justify-self: center; width: min(560px, 100%); display: flex; align-items: center; gap: 10px; padding: 0 14px; height: 42px; border-radius: 999px;
@@ -81,7 +78,10 @@ button { cursor: pointer }
 .search input { flex: 1; min-width: 0; border: 0; background: none; outline: none; color: var(--tea); font-size: 17px }
 .search input::placeholder { color: var(--steep); font-style: italic }
 .search kbd { font: 500 11px var(--mono); border: 1px solid var(--line); border-radius: 5px; padding: 1px 6px; color: var(--steep) }
-.links { display: flex; gap: 6px }
+.links { display: flex; gap: 6px; align-items: center }
+/* back to the lab homepage, styled like the "← Lab" link on the lab's other pages */
+.home { margin-left: 12px; font: 400 13px var(--sans); letter-spacing: .1em; text-transform: uppercase; color: var(--tea); text-decoration: none; white-space: nowrap; transition: color .25s }
+.home:hover { color: var(--lavender) }
 .pill { display: inline-flex; align-items: center; gap: 6px; height: 38px; padding: 0 16px; border-radius: 999px; border: 1px solid var(--line);
   background: rgb(var(--foam-c) / .5); text-decoration: none; font-size: 16px; transition: background .25s, border-color .25s, color .25s }
 .pill:hover { border-color: rgb(var(--ink-c) / .35) }
@@ -245,7 +245,6 @@ main { position: relative; z-index: 1; padding: calc(var(--head) + env(safe-area
   .top { grid-template-columns: auto 1fr; gap: 10px 12px; padding-top: calc(10px + env(safe-area-inset-top, 0px)); padding-bottom: 10px }
   .mark { font-size: 22px }
   .pill.icon { width: 34px }
-  .brand { gap: 7px }
   .links { justify-self: end }
   .search { grid-column: 1 / -1; grid-row: 2; width: 100%; height: 40px }
   .search kbd { display: none }
@@ -259,14 +258,15 @@ main { position: relative; z-index: 1; padding: calc(var(--head) + env(safe-area
 }
 /* phones: the Wall pill steps aside (the Gallery Wall mark goes to the wall), and the theme toggle sits beside the search */
 @media (max-width: 480px) {
-  .top { grid-template-columns: minmax(0, 1fr) auto auto; gap: 10px 6px }
+  .top { grid-template-columns: minmax(0, 1fr) auto auto auto; gap: 10px 6px }
   .links { display: contents }
-  .brand { grid-row: 1; grid-column: 1; overflow: hidden }
-  .search { grid-row: 2; grid-column: 1 / 3 }
+  .mark { grid-row: 1; grid-column: 1; overflow: hidden; text-overflow: clip }
+  .search { grid-row: 2; grid-column: 1 / 4 }
   #filter-toggle { grid-row: 1; grid-column: 2 }
   [data-nav="boards"] { grid-row: 1; grid-column: 3 }
+  .home { grid-row: 1; grid-column: 4; margin-left: 6px }
   [data-nav="wall"] { display: none }
-  #theme-toggle { grid-row: 2; grid-column: 3; width: auto; height: 40px }
+  #theme-toggle { grid-row: 2; grid-column: 4; width: auto; height: 40px }
 }
 @media (max-width: 360px) {
   .mark { font-size: 20px }
