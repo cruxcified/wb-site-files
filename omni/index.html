@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="theme-color" content="#111213" />
     <title>omni</title>
-    <script type="module" crossorigin src="./assets/index-MQqsBOZN.js"></script>
-    <link rel="stylesheet" crossorigin href="./assets/index-BoHeSoKW.css">
+    <script type="module" crossorigin src="./assets/index-B7dAeRtc.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-Cxss8Qhx.css">
   </head>
   <body>
     <canvas id="scene" aria-hidden="true"></canvas>
@@ -93,9 +93,19 @@
           <button type="button" role="radio" data-instrument="acoustic">acoustic</button>
           <button type="button" role="radio" data-instrument="electric">electric</button>
         </div>
+        <div class="moods" role="radiogroup" aria-label="Octave" title="Move your melody up or down">
+          <button type="button" role="radio" data-octave="-1">low</button>
+          <button type="button" role="radio" data-octave="0">mid</button>
+          <button type="button" role="radio" data-octave="1">high</button>
+          <button type="button" role="radio" data-octave="2">higher</button>
+        </div>
         <div class="moods" role="radiogroup" aria-label="Tapping adds">
           <button type="button" role="radio" data-tap="note">note</button>
-          <button type="button" role="radio" data-tap="chord">chord</button>
+          <button type="button" role="radio" data-tap="triad" title="The plain chord">triad</button>
+          <button type="button" role="radio" data-tap="open" title="Root, a wide fifth and the octave: airy and hollow">open</button>
+          <button type="button" role="radio" data-tap="lush" title="A fourth note on top, like a seventh">lush</button>
+          <button type="button" role="radio" data-tap="cluster" title="Three neighbouring notes, soft and blurred">cluster</button>
+          <button type="button" role="radio" data-tap="deep" title="The chord over its root an octave down">deep</button>
         </div>
         <span class="melody__actions">
           <button id="melody-new" class="drift" type="button" title="omni writes a new melody at this length">new melody</button>
@@ -108,7 +118,7 @@
         <span id="melody-page-label" aria-live="polite"></span>
         <button id="melody-next" class="drift" type="button" aria-label="Later bars">›</button>
       </div>
-      <p class="melody__hint">tap squares to add or remove notes, or switch to chord · everything fits the mood</p>
+      <p class="melody__hint">tap squares to add or remove notes, or pick a chord to place instead · everything fits the mood</p>
     </section>
 
     <section class="panel room-panel" id="room" aria-label="Room" hidden>
