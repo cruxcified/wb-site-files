@@ -5,7 +5,7 @@ import { whenObject, artistsOf, esc, heroUrl, fullUrl, thumbUrl } from '../data.
 import { boards, keys } from '../store.js';
 import { toast, hideLoader } from '../ui.js';
 import {
-  FORMATS, TRIMS, formatOf, geometry, regions, regionBox, spineOf, MIN_LETTERED_SPINE, snapBox, newLayer, uid,
+  FORMATS, SIZES, trimOf, formatOf, geometry, regions, regionBox, spineOf, MIN_LETTERED_SPINE, snapBox, newLayer, uid,
   layerBounds, drawDesign, designFonts, cropOf, effectivePpi, placeImage, starter, 
 } from '../cover/engine.js';
 import { allCovers, getCover, putCover, dropCover, newCoverId, toBlob, download, pdfFromJpeg } from '../cover/files.js';
@@ -167,7 +167,14 @@ function shell() {
           <div class="seg" id="st-format">${FORMATS.map(f => `<button type="button" data-fmt="${f.key}">${f.name}</button>`).join('')}</div>
           <p class="st-note" id="st-fnote"></p>
           <div class="st-fields" id="st-pb">
-            <label><span>Trim</span><select id="st-trim">${Object.keys(TRIMS).map(k => `<option value="${k}">${k.replace('x', ' × ')} in</option>`).join('')}</select></label>
+            <div class="st-f"><span>Book size</span>
+              <div class="st-sizes" id="st-sizes" role="radiogroup" aria-label="Book size">${SIZES.map(([k, n, w, h, use]) => sizeCard(k, n, w, h, use)).join('')}${sizeCard('custom', 'Custom', 5.5, 8.5, 'Type your own trim')}</div>
+              <p class="st-note" id="st-sizenote"></p>
+            </div>
+            <div class="st-f2" id="st-custom" hidden>
+              <label><span>Width, in</span><input id="st-cw" type="number" min="2" max="14" step=".01" inputmode="decimal"></label>
+              <label><span>Height, in</span><input id="st-ch" type="number" min="2" max="14" step=".01" inputmode="decimal"></label>
+            </div>
             <label><span>Pages</span><input id="st-pages" type="number" min="24" max="900" step="2" inputmode="numeric"></label>
             <label><span>Spine, from your printer</span><input id="st-spine" type="number" min="0" max="3" step=".001" placeholder="inches" inputmode="decimal"></label>
             <p class="st-note" id="st-spinenote"></p>
@@ -197,11 +204,25 @@ function shell() {
   </section>`;
 }
 
+// a size template: a small page drawn to the trim's proportions, its name and inches
+function sizeCard(k, n, w, h, use) {
+  const s = 30 / 11; // every card shares one scale, so the sizes compare at a glance
+  return `<button type="button" class="st-size" data-size="${k}" role="radio" aria-checked="false" title="${esc(use)}">
+    <i style="width:${(w * s).toFixed(1)}px;height:${(h * s).toFixed(1)}px"></i>
+    <b>${n}</b><small>${k === 'custom' ? 'your size' : `${w} × ${h}`}</small></button>`;
+}
+
 function fillFormat() {
   root.querySelectorAll('[data-fmt]').forEach(b => b.setAttribute('aria-pressed', b.dataset.fmt === fmt.key));
   $('#st-fnote').textContent = fmt.note;
   $('#st-pb').hidden = !fmt.paperback;
-  $('#st-trim').value = cover.opts.trim; $('#st-pages').value = cover.opts.pages; $('#st-spine').value = cover.opts.spine || '';
+  const trim = cover.opts.trim in Object.fromEntries(SIZES) || cover.opts.trim === 'custom' ? cover.opts.trim : '6x9';
+  root.querySelectorAll('[data-size]').forEach(b => b.setAttribute('aria-checked', b.dataset.size === trim));
+  const size = SIZES.find(x => x[0] === trim), [tw, th] = trimOf(cover.opts);
+  $('#st-sizenote').textContent = size ? `${size[1]}, ${size[2]} × ${size[3]} in. ${size[4]}.` : `Custom, ${tw} × ${th} in. Check your printer offers this trim.`;
+  $('#st-custom').hidden = trim !== 'custom';
+  if (trim === 'custom') { $('#st-cw').value = cover.opts.customW ?? tw; $('#st-ch').value = cover.opts.customH ?? th }
+  $('#st-pages').value = cover.opts.pages; $('#st-spine').value = cover.opts.spine || '';
   $('#st-bg').value = /^#[0-9a-f]{6}$/i.test(cover.design.background) ? cover.design.background : '#1d1a17';
   if (fmt.paperback) {
     const sp = spineOf(cover.opts);
@@ -367,7 +388,22 @@ function setFormat(key) {
 function setOpts(patch) {
   const before = g;
   Object.assign(cover.opts, patch); g = geometry(fmt, cover.opts);
-  refit(before); fillFormat(); fit(); commit();
+  rescale(before); refit(before); fillFormat(); renderInspector(); fit(); commit();
+}
+// A new book size scales the layout with the page: type, wrap widths and free-placed pictures by the change
+// in trim width, heights by the change in trim height. Ratios chain exactly, so clicking through several sizes
+// and back returns the design as it was. Spine lettering keeps its size; only the page count moves the spine.
+function rescale(before) {
+  const kx = g.panels.front.trimW / before.panels.front.trimW, ky = g.trimH / before.trimH;
+  if (Math.abs(kx - 1) < 1e-9 && Math.abs(ky - 1) < 1e-9) return;
+  for (const l of cover.design.layers) {
+    if (l.type === 'fill') continue;
+    l.y *= ky;
+    if (l.region === 'spine') continue;
+    l.x *= kx;
+    if (l.type === 'text') { l.size *= kx; if (l.boxW > 0) l.boxW *= kx }
+    else if (l.type === 'image' && !l.fit) l.w *= kx;
+  }
 }
 // pictures that were filling their panel keep filling it when the panel's size changes
 function refit(before) {
@@ -402,6 +438,7 @@ const color = (k, v) => `<input type="color" data-k="${k}" value="${/^#[0-9a-f]{
 
 function renderInspector() {
   const box = $('#st-insp'), l = layer(sel);
+  if (box.contains(document.activeElement) && document.activeElement.matches('input:not([type=range]), textarea')) return; // don't pull the field out from under typing
   if (!l) {
     box.innerHTML = `<div class="st-sec"><span class="label">Nothing selected</span><p class="st-note">Click a layer on the cover or in the list to change it. Words between *asterisks* in a text layer are set in italic.</p></div>${checklist()}`;
     return;
@@ -484,7 +521,16 @@ function bindStudio() {
   on($('#st-guides'), 'click', e => { guides = !guides; e.currentTarget.setAttribute('aria-pressed', guides); draw() });
   on($('#st-export'), 'click', () => exportCover());
   on($('#st-format'), 'click', e => { const b = e.target.closest('[data-fmt]'); if (b && b.dataset.fmt !== fmt.key) setFormat(b.dataset.fmt) });
-  on($('#st-trim'), 'change', e => setOpts({ trim: e.target.value }));
+  on($('#st-sizes'), 'click', e => {
+    const b = e.target.closest('[data-size]'); if (!b || b.dataset.size === cover.opts.trim) return;
+    const patch = { trim: b.dataset.size };
+    if (b.dataset.size === 'custom' && !(cover.opts.customW > 0)) { const [w, h] = trimOf(cover.opts); patch.customW = w; patch.customH = h }
+    setOpts(patch);
+  });
+  // only a usable trim (2 to 14 in) is applied, so half-typed numbers don't jolt the layout
+  const custom = (k, e) => { const v = +e.target.value; if (v >= 2 && v <= 14) setOpts({ [k]: v }) };
+  on($('#st-cw'), 'input', e => custom('customW', e));
+  on($('#st-ch'), 'input', e => custom('customH', e));
   on($('#st-pages'), 'input', e => setOpts({ pages: clamp(+e.target.value || 0, 0, 2000) }));
   on($('#st-spine'), 'input', e => setOpts({ spine: e.target.value }));
   on($('#st-bg'), 'input', e => { cover.design.background = e.target.value; draw(); commit() });
@@ -683,7 +729,7 @@ async function exportCover() {
     btn.textContent = 'Rendering…';
     await new Promise(r => setTimeout(r, 30));
     drawDesign(c.getContext('2d'), cover.design, g, ppi, full);
-    const base = `${slug(cover.name)}-${fmt.key === 'paperback' ? 'paperback-' + cover.opts.trim : 'ebook'}`;
+    const base = `${slug(cover.name)}-${fmt.key === 'paperback' ? 'paperback-' + trimOf(cover.opts).join('x') : 'ebook'}`;
     let blob;
     try {
       if (type === 'png') blob = await toBlob(c, 'image/png');

@@ -375,3 +375,12 @@ main { position: relative; z-index: 1; padding: calc(var(--head) + env(safe-area
   .st-actions .btn.primary { margin-left: auto }
   .st-hint { display: none }
 }
+.st-sizes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px }
+.st-size { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 8px 4px 7px; border-radius: 10px; border: 1px solid var(--line); background: rgb(var(--foam-c) / .5); min-width: 0; transition: border-color .25s, background .25s }
+.st-size i { display: block; height: 30px; margin-top: auto; border: 1px solid rgb(var(--ink-c) / .45); border-radius: 1px 3px 3px 1px; background: rgb(var(--ink-c) / .06); box-shadow: inset 2px 0 0 rgb(var(--ink-c) / .2); transition: background .25s, border-color .25s }
+.st-size b { font: 400 13px/1.1 var(--body); color: var(--tea); text-align: center; max-width: 100%; text-wrap: balance }
+.st-size small { font: 400 9.5px var(--mono); letter-spacing: -.02em; color: var(--steep); white-space: nowrap }
+.st-size:hover { border-color: rgb(var(--ink-c) / .35) }
+.st-size[aria-checked="true"] { border-color: var(--lavender); background: var(--lavender-wash) }
+.st-size[aria-checked="true"] i { border-color: var(--lavender); background: var(--lavender) }
+@media (max-width: 820px) { .st-sizes { grid-template-columns: repeat(4, minmax(0, 1fr)) } }

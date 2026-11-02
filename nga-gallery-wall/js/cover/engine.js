@@ -7,9 +7,31 @@
 // sheet), is clipped to it, and is placed by its centre relative to the region's centre, in inches. So
 // when the spine widens, the front's layers move with the front instead of drifting over the fold.
 
-export const TRIMS = {
-  '5x8': [5, 8], '5.25x8': [5.25, 8], '5.5x8.5': [5.5, 8.5], '6x9': [6, 9], '7x10': [7, 10], '8x10': [8, 10],
-};
+// Book size templates: the trims print-on-demand printers (KDP, IngramSpark, Blurb, Lulu) offer most.
+// [key, name, width, height, what it's usually for]. Keys are kept stable because saved covers store them.
+export const SIZES = [
+  ['mass', 'Mass market', 4.25, 6.87, 'Rack-size genre paperbacks'],
+  ['b-format', 'B-format', 5.06, 7.81, 'UK paperback fiction'],
+  ['5x8', 'Novella', 5, 8, 'Novellas, poetry, short fiction'],
+  ['5.25x8', 'Small trade', 5.25, 8, 'Fiction, a little roomier'],
+  ['5.5x8.5', 'Digest', 5.5, 8.5, 'Fiction and memoir'],
+  ['a5', 'A5', 5.83, 8.27, 'The European standard'],
+  ['6x9', 'US trade', 6, 9, 'The usual size for novels and nonfiction'],
+  ['royal', 'Royal', 6.14, 9.21, 'UK hardback-style trade'],
+  ['7x10', 'Textbook', 7, 10, 'Textbooks and guides'],
+  ['8x10', 'Large', 8, 10, 'Art books, comics, workbooks'],
+  ['8.5x8.5', 'Square', 8.5, 8.5, 'Picture books and photo books'],
+  ['8.5x11', 'Letter', 8.5, 11, 'Manuals, workbooks, zines'],
+];
+export const TRIMS = Object.fromEntries(SIZES.map(([k, , w, h]) => [k, [w, h]]));
+// a trim from a template key, or the custom size typed in
+export function trimOf(opts = {}) {
+  if (opts.trim === 'custom') {
+    const w = +opts.customW, h = +opts.customH;
+    if (w >= 2 && w <= 14 && h >= 2 && h <= 14) return [w, h];
+  }
+  return TRIMS[opts.trim] || TRIMS['6x9'];
+}
 // Scriptorium's per-page estimate, typical of the cream stock POD novels are printed on. The printer's own
 // spine calculator is the figure that counts; it can be typed in over this.
 export const INCHES_PER_PAGE = 0.0025;
@@ -26,7 +48,7 @@ export const FORMATS = [
 ];
 export const formatOf = key => FORMATS.find(f => f.key === key) || FORMATS[0];
 
-// opts (paperback only): {trim, pages, spine}. spine > 0 is the printer's figure; otherwise it is estimated.
+// opts (paperback only): {trim, customW, customH, pages, spine}. spine > 0 is the printer's figure; otherwise it is estimated.
 export function spineOf(opts = {}) {
   const typed = +opts.spine;
   return typed > 0 ? { inches: typed, source: 'printer' } : { inches: estimateSpine(opts.pages ?? 300), source: 'estimate' };
@@ -35,7 +57,7 @@ export function spineOf(opts = {}) {
 export function geometry(f, opts = {}) {
   let panels = f.panels, h = f.h;
   if (f.paperback) {
-    const [w, th] = TRIMS[opts.trim] || TRIMS['6x9'];
+    const [w, th] = trimOf(opts);
     panels = wrap(w, Math.max(spineOf(opts).inches, .01), w); h = th;
   }
   const b = f.bleed, P = {}, folds = [];
