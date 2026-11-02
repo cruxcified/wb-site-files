@@ -19,7 +19,7 @@ for p in sorted((root / "js").rglob("*.js")) + sorted((root / "vendor").glob("*.
     imports[rel] = f"{rel}?v={h(p)}"
 imap = '<script type="importmap">' + json.dumps({"imports": imports}, indent=2).replace("\n", "\n  ") + "</script>"
 
-for page in ("index.html", "artwork.html", "boards.html"):
+for page in ("index.html", "artwork.html", "boards.html", "cover.html"):
     f = root / page
     s = f.read_text()
     s = re.sub(r'<script type="importmap">.*?</script>', lambda m: imap, s, count=1, flags=re.S)

@@ -24,6 +24,8 @@ export function enter(container) {
         <span class="sep"></span>
         <button class="linkish" type="button" id="b-export">Export boards</button>
         <label class="linkish" for="b-import">Import boards<input type="file" id="b-import" accept="application/json,.json" hidden></label>
+        <span class="sep"></span>
+        <a class="linkish" href="cover.html">Your covers</a>
       </div>
       <form class="newboard" id="b-rename-form" hidden><input id="b-rename-name" aria-label="Board name" autocomplete="off"><button class="linkish" type="submit">Save name</button></form>
     </section>
