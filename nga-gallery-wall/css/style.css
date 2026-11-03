@@ -275,3 +275,112 @@ main { position: relative; z-index: 1; padding: calc(var(--head) + env(safe-area
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important }
 }
+
+/* ---------- cover studio (Scriptorium's Cover Maker, on the wall) ---------- */
+.btn.accent { border-color: var(--lavender); color: var(--lavender) }
+.btn.accent:hover { background: var(--lavender-wash) }
+[data-view="cover"] main { padding-bottom: 18px }
+.studio { --st-h: calc(100svh - var(--head) - env(safe-area-inset-top, 0px) - 160px); display: flex; flex-direction: column; gap: 14px; padding-top: 14px; height: calc(100svh - var(--head) - env(safe-area-inset-top, 0px) - 18px); min-height: 640px }
+.st-top { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 14px 24px }
+.st-title { display: flex; flex-direction: column; gap: 6px; min-width: 0; flex: 1 1 320px }
+.st-all { color: var(--lavender); text-decoration: none }
+.st-all:hover { text-decoration: underline; text-underline-offset: 3px }
+.st-name { font: 400 clamp(26px, 2.6vw, 40px)/1.05 var(--display); border: 0; border-bottom: 1px solid transparent; background: none; padding: 0 0 2px; width: 100%; outline: none; color: var(--tea); transition: border-color .3s }
+.st-name:hover, .st-name:focus { border-bottom-color: var(--line) }
+.st-src { margin: 0; color: var(--steep); font: italic 400 15px var(--caption) }
+.st-src a { color: inherit }
+.st-actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center }
+.st-actions .pill[aria-pressed="true"] { border-color: var(--lavender); color: var(--lavender) }
+.st-select { height: 40px; border-radius: 999px; border: 1px solid var(--line); background: rgb(var(--foam-c) / .55); padding: 0 14px; font-size: 15px }
+.st-grid { display: grid; grid-template-columns: 260px minmax(0, 1fr) 290px; gap: 14px; flex: 1; min-height: 0 }
+.st-panel { overflow-y: auto; overscroll-behavior: contain; border: 1px solid var(--line); border-radius: 16px; background: var(--glass); display: flex; flex-direction: column; scrollbar-width: thin }
+.st-sec { padding: 16px; display: flex; flex-direction: column; gap: 10px }
+.st-sec + .st-sec { border-top: 1px solid var(--line) }
+.st-row { display: flex; justify-content: space-between; align-items: center; gap: 10px }
+.st-add { display: flex; gap: 10px; flex-wrap: wrap }
+.st-add .linkish { font-size: 14px; padding: 2px 0; cursor: pointer }
+.st-note { margin: 0; color: var(--steep); font: 400 14px/1.45 var(--caption) }
+.seg { display: flex; flex-wrap: wrap; gap: 4px; padding: 3px; border-radius: 12px; border: 1px solid var(--line); background: rgb(var(--foam-c) / .5) }
+.seg button { flex: 1 1 auto; border: 0; background: none; border-radius: 9px; padding: 6px 10px; font-size: 14px; color: var(--steep); transition: background .25s, color .25s }
+.seg button:hover { color: var(--tea) }
+.seg button[aria-pressed="true"] { background: var(--tea); color: var(--foam) }
+.st-fields { display: flex; flex-direction: column; gap: 10px }
+.st-fields label, .st-f, .st-boardart { display: flex; flex-direction: column; gap: 5px; min-width: 0 }
+.st-fields label > span, .st-f > span, .st-boardart > span { font: 500 10px var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--steep) }
+.st-panel select, .st-panel input[type="number"], .st-panel textarea, .st-lnamein { border-radius: 9px; border: 1px solid var(--line); background: rgb(var(--foam-c) / .8); padding: 0 10px; height: 34px; font-size: 15px; min-width: 0; width: 100% }
+.st-panel textarea { height: auto; padding: 8px 10px; resize: vertical; line-height: 1.4; font: 400 15px/1.4 var(--body) }
+.st-lnamein { font: 400 18px var(--display); border-color: transparent; background: none; padding: 0 2px }
+.st-lnamein:hover, .st-lnamein:focus { border-color: var(--line); outline: none }
+.st-inline { display: flex; align-items: center; justify-content: space-between; gap: 10px }
+.st-panel input[type="color"] { width: 44px; height: 30px; padding: 0; border: 1px solid var(--line); border-radius: 8px; background: none; cursor: pointer }
+.st-panel input[type="color"]::-webkit-color-swatch-wrapper { padding: 3px }
+.st-panel input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 5px }
+.st-num { display: flex; align-items: center; gap: 8px }
+.st-num input[type="range"] { flex: 1; min-width: 0; accent-color: var(--lavender) }
+.st-num input[type="number"] { width: 72px; flex: none; height: 30px; font: 400 12px var(--mono); padding: 0 6px }
+.st-num small { font: 400 11px var(--mono); color: var(--steep); width: 16px }
+.st-f2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px }
+.st-checks { display: flex; gap: 16px; flex-wrap: wrap }
+.st-check { display: inline-flex; align-items: center; gap: 7px; font-size: 15px; cursor: pointer }
+.st-check input { accent-color: var(--lavender); width: 16px; height: 16px }
+.st-tools { display: flex; flex-wrap: wrap; gap: 2px 14px; padding-top: 4px; border-top: 1px solid var(--line) }
+.st-tools .linkish { font-size: 14px }
+.st-fitbar { display: flex; gap: 6px; flex-wrap: wrap }
+.st-fitbar .btn { height: 32px; padding: 0 12px; font-size: 14px }
+.st-ppi { padding: 10px 12px }
+.st-ppi .good { color: var(--good) } .st-ppi .low { color: var(--low) }
+.st-ppi a, .st-ppi .linkish { color: var(--lavender); font-size: inherit; padding: 0; cursor: pointer }
+.st-list { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 6px; color: var(--steep); font: 400 14px/1.45 var(--caption) }
+.st-list .ok::marker { color: var(--good) } .st-list .warn { color: var(--low) }
+.st-layers { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px }
+.st-layers li { display: flex; align-items: center; gap: 2px; border-radius: 9px; transition: background .2s }
+.st-layers li:hover { background: rgb(var(--ink-c) / .05) }
+.st-layers li.on { background: var(--lavender-wash) }
+.st-layers li.off .st-lname { opacity: .45 }
+.st-eye { width: 28px; height: 32px; border: 0; background: none; color: var(--lavender); font-size: 12px; flex: none }
+.st-lname { flex: 1; min-width: 0; display: flex; align-items: center; gap: 8px; border: 0; background: none; text-align: left; padding: 6px 6px 6px 0; font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
+.st-lname i { font: 500 11px var(--mono); font-style: normal; width: 16px; text-align: center; color: var(--steep); flex: none }
+.st-lname small { margin-left: auto; font: 400 10px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--steep) }
+.st-stage { position: relative; border-radius: 16px; overflow: hidden; border: 1px solid var(--line);
+  background: radial-gradient(120% 90% at 50% 40%, rgb(var(--foam-c) / .55), rgb(var(--fog-c) / .25)); min-height: 0 }
+.st-stage canvas { display: block; touch-action: none; outline: none }
+.st-hint { position: absolute; left: 0; right: 0; bottom: 10px; margin: 0; text-align: center; font: 400 11px var(--mono); letter-spacing: .06em; color: var(--steep); pointer-events: none; opacity: .8 }
+.st-fix { border: 1px solid var(--low); border-radius: 14px; padding: 12px 16px; background: var(--glass); font: 400 15px/1.45 var(--caption) }
+.st-fix p { margin: 0 0 8px }
+.st-fix ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px }
+.st-fix li { display: flex; align-items: center; gap: 8px; flex-wrap: wrap }
+.st-fix li span { flex: 1; min-width: 120px }
+.st-fix .btn { height: 34px; font-size: 14px; cursor: pointer }
+.st-lede { margin: 0; max-width: 60ch; color: var(--steep); font: 400 18px/1.5 var(--caption) }
+.st-lede b { color: var(--tea); font-weight: 400; font-style: italic }
+.st-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 18px; padding-bottom: 40px }
+.st-card { display: flex; gap: 14px; align-items: flex-start; padding: 12px; border-radius: 14px; border: 1px solid var(--line); background: var(--glass) }
+.st-thumb { flex: none; width: 96px; height: 130px; border-radius: 6px; overflow: hidden; background: rgb(var(--ink-c) / .08); display: flex; align-items: center; justify-content: center }
+.st-thumb img { max-width: 100%; max-height: 100%; display: block; box-shadow: 0 6px 18px rgb(var(--shade-c) / .25) }
+.st-card-name { font: 400 20px/1.15 var(--display); text-decoration: none }
+.st-card-meta { margin: 6px 0 4px; font: 400 11px var(--mono); letter-spacing: .06em; color: var(--steep) }
+.st-card .linkish { font-size: 14px; padding: 0 }
+@media (max-width: 1100px) {
+  .studio { height: auto }
+  .st-grid { grid-template-columns: 240px minmax(0, 1fr); grid-template-rows: minmax(0, 1fr); height: auto }
+  .st-stage { height: var(--st-h); min-height: 480px }
+  .st-right { grid-column: 1 / -1; max-height: none }
+  .st-left { max-height: var(--st-h) }
+}
+@media (max-width: 820px) {
+  .st-grid { grid-template-columns: minmax(0, 1fr); min-height: 0 }
+  .st-stage { order: -1; height: 62svh; min-height: 340px }
+  .st-left { max-height: none }
+  .st-actions { width: 100% }
+  .st-actions .btn.primary { margin-left: auto }
+  .st-hint { display: none }
+}
+.st-sizes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px }
+.st-size { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 8px 4px 7px; border-radius: 10px; border: 1px solid var(--line); background: rgb(var(--foam-c) / .5); min-width: 0; transition: border-color .25s, background .25s }
+.st-size i { display: block; height: 30px; margin-top: auto; border: 1px solid rgb(var(--ink-c) / .45); border-radius: 1px 3px 3px 1px; background: rgb(var(--ink-c) / .06); box-shadow: inset 2px 0 0 rgb(var(--ink-c) / .2); transition: background .25s, border-color .25s }
+.st-size b { font: 400 13px/1.1 var(--body); color: var(--tea); text-align: center; max-width: 100%; text-wrap: balance }
+.st-size small { font: 400 9.5px var(--mono); letter-spacing: -.02em; color: var(--steep); white-space: nowrap }
+.st-size:hover { border-color: rgb(var(--ink-c) / .35) }
+.st-size[aria-checked="true"] { border-color: var(--lavender); background: var(--lavender-wash) }
+.st-size[aria-checked="true"] i { border-color: var(--lavender); background: var(--lavender) }
+@media (max-width: 820px) { .st-sizes { grid-template-columns: repeat(4, minmax(0, 1fr)) } }

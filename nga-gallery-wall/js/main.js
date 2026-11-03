@@ -1,5 +1,5 @@
 // Boot: WebGL canvas, smooth scroll, data, chrome, then barba page transitions between
-// the wall (index.html), an artwork (artwork.html?id=…) and boards (boards.html).
+// the wall (index.html), an artwork (artwork.html?id=…), boards (boards.html) and Cover Studio (cover.html).
 import barba from '../vendor/barba.mjs';
 import Lenis from '../vendor/lenis.mjs';
 import * as G from './gl.js';
@@ -8,9 +8,10 @@ import { initUI, setNavigator } from './ui.js';
 import * as wall from './views/wall.js';
 import * as artwork from './views/artwork.js';
 import * as boardsView from './views/boards.js';
+import * as coverView from './views/cover.js';
 
 const { gl, tween, ease, post } = G;
-const views = { wall, artwork, boards: boardsView };
+const views = { wall, artwork, boards: boardsView, cover: coverView };
 const wait = ms => new Promise(r => setTimeout(r, gl.reduced ? Math.min(ms, 120) : ms));
 const rectOf = el => { const r = el.getBoundingClientRect(); return { x: r.left, y: r.top, w: r.width, h: r.height } };
 
@@ -46,7 +47,7 @@ let lastArtId = null;
 async function enterView(container, href, opts) {
   const ns = container.dataset.barbaNamespace;
   document.body.dataset.view = ns;
-  const res = await views[ns].enter(container, ns === 'artwork' ? href : opts);
+  const res = await views[ns].enter(container, ns === 'artwork' || ns === 'cover' ? href : opts);
   lenis?.resize();
   return res;
 }

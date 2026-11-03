@@ -53,6 +53,7 @@ function render(o) {
         <a class="btn primary" href="${fullUrl(o[1])}" target="_blank" rel="noopener">Full resolution</a>
         <a class="btn" href="https://www.nga.gov/collection/art-object-page.${o[0]}.html" target="_blank" rel="noopener">nga.gov</a>
         <button class="btn" type="button" id="crop-toggle" aria-pressed="false">6×9 crop</button>
+        <a class="btn accent" href="cover.html?id=${o[0]}">Make a cover</a>
       </div>
       <div class="art-boards reveal"><span class="label">Save to board</span><div class="chips" id="art-boards"></div></div>
       <div class="print reveal">
