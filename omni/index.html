@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="theme-color" content="#111213" />
     <title>omni</title>
-    <script type="module" crossorigin src="./assets/index-mj6-76hL.js"></script>
-    <link rel="stylesheet" crossorigin href="./assets/index-DilChiR_.css">
+    <script type="module" crossorigin src="./assets/index-WUVns5m0.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-DkBicPaR.css">
   </head>
   <body>
     <canvas id="scene" aria-hidden="true"></canvas>
@@ -122,6 +122,9 @@
         <span class="melody__actions">
           <button id="melody-new" class="drift" type="button" title="omni writes a new part for the instrument you've picked, keeping the others">new melody</button>
           <button id="melody-clear" class="drift" type="button" title="Clear the instrument you've picked, keeping the others">clear</button>
+          <button id="melody-save" class="drift" type="button" title="Download this melody as a file you can keep or open later">save</button>
+          <button id="melody-open" class="drift" type="button" title="Open a melody file you saved">open</button>
+          <input id="melody-file" type="file" accept=".json,application/json" hidden />
         </span>
       </div>
       <div class="melody__grid" id="melody-grid" role="group" aria-label="Notes"></div>
