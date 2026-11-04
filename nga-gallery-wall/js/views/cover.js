@@ -374,7 +374,14 @@ function thumb() {
 function setFormat(key) {
   const before = g;
   cover.format = key; fmt = formatOf(key); g = geometry(fmt, cover.opts);
-  for (const l of cover.design.layers) if (!g.panels[l.region] && l.region !== 'all') l.region = 'front';
+  // layers on panels this format doesn't have (the back and spine of a wrap, on an ebook) are set aside,
+  // not moved onto the front, and come back where they were when the wrap returns
+  const d = cover.design, fits = l => l.region === 'all' || !!g.panels[l.region];
+  const all = [...d.layers, ...(d.parked || [])];
+  d.layers = all.filter(fits);
+  d.parked = all.filter(l => !fits(l));
+  if (!d.parked.length) delete d.parked;
+  if (!layer(sel)) sel = d.layers.find(l => l.type === 'text')?.id || null;
   // a wrap needs a spine and back; add the starter ones when the design has none there yet
   if (g.order.length > 1 && !cover.design.layers.some(l => l.region === 'back' || l.region === 'spine')) {
     const extra = starter(fmt, g, { src: null, w: 1, h: 1, ...(cover.art || { title: 'Untitled' }) }).layers.filter(l => l.region === 'back' || l.region === 'spine');
