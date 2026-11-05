@@ -4,9 +4,17 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="theme-color" content="#111213" />
+    <meta name="description" content="Endless ambient for empty rooms" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="omni" />
     <title>omni</title>
-    <script type="module" crossorigin src="./assets/index-BZ8535qB.js"></script>
-    <link rel="stylesheet" crossorigin href="./assets/index-DkBicPaR.css">
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="icon" href="./icons/icon-192.png" type="image/png" />
+    <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png" />
+    <script type="module" crossorigin src="./assets/index-DxPbzQj1.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-DL1vDLWg.css">
   </head>
   <body>
     <canvas id="scene" aria-hidden="true"></canvas>
@@ -27,6 +35,10 @@
           <button type="button" role="radio" data-quality="ultra">ultra</button>
         </div>
         <p class="quality__note" id="quality-note"></p>
+      </div>
+      <div class="offline">
+        <button id="offline-save" class="drift" type="button" aria-pressed="false" aria-describedby="offline-note">save for offline</button>
+        <p class="quality__note" id="offline-note"></p>
       </div>
       <p class="hint">best with headphones, quietly</p>
       <p class="credit">piano: Salamander Grand by Alexander Holm · guitars: tonejs-instruments by Nicholas Brosowsky · both CC BY 3.0</p>
