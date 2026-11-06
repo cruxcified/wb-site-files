@@ -5,7 +5,7 @@ import { filters, onFilters, hideLoader } from '../ui.js';
 import { unobserveAll } from '../gl.js';
 import { Masonry, bindSaves, columnsFor } from './tiles.js';
 
-const mem = { ids: null, shown: 0, scroll: 0, key: '' };
+const mem = { ids: null, info: null, shown: 0, scroll: 0, key: '' };
 let root, masonry, io, offs = [], resizeT;
 
 const item = o => ({ id: o[0], u: o[1], w: o[2], h: o[3], title: o[4], artist: artistsOf(o).join(', '), date: o[5] });
@@ -25,11 +25,17 @@ export function enter(container, { restore = false } = {}) {
         <label class="sort" for="sort-proxy">Order
           <select id="sort-proxy"><option value="shuffle">Shuffle</option><option value="rel">Best match</option><option value="old">Oldest first</option><option value="new">Newest first</option><option value="big">Largest image</option></select>
         </label></div>
+      <p class="also" id="also" hidden></p>
     </section>
     <div class="wall" id="wall"></div>
     <div class="sentinel" id="sentinel"></div>
     <div class="empty" id="empty" hidden><h2>Nothing on the wall for that</h2><p>Try fewer words or clear a filter. Movement tags cover only about 11,000 works, so a keyword such as “impressionist” often finds more than the Movement menu.</p></div>`;
   masonry = new Masonry(root.querySelector('#wall'));
+  // switch between related themes and exact words right from the results line
+  root.querySelector('#also').addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return;
+    const r = document.getElementById('f-rel'); r.value = b.dataset.rel; r.dispatchEvent(new Event('change'));
+  });
   bindSaves(root, get);
   const sortProxy = root.querySelector('#sort-proxy'), sortReal = document.getElementById('f-sort');
   sortProxy.value = sortReal.value;
@@ -41,7 +47,7 @@ export function enter(container, { restore = false } = {}) {
   offs.push(onFilters((f, opt) => { if (opt?.reshuffle) reshuffle(); sortProxy.value = f.sort; compute(true) }));
   offs.push(onData(kind => {
     if (kind === 'chunk' && !mem.ids) { compute(true); hideLoader() }
-    else if (kind === 'chunk' || kind === 'done') merge();
+    else if (kind === 'chunk' || kind === 'done' || kind === 'related' && filters().q.trim()) merge();
   }));
   const onResize = () => { clearTimeout(resizeT); resizeT = setTimeout(() => { if (columnsFor(masonry.el) !== masonry.cols.length) redraw(mem.shown) }, 180) };
   addEventListener('resize', onResize); offs.push(() => removeEventListener('resize', onResize));
@@ -60,7 +66,7 @@ export function leave() {
 
 function compute(scrollTop) {
   const f = filters();
-  mem.key = keyOf(f); mem.ids = search(f); mem.shown = 0;
+  mem.key = keyOf(f); mem.ids = search(f); mem.info = mem.ids.info; mem.shown = 0;
   heading(f);
   unobserveAll(); masonry.reset(); more(40);
   if (scrollTop) window.__lenis?.scrollTo(0, { immediate: true }) ?? scrollTo(0, 0);
@@ -68,8 +74,8 @@ function compute(scrollTop) {
 // when more of the index arrives, keep what's already on screen in place and add the new matches after it
 function merge() {
   if (!mem.ids) return;
-  const shownIds = mem.ids.slice(0, mem.shown), on = new Set(shownIds);
-  mem.ids = shownIds.concat(search(filters()).filter(id => !on.has(id)));
+  const shownIds = mem.ids.slice(0, mem.shown), on = new Set(shownIds), next = search(filters());
+  mem.ids = shownIds.concat(next.filter(id => !on.has(id))); mem.info = next.info;
   heading(filters());
   if (mem.shown < 40) more(40 - mem.shown);
 }
@@ -95,5 +101,17 @@ function heading(f) {
   else if (bits.length) h.innerHTML = bits.filter(Boolean).map((b, i) => i ? b : `<em>${b}</em>`).join(', ');
   else h.innerHTML = `<em>${loading ? 'Sixty-three thousand' : fmt}</em> works,<br>free for your covers.`;
   s.textContent = loading ? `${fmt} found so far, still loading the collection` : `${fmt} ${n === 1 ? 'work' : 'works'}`;
+  // with a search, say how many works have the words themselves and what related words were searched too
+  const a = root.querySelector('#also'), info = mem.info, q = f.q.trim();
+  a.hidden = !q || loading;
+  if (q && !loading) {
+    if (f.rel === 'exact') a.innerHTML = `Exact words only. <button type="button" class="linkish" data-rel="">Include related themes</button>`;
+    else if (info?.related && info.also.length) {
+      const ex = info.exact.toLocaleString(), shown = info.also.slice(0, 10).map(esc).join(', '), more = info.also.length - 10;
+      const lead = info.exact ? `${ex} mention “${esc(q)}” directly, then works matching related words` : `Nothing mentions “${esc(q)}” directly, so these match related words`;
+      a.innerHTML = `${lead}: ${shown}${more > 0 ? ` and ${more} more` : ''}. <button type="button" class="linkish" data-rel="exact">Exact words only</button>`;
+    } else a.innerHTML = '';
+    a.hidden = !a.innerHTML;
+  }
   root.querySelector('#empty').hidden = !!n || loading;
 }

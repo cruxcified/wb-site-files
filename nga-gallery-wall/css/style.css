@@ -138,6 +138,8 @@ main { position: relative; z-index: 1; padding: calc(var(--head) + env(safe-area
 .headline { margin: 0; font: 400 clamp(34px, 5.2vw, 84px)/1 var(--display); letter-spacing: -.012em; text-wrap: balance; overflow-wrap: anywhere }
 .headline em { font-style: italic; font-weight: 300; color: var(--lavender) }
 .status { display: flex; flex-wrap: wrap; gap: 10px 22px; align-items: center; color: var(--steep); font: 400 13px var(--mono); letter-spacing: .02em }
+.also { margin: 0; max-width: 62ch; color: var(--steep); font-size: 15px; line-height: 1.5 }
+.also .linkish { font-size: inherit; padding: 0 0 0 4px; font-style: italic }
 .sort { display: inline-flex; gap: 8px; align-items: center }
 .sort select { height: 30px; border-radius: 8px; border: 1px solid var(--line); background: rgb(var(--foam-c) / .7); padding: 0 8px; font: 400 15px var(--body) }
 
