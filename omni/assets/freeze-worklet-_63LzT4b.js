@@ -50,50 +50,69 @@ class FreezeProcessor extends AudioWorkletProcessor {
       this.untilNext = BLOCK;
       return;
     }
+    const pan = Math.random();
     this.grains.push({
       start: candidates[Math.floor(Math.random() * candidates.length)] + Math.floor(Math.random() * BLOCK),
       length,
       position: 0,
       // A few cents either way, so repeats shimmer instead of looping.
       rate: 1 + (Math.random() - 0.5) * 0.004,
-      pan: Math.random(),
+      // Equal-power pan, worked out once per grain rather than per sample.
+      left: Math.cos(pan * Math.PI * 0.5),
+      right: Math.sin(pan * Math.PI * 0.5),
     });
     this.untilNext = Math.floor(length / OVERLAP);
   }
 
+  // Runs on the audio thread, so it must never allocate: any garbage here
+  // makes the browser pause this thread now and then to clean up, and the
+  // whole mix skips. Plain index loops only, and grains are removed in place.
   process(inputs, outputs) {
-    const input = inputs[0][0];
-    const [left, right] = outputs[0];
+    const channels = inputs[0];
+    const input = channels.length ? channels[0] : null;
+    const out = outputs[0];
+    const left = out[0];
+    const right = out.length > 1 ? out[1] : null;
     const frames = left.length;
+    const buffer = this.buffer;
+    const size = this.size;
 
     if (!this.frozen && input) {
+      let head = this.head;
       for (let i = 0; i < frames; i++) {
-        this.buffer[this.head] = input[i];
-        this.head = (this.head + 1) % this.size;
+        buffer[head] = input[i];
+        head = head + 1 === size ? 0 : head + 1;
       }
+      this.head = head;
     }
 
+    // Nothing playing back: leave the output silent and skip the grain work.
+    if (!this.frozen && this.grains.length === 0) return true;
+
+    const grains = this.grains;
+    const origin = this.origin;
     for (let i = 0; i < frames; i++) {
-      if (this.frozen && this.grains.length < MAX_GRAINS && --this.untilNext <= 0) this.spawn();
+      if (this.frozen && grains.length < MAX_GRAINS && --this.untilNext <= 0) this.spawn();
       let l = 0;
       let r = 0;
-      for (const grain of this.grains) {
+      for (let g = 0; g < grains.length; g++) {
+        const grain = grains[g];
         const t = grain.position / grain.length;
         const window = 0.5 - 0.5 * Math.cos(2 * Math.PI * t);
         const at = grain.start + grain.position * grain.rate;
         const index = Math.floor(at);
         const frac = at - index;
-        const a = this.buffer[(this.origin + index) % this.size];
-        const b = this.buffer[(this.origin + index + 1) % this.size];
+        const a = buffer[(origin + index) % size];
+        const b = buffer[(origin + index + 1) % size];
         const v = (a + (b - a) * frac) * window;
-        l += v * Math.cos(grain.pan * Math.PI * 0.5);
-        r += v * Math.sin(grain.pan * Math.PI * 0.5);
+        l += v * grain.left;
+        r += v * grain.right;
         grain.position++;
       }
       left[i] = l * 0.75;
       if (right) right[i] = r * 0.75;
-      if (this.grains.length && this.grains[0].position >= this.grains[0].length) {
-        this.grains = this.grains.filter((g) => g.position < g.length);
+      for (let g = grains.length - 1; g >= 0; g--) {
+        if (grains[g].position >= grains[g].length) grains.splice(g, 1);
       }
     }
     return true;
