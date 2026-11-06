@@ -8,6 +8,7 @@ Live at https://lab.wboechler.com/nga-gallery-wall/
 - Type is Adobe Jenson Pro (fonts/, from Will's own files). Images stream from NGA's IIIF server (`api.nga.gov/iiif`). If the browser can't read them into WebGL (CORS), the page falls back to plain `<img>` tiles.
 - Light and dark themes: the head script picks one before first paint (saved choice in `gw-theme`, else the system setting). CSS tokens switch on `html[data-theme]`; the shaders tween a `uDark` uniform.
 - `cover.html` is Cover Studio, a port of Scriptorium's Cover Maker (`js/cover/engine.js` follows Scriptorium's `coverDesign.js` and `printCover.js`). "Make a cover" on an artwork page starts an ebook front (1600 × 2560 px) that can switch to a paperback wrap: back, spine and front with 0.125″ bleed, spine estimated from the page count (0.0025″ a page) or typed in from the printer. Layers are image, colour or text, placed in inches relative to their panel, so they stay put when the spine changes. Exports PNG, JPEG or a one-page PDF with TrimBox/BleedBox at 300 ppi. Export reads NGA's full-size image; if the browser can't (CORS), it asks for a downloaded copy. Covers are saved in localStorage (`gw-covers`); `cover.html` with no query lists them. The Covers pill in the header opens that list. Switching a wrap to ebook sets its back and spine layers aside (`design.parked`) and switching back restores them.
+- Search also finds related words: “werewolf” brings up wolves, hounds, beasts, monsters, fangs, moonlit forests. `data/related.json` maps a word to related words with weights, built by `tools/related.py` from hand-written theme links (`tools/themes.py`, edit these to tune a theme) plus WordNet (other names, kinds of a thing, its family), keeping only words the collection uses. Works with the word itself always rank first under Best match; related words match whole words only. The wall says how many works have the word itself, and “Search words: Exact words only” in Filters turns it off.
 - Boards are kept in localStorage. Export/import on the Boards page moves them between browsers.
 - After changing anything in js/ or css/, run `python3 tools/version.py`. It stamps content hashes into each page's import map so visitors don't get stale cached code after a deploy.
 - Vendored: three.js 0.180.0, @barba/core 2.10.3, lenis 1.1.20. No build step.
@@ -18,4 +19,6 @@ Live at https://lab.wboechler.com/nga-gallery-wall/
 ```sh
 git clone --depth 1 https://github.com/NationalGalleryOfArt/opendata /tmp/nga
 python3 tools/build.py /tmp/nga/data data
+pip install nltk && python3 -c "import nltk; nltk.download('wordnet')"
+python3 tools/related.py data
 ```

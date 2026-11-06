@@ -4,7 +4,7 @@ import { savedCount, onBoards } from './store.js';
 import { onFrame, tween, ease, post } from './gl.js';
 
 const $ = id => document.getElementById(id);
-const FIELDS = { q: 'q', cls: 'f-cls', style: 'f-style', tech: 'f-tech', theme: 'f-theme', nat: 'f-nat', artist: 'f-artist', medium: 'f-medium', orient: 'f-orient', from: 'f-from', to: 'f-to', sort: 'f-sort' };
+const FIELDS = { q: 'q', rel: 'f-rel', cls: 'f-cls', style: 'f-style', tech: 'f-tech', theme: 'f-theme', nat: 'f-nat', artist: 'f-artist', medium: 'f-medium', orient: 'f-orient', from: 'f-from', to: 'f-to', sort: 'f-sort' };
 const ls = (() => { try { return window.localStorage } catch { return null } })();
 
 export function filters() {
@@ -43,7 +43,7 @@ export function initUI() {
     clearTimeout(t);
     t = setTimeout(() => { if ($('q').value.trim() && $('f-sort').value === 'shuffle') $('f-sort').value = 'rel'; changed() }, 220);
   });
-  $('q').addEventListener('keydown', e => { if (e.key === 'Enter') { clearTimeout(t); changed() } });
+  $('q').addEventListener('keydown', e => { if (e.key === 'Enter') { clearTimeout(t); if ($('q').value.trim() && $('f-sort').value === 'shuffle') $('f-sort').value = 'rel'; changed() } });
   document.querySelectorAll('#drawer select').forEach(el => el.addEventListener('change', changed));
   document.querySelectorAll('#drawer input').forEach(el => el.addEventListener('input', () => { clearTimeout(t); t = setTimeout(changed, 300) }));
   $('filter-toggle').addEventListener('click', () => toggleDrawer());

@@ -17,22 +17,22 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500&family=Geist+Mono:wght@400;500&display=swap">
   <link rel="preload" href="fonts/jenson-display-regular.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="fonts/jenson-text-regular.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="css/style.css?v=ed56da8a">
+  <link rel="stylesheet" href="css/style.css?v=2a4c810d">
   <script type="importmap">{
     "imports": {
       "three": "./vendor/three.module.min.js",
       "./js/cover/engine.js": "./js/cover/engine.js?v=760e23fc",
       "./js/cover/files.js": "./js/cover/files.js?v=649a1dac",
-      "./js/data.js": "./js/data.js?v=779a3871",
+      "./js/data.js": "./js/data.js?v=20bee772",
       "./js/gl.js": "./js/gl.js?v=62e73345",
       "./js/main.js": "./js/main.js?v=d76b342d",
       "./js/store.js": "./js/store.js?v=f165e099",
-      "./js/ui.js": "./js/ui.js?v=a3022125",
+      "./js/ui.js": "./js/ui.js?v=e2fdeb18",
       "./js/views/artwork.js": "./js/views/artwork.js?v=c818316b",
       "./js/views/boards.js": "./js/views/boards.js?v=71d8b21b",
       "./js/views/cover.js": "./js/views/cover.js?v=9a095e5c",
       "./js/views/tiles.js": "./js/views/tiles.js?v=908b0de4",
-      "./js/views/wall.js": "./js/views/wall.js?v=a37db679",
+      "./js/views/wall.js": "./js/views/wall.js?v=08de20ef",
       "./vendor/barba.mjs": "./vendor/barba.mjs?v=a2c4e662",
       "./vendor/lenis.mjs": "./vendor/lenis.mjs?v=bd0c2d8c"
     }
@@ -73,6 +73,9 @@
       <label for="f-nat"><span>Nationality</span><select id="f-nat"><option value="">Any nationality</option></select></label>
       <label for="f-orient"><span>Shape</span><select id="f-orient">
         <option value="">Any shape</option><option value="cover">Book cover, about 2:3</option><option value="portrait">Portrait</option><option value="landscape">Landscape</option><option value="square">Square-ish</option>
+      </select></label>
+      <label for="f-rel"><span>Search words</span><select id="f-rel">
+        <option value="">Include related themes</option><option value="exact">Exact words only</option>
       </select></label>
       <div class="years">
         <label for="f-from"><span>From year</span><input id="f-from" inputmode="numeric" placeholder="1400" autocomplete="off"></label>

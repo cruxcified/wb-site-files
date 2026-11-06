@@ -35,6 +35,7 @@ export async function load() {
   }));
   state.done = true;
   emit('done');
+  loadRelated();
 }
 function emit(kind) { listeners.forEach(fn => fn(kind)) }
 
@@ -54,6 +55,43 @@ function indexSoon() {
 }
 function indexNow() { while (hay.length < O.length) hay.push(haystack(O[hay.length])) }
 
+// Related words (tools/related.py): "werewolf" also finds wolf, hound, beast, moon. They are
+// matched as whole words through a small word -> works index, built once while the page is idle.
+let REL = null, post = null, postAt = 0, postTmp = null, posting = false;
+async function loadRelated() {
+  try { REL = (await (await fetch('data/related.json')).json()).w } catch { return }
+  postSoon();
+  emit('related');
+}
+export const relatedReady = () => !!REL && state.done;
+function postStep(budget) {
+  if (!postTmp) { postTmp = new Map(); for (const v of Object.values(REL)) for (const [a] of v) postTmp.set(a, []) }
+  indexNow();
+  const end = Math.min(O.length, postAt + budget);
+  for (; postAt < end; postAt++) {
+    const parts = hay[postAt].split('\u0001'), seen = new Set();
+    for (let f = 0; f < parts.length; f++) {
+      const tier = f === 0 ? 0 : f === 1 ? 1 : f === parts.length - 1 ? 3 : 2;
+      for (const w of parts[f].split(' ')) {
+        if (!w || seen.has(w)) continue;
+        const l = postTmp.get(w); if (!l) continue;
+        seen.add(w); l.push(postAt << 2 | tier);
+      }
+    }
+  }
+  if (postAt >= O.length) { post = new Map(); for (const [w, l] of postTmp) if (l.length) post.set(w, Int32Array.from(l)); postTmp = null }
+}
+function postSoon() {
+  if (posting || post) return; posting = true;
+  idle(function step(d) { if (post) return; postStep(Math.max(200, (d.timeRemaining() | 0) * 150)); if (!post) idle(step); else posting = false });
+}
+// the related words for one search word (no leading space), trying its singular too
+export function relatedTo(t) {
+  if (!REL) return [];
+  return REL[t] || REL[t.replace(/ves$/, 'f')] || REL[t.replace(/ies$/, 'y')] || REL[t.replace(/e?s$/, '')] || [];
+}
+const FIELD = [10, 6, 3, 1];
+
 export const get = id => O[byId.get(+id)];
 // resolves once the object is in memory, or null when the whole index has loaded without it
 export function whenObject(id) {
@@ -67,10 +105,28 @@ let seed = Math.random() * 1e9 | 0;
 export const reshuffle = () => { seed = Math.random() * 1e9 | 0 };
 const rnd = id => { let x = (id ^ seed) >>> 0; x = Math.imul(x ^ x >>> 16, 0x45d9f3b); x = Math.imul(x ^ x >>> 16, 0x45d9f3b); return (x ^ x >>> 16) >>> 0 };
 
-// f: {q, cls, style, tech, theme, nat, artist, medium, orient, from, to, sort}; returns object ids
+// f: {q, rel ('exact' turns related words off), cls, style, tech, theme, nat, artist, medium, orient, from, to, sort}; returns object ids
 export function search(f) {
   const terms = norm(f.q).split(' ').filter(Boolean).map(t => ' ' + t);
   if (terms.length) indexNow();
+  // per search word, the best related-word score each work gets (0 = none)
+  const useRel = terms.length && f.rel !== 'exact' && relatedReady();
+  const also = [], relScore = [];
+  if (useRel) {
+    while (!post) postStep(O.length);
+    const own = new Set(terms.map(t => t.slice(1)));
+    for (const t of terms) {
+      const alts = relatedTo(t.slice(1)), sc = new Float32Array(O.length);
+      for (const [a, x] of alts) {
+        // in "werewolf moon", moon is its own word, so it can't also count as werewolf-ish
+        const l = own.has(a) ? null : post.get(a); if (!l) continue;
+        if (!also.includes(a)) also.push(a);
+        for (let k = 0; k < l.length; k++) { const i = l[k] >> 2, v = x * FIELD[l[k] & 3]; if (v > sc[i]) sc[i] = v }
+      }
+      relScore.push(sc);
+    }
+  }
+  let exact = 0;
   const num = v => v === '' || v == null ? -1 : +v;
   const cls = num(f.cls), st = num(f.style), te = num(f.tech), th = num(f.theme), na = num(f.nat);
   const artist = (f.artist || '').trim().toLowerCase(), medium = (f.medium || '').trim().toLowerCase();
@@ -96,14 +152,19 @@ export function search(f) {
     }
     let score = 0;
     if (terms.length) {
-      const h = hay[i]; let ok = true;
+      const h = hay[i]; let ok = true, lit = true;
       const tEnd = h.indexOf('\u0001'), aEnd = h.indexOf('\u0001', tEnd + 1), altStart = h.lastIndexOf('\u0001');
-      for (const t of terms) {
-        const p = h.indexOf(t);
-        if (p < 0) { ok = false; break }
-        score += p < tEnd ? 10 : p < aEnd ? 6 : p < altStart ? 3 : 1;
+      for (let k = 0; k < terms.length; k++) {
+        const p = h.indexOf(terms[k]);
+        // the word itself always outranks a related word, so exact matches lead "Best match"
+        if (p >= 0) { score += 100 + (p < tEnd ? 10 : p < aEnd ? 6 : p < altStart ? 3 : 1); continue }
+        lit = false;
+        const r = useRel ? relScore[k][i] : 0;
+        if (!r) { ok = false; break }
+        score += r;
       }
       if (!ok) continue;
+      if (lit) exact++;
     }
     out.push([i, score]);
   }
@@ -122,6 +183,8 @@ export function search(f) {
     for (const id of ids) (fav.has(get(id)[9]) ? a : b).push(id);
     ids = a.concat(b);
   }
+  // what the wall says about the result: how many had the words themselves, and what else was searched
+  ids.info = { exact: terms.length ? exact : ids.length, also: also.slice(0, 40), related: useRel };
   return ids;
 }
 
