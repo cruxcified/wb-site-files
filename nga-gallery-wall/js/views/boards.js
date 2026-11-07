@@ -67,7 +67,7 @@ function draw(keepWall) {
   if (!boards[current]) current = lastKey();
   const b = boards[current];
   root.querySelector('#b-title').innerHTML = `<em>${esc(b.name)}</em>`;
-  root.querySelector('#b-chips').innerHTML = keys().map(k => `<button type="button" class="chip" data-k="${k}" aria-pressed="${k === current}">${esc(boards[k].name)}<span class="n">${boards[k].items.length}</span></button>`).join('');
+  root.querySelector('#b-chips').innerHTML = keys().map(k => `<button type="button" class="chip" data-k="${esc(k)}" aria-pressed="${k === current}">${esc(boards[k].name)}<span class="n">${boards[k].items.length}</span></button>`).join('');
   const del = root.querySelector('#b-delete');
   del.hidden = keys().length < 2;
   del.textContent = armed === current ? `Tap again to delete ${b.name}` : 'Delete board';

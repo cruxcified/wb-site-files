@@ -250,14 +250,15 @@ const LINES_PER_PAGE = Math.round((PAGE.h - PAGE.top - PAGE.bottom) * LPI);   //
 //   Parenthetical      3.1in, 2.0in wide  -> 20 characters (wrapped lines hang 1 char in)
 //   Character cue      3.7in, to 7.5in
 //   Transition         right-aligned so it ends on the 7.5in mark
-const EL = {
+// No prototype, so a name like "constructor" in an imported file isn't mistaken for an element type.
+const EL = Object.assign(Object.create(null), {
   scene:      { name: 'Scene Heading', left: 1.5, width: 6.0, before: 1, caps: true },   // set before:2 for double-spaced sluglines
   action:     { name: 'Action',        left: 1.5, width: 6.0, before: 1 },
   character:  { name: 'Character',     left: 3.7, width: 3.8, before: 1, caps: true },
   paren:      { name: 'Parenthetical', left: 3.1, width: 2.0, before: 0 },
   dialogue:   { name: 'Dialogue',      left: 2.5, width: 3.3, before: 0 },
   transition: { name: 'Transition',    left: 1.5, width: 6.0, before: 1, caps: true, right: true },
-};
+});
 const TYPES = Object.keys(EL);
 
 // Inject the element geometry as CSS: on screen in units of --in, in print in real inches.
