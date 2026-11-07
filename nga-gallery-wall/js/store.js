@@ -7,7 +7,9 @@ const ls = (() => { try { return window.localStorage } catch { return null } })(
 const read = (k, d) => { try { return JSON.parse(ls.getItem(k)) ?? d } catch { return d } };
 const write = (k, v) => { try { ls.setItem(k, JSON.stringify(v)) } catch {} };
 
-export let boards = read(KEY, {});
+const SAFE_KEY = /^[a-z0-9_-]{1,40}$/i;
+// drop any board saved under an id this app would never make (left by an older import)
+export let boards = Object.fromEntries(Object.entries(read(KEY, {}) || {}).filter(([k]) => SAFE_KEY.test(k) && k !== '__proto__'));
 const listeners = new Set();
 export const onBoards = fn => (listeners.add(fn), () => listeners.delete(fn));
 function save() { write(KEY, boards); listeners.forEach(fn => fn()) }
@@ -15,7 +17,7 @@ function ensureDefault() { if (!Object.keys(boards).length) boards.saved = { nam
 ensureDefault();
 
 export const keys = () => Object.keys(boards).sort((a, b) => boards[a].created - boards[b].created);
-export function lastKey() { const k = read(LAST, null); return boards[k] ? k : keys()[0] }
+export function lastKey() { const k = read(LAST, null); return typeof k === 'string' && Object.hasOwn(boards, k) ? k : keys()[0] }
 export const setLast = k => write(LAST, k);
 export const isSaved = id => Object.values(boards).some(b => b.items.some(x => x.id === id));
 export const inBoard = (k, id) => !!boards[k]?.items.some(x => x.id === id);
@@ -44,8 +46,9 @@ export function importJson(text) {
   if (!data || typeof data.boards !== 'object') throw new Error('That file is not a Gallery Wall export.');
   let added = 0;
   for (const [k, b] of Object.entries(data.boards)) {
-    if (!b || !Array.isArray(b.items)) continue;
-    const target = boards[k] || (boards[k] = { name: String(b.name || 'Imported'), created: +b.created || Date.now(), items: [] });
+    // board ids are short words this app makes itself ('saved', 'b' + a timestamp); skip anything else
+    if (!SAFE_KEY.test(k) || k === '__proto__' || !b || !Array.isArray(b.items)) continue;
+    const target = (Object.hasOwn(boards, k) && boards[k]) || (boards[k] = { name: String(b.name || 'Imported'), created: +b.created || Date.now(), items: [] });
     for (const it of b.items) if (it && Number.isFinite(it.id) && !target.items.some(x => x.id === it.id)) { target.items.push(it); added++ }
   }
   save(); return added;

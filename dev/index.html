@@ -779,7 +779,7 @@ const MAP = [
   '#........#',
   '##########',
 ];
-const THREE_URL = 'https://cdn.jsdelivr.net/npm/three@0.186.1/build/three.module.js';
+const THREE_URL = '/vendor/three-0.186.1/three.module.js';
 /* --------------------------------------------------- */
 
 const root = document.getElementById('wbgames');
@@ -2793,7 +2793,7 @@ async function buildCase(THREE, host) {
    2. Goals as VHS tapes built in code. Drag a tape to spin it.
    Delete this whole <script> to remove both; the plain photo and list come back on their own.
    ========================================================================== */
-const THREE_URL = 'https://cdn.jsdelivr.net/npm/three@0.186.1/build/three.module.js';
+const THREE_URL = '/vendor/three-0.186.1/three.module.js';
 const root = document.getElementById('wbgames');
 const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const hasGL = (() => { const c = document.createElement('canvas'); return !!(c.getContext('webgl2') || c.getContext('webgl')); })();

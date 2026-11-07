@@ -110,6 +110,6 @@ function render(o) {
 }
 function renderBoards() {
   const box = root.querySelector('#art-boards');
-  box.innerHTML = keys().map(k => `<button type="button" class="chip" data-k="${k}" aria-pressed="${inBoard(k, current[0])}">${esc(boards[k].name)}</button>`).join('') +
+  box.innerHTML = keys().map(k => `<button type="button" class="chip" data-k="${esc(k)}" aria-pressed="${inBoard(k, current[0])}">${esc(boards[k].name)}</button>`).join('') +
     `<form class="newboard"><input id="art-nb" placeholder="New board" aria-label="New board name" autocomplete="off"><button class="linkish" type="submit">Add</button></form>`;
 }
