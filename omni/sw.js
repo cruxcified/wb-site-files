@@ -7,7 +7,7 @@
 // ever download each one once. "save for offline" on the start screen
 // fetches the rest.
 
-const VERSION = '09daaeb08f30';
+const VERSION = '497a410aff31';
 const SHELL = `omni-shell-${VERSION}`;
 const MEDIA = 'omni-media';
 const scope = new URL(self.registration.scope);
