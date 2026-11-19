@@ -13,8 +13,8 @@
     <link rel="manifest" href="./manifest.webmanifest" />
     <link rel="icon" href="./icons/icon-192.png" type="image/png" />
     <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png" />
-    <script type="module" crossorigin src="./assets/index-CTUge6KG.js"></script>
-    <link rel="stylesheet" crossorigin href="./assets/index-DL1vDLWg.css">
+    <script type="module" crossorigin src="./assets/index-Cvupzs36.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-BbQqDwXM.css">
   </head>
   <body>
     <canvas id="scene" aria-hidden="true"></canvas>
@@ -76,6 +76,7 @@
           <button type="button" role="radio" data-mood="night">night</button>
           <button type="button" role="radio" data-mood="fog" title="Dark: after Akira Yamaoka and Cry of Fear">fog</button>
           <button type="button" role="radio" data-mood="memory" title="Dark: an old ballroom record, after The Caretaker">memory</button>
+          <button type="button" role="radio" data-mood="wolf" title="Dark: D harmonic minor under a cold moon, made for cello themes">wolf</button>
         </div>
         <span class="layers__tune">
           <label class="knob layers__density"><span>density</span><input id="density" type="range" min="0" max="1" step="0.01" /></label>
@@ -94,6 +95,19 @@
     </section>
 
     <section class="panel melody" id="melody" aria-label="Melody" hidden>
+      <div class="themes" aria-label="Themes">
+        <input id="theme-name" class="themes__name" type="text" maxlength="40" placeholder="name this theme: a character, a place" aria-label="Theme name" />
+        <div class="themes__colours" id="theme-colours" role="radiogroup" aria-label="Theme colour"></div>
+        <button id="theme-keep" class="drift" type="button" title="Keep this melody, its mood and effects under this name">keep</button>
+        <button id="theme-export" class="drift" type="button" title="Render the melody twice over the layers you have on, and download it as a WAV">export audio</button>
+        <div class="themes__list" id="theme-list" aria-label="Kept themes"></div>
+        <div class="song" id="song" hidden>
+          <span class="row-label">song</span>
+          <div class="themes__list song__sections" id="song-sections" aria-label="Song sections"></div>
+          <button id="song-play" class="drift" type="button" aria-pressed="false" title="Play the kept themes in order, each for its repeats; the mood and room change with each one">play song</button>
+          <button id="song-export" class="drift" type="button" title="Render the song once through, and download it as a WAV">export song</button>
+        </div>
+      </div>
       <div class="layers__row melody__bar">
         <button id="melody-play" class="drift" type="button" aria-pressed="false">play</button>
         <div class="moods" role="radiogroup" aria-label="Length in bars">
@@ -131,6 +145,9 @@
           <button type="button" role="radio" data-tap="shimmer" title="The note with a glassy pair two octaves up">shimmer</button>
           <button type="button" role="radio" data-tap="low" title="A low root and fifth under the note: heavy and dark">low</button>
         </div>
+        <div class="moods" role="group" aria-label="Accent">
+          <button type="button" role="switch" data-tap="accent" title="Tap notes to make them lean in harder and louder; tap again to undo">accent</button>
+        </div>
         <span class="melody__actions">
           <button id="melody-new" class="drift" type="button" title="omni writes a new part for the instrument you've picked, keeping the others">new melody</button>
           <button id="melody-clear" class="drift" type="button" title="Clear the instrument you've picked, keeping the others">clear</button>
@@ -146,7 +163,7 @@
         <span id="melody-page-label" aria-live="polite"></span>
         <button id="melody-next" class="drift" type="button" aria-label="Later bars">›</button>
       </div>
-      <p class="melody__hint">pick an instrument, then tap squares to add notes or chords on it · each instrument keeps its own notes and colour, so you can layer parts · new and clear only touch the one you've picked</p>
+      <p class="melody__hint">pick an instrument, then tap squares to add notes or chords on it · drag right from a note to hold it, so long notes swell on cello and violin · each instrument keeps its own notes and colour, so you can layer parts · new and clear only touch the one you've picked</p>
     </section>
 
     <section class="panel room-panel" id="room" aria-label="Room" hidden>
