@@ -13,8 +13,8 @@
     <link rel="manifest" href="./manifest.webmanifest" />
     <link rel="icon" href="./icons/icon-192.png" type="image/png" />
     <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png" />
-    <script type="module" crossorigin src="./assets/index-DkSO8Uxq.js"></script>
-    <link rel="stylesheet" crossorigin href="./assets/index-DlVb5U6M.css">
+    <script type="module" crossorigin src="./assets/index-BXINJLiK.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-C-AVQ-UW.css">
   </head>
   <body>
     <canvas id="scene" aria-hidden="true"></canvas>
@@ -145,9 +145,12 @@
           <button type="button" role="radio" data-tap="shimmer" title="The note with a glassy pair two octaves up">shimmer</button>
           <button type="button" role="radio" data-tap="low" title="A low root and fifth under the note: heavy and dark">low</button>
         </div>
-        <div class="moods melody__glyphs" role="radiogroup" aria-label="Note length" id="melody-lengths"></div>
+        <div class="moods melody__wrap melody__glyphs" role="radiogroup" aria-label="Note length" id="melody-lengths"></div>
         <div class="moods melody__glyphs" role="group" aria-label="Accent">
           <button type="button" role="switch" data-tap="accent" title="Tap notes to make them lean in harder and louder; tap again to undo">accent</button>
+        </div>
+        <div class="moods melody__glyphs" role="group" aria-label="Select">
+          <button type="button" role="switch" id="melody-select" title="Select notes (or hold C): tap notes or sweep a box around them, then drag them up, down or along. Arrow keys move them too (shift: an octave, or a bar); delete removes them">select</button>
         </div>
         <span class="melody__actions">
           <button id="melody-new" class="drift" type="button" title="omni writes a new part for the instrument you've picked, keeping the others">new melody</button>
@@ -158,13 +161,17 @@
           <input id="melody-file" type="file" accept=".json,application/json" hidden />
         </span>
       </div>
-      <div class="melody__grid" id="melody-grid" role="group" aria-label="Notes"></div>
+      <div class="melody__scale" id="melody-scale">
+        <div class="melody__scroll" id="melody-scroll">
+          <div class="melody__grid" id="melody-grid" role="group" aria-label="Notes"></div>
+        </div>
+      </div>
       <div class="melody__pages" id="melody-pages">
         <button id="melody-prev" class="drift" type="button" aria-label="Earlier bars">‹</button>
         <span id="melody-page-label" aria-live="polite"></span>
         <button id="melody-next" class="drift" type="button" aria-label="Later bars">›</button>
       </div>
-      <p class="melody__hint">pick an instrument, then tap squares to add notes or chords on it · pick a note length (♪ to 8 bars) or drag right from a note to hold it; long notes swell on cello and violin · hover a symbol for its name · each instrument keeps its own notes and colour, so parts can overlap; the others show faded · new and clear only touch the one you've picked</p>
+      <p class="melody__hint">pick an instrument, then tap squares to add notes or chords on it · pick a note length (♪ to 8 bars) or drag right from a note to hold it; long notes swell on cello and violin · scroll the scale for more octaves · hold C to select notes and drag them up, down or along in time (or use the arrow keys) · hover a symbol for its name · each instrument keeps its own notes and colour, so parts can overlap; the others show faded · new and clear only touch the one you've picked</p>
     </section>
 
     <section class="panel room-panel" id="room" aria-label="Room" hidden>
