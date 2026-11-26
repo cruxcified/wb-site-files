@@ -375,7 +375,9 @@ html.wbgames-booting #wbgames .vcr, #wbgames .hero .osd { display: none; }
   #wbgames.webgl .case-stage.shelf .game .shot { display: none; }
 }
 /* 2026-10-26: fewer boxes, the scene carries the page. Nav floats with no bar; About photo has no frame. */
-#wbgames .nav { background: linear-gradient(rgba(8, 6, 7, .92), rgba(8, 6, 7, .6) 70%, transparent); border-bottom: 0; }
+#wbgames .nav { background: linear-gradient(rgb(8, 6, 7), rgba(8, 6, 7, .96) 58%, rgba(8, 6, 7, 0)); border-bottom: 0; padding-bottom: 38px; }
+/* 2026-11-26: the fade starts below the nav's text, so scrolled copy can't show through it. The footer sits above the fixed REC / PLAY line. */
+#wbgames .contact { padding-bottom: calc(var(--frame) + 18px + 1.6 * clamp(20px, 1.8vw, 28px) + 24px); }
 #wbgames .photo { border: 0; border-radius: 0; background: none; }
 #wbgames .controls button { border-color: transparent; }
 #wbgames .controls button:hover { border-color: rgba(243, 235, 225, .4); background: none; }
@@ -408,7 +410,7 @@ html.wbgames-booting #wbgames .vcr, #wbgames .hero .osd { display: none; }
 @media (max-width: 680px) {
   #wbgames { --frame: 6px; font-size: 18px; }
   #wbgames .tube::before { border-radius: 20px; }
-  #wbgames .nav { padding-top: calc(var(--frame) + 12px + env(safe-area-inset-top, 0px)); padding-bottom: 12px; }
+  #wbgames .nav { padding-top: calc(var(--frame) + 12px + env(safe-area-inset-top, 0px)); padding-bottom: 32px; }
   #wbgames .logo { font-size: 21px; }
   #wbgames .logo svg { width: 30px; height: 20px; }
   #wbgames .nav-right { gap: 14px; }
