@@ -126,7 +126,7 @@ html.wbgames-booting, html.wbgames-booting body { overflow: hidden !important; }
 /* Nav */
 #wbgames .nav { position: fixed; top: 0; left: 0; right: 0; z-index: 20; display: flex; align-items: center; gap: clamp(18px, 3vw, 44px);
   padding: calc(var(--frame) + 16px + env(safe-area-inset-top, 0px)) calc(var(--frame) + clamp(16px, 2.6vw, 40px)) 16px;
-  background: linear-gradient(rgba(8, 6, 7, .9), rgba(8, 6, 7, .62)); border-bottom: 1px solid rgba(243, 235, 225, .07); text-shadow: var(--glow); font-size: 18px; }
+  background: linear-gradient(rgba(8, 6, 7, .9), rgba(8, 6, 7, .62)); border-bottom: 1px solid var(--line); text-shadow: var(--glow); font-size: 18px; }
 #wbgames .logo { justify-self: start; display: inline-flex; align-items: center; gap: 10px; font-style: italic; font-weight: 700; font-size: 25px; letter-spacing: .02em; line-height: 1; white-space: nowrap; }
 #wbgames .logo svg { width: 36px; height: 24px; filter: drop-shadow(0 0 6px rgba(255, 170, 120, .35)); }
 #wbgames .nav-links { display: flex; gap: clamp(14px, 2vw, 30px); white-space: nowrap; margin-left: auto; font-family: var(--vcr); font-size: 21px; letter-spacing: .06em; text-transform: uppercase; }
@@ -155,7 +155,7 @@ html.wbgames-booting, html.wbgames-booting body { overflow: hidden !important; }
 #wbgames section { position: relative; z-index: 2; }
 #wbgames .kicker { font-style: italic; font-size: 19px; color: var(--dim); text-shadow: var(--soft); display: flex; gap: 14px; align-items: baseline; }
 #wbgames .kicker b { font-style: normal; color: var(--bone); }
-#wbgames h1, #wbgames h2, #wbgames h3 { font-family: var(--display); font-weight: 500; line-height: 1.04; letter-spacing: -.012em; text-wrap: balance; text-shadow: var(--glow); }
+#wbgames h1, #wbgames h2, #wbgames h3 { font-family: var(--display); font-weight: 500; line-height: 1.04; letter-spacing: 0; text-wrap: balance; text-shadow: var(--glow); }
 #wbgames h2 { font-size: clamp(42px, 6.4vw, 104px); }
 #wbgames p { text-shadow: var(--soft); }
 #wbgames .muted { color: var(--dim); }
@@ -197,7 +197,7 @@ html.wbgames-booting, html.wbgames-booting body { overflow: hidden !important; }
 #wbgames .work-bottom h3, #wbgames .work-bottom p, #wbgames .work-bottom small { text-shadow: 0 1px 2px #000, 0 0 14px rgba(0,0,0,.9); }
 #wbgames .work-bottom h3 small { color: #d8d8d8; }
 #wbgames .controls { display: flex; align-items: center; gap: 18px; }
-#wbgames .controls button { width: 52px; height: 52px; border-radius: 50%; border: 1px solid rgba(243, 235, 225, .4); font-size: 20px; display: grid; place-items: center; text-shadow: var(--glow); transition: border-color .2s, background .2s; }
+#wbgames .controls button { width: 52px; height: 52px; border-radius: 50%; border: 1px solid var(--dim); font-size: 20px; display: grid; place-items: center; text-shadow: var(--glow); transition: border-color .2s, background .2s; }
 #wbgames .controls button:hover { border-color: var(--bone); background: rgba(243, 235, 225, .08); }
 #wbgames .controls .u { font-size: 20px; text-shadow: var(--glow); }
 
@@ -224,7 +224,7 @@ html.wbgames-booting, html.wbgames-booting body { overflow: hidden !important; }
 /* Engine features as a stack of VHS tapes: each label is a feature, with a strip of masking tape for the title. */
 #wbgames .rows { list-style: none; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
 #wbgames .rows li { position: relative; display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 6px 18px; align-content: start; padding: 22px 22px 22px 18px;
-  background: #121011; border: 1px solid rgba(243, 235, 225, .1); border-radius: 6px; box-shadow: inset 0 0 0 10px #0b0a0a, 0 18px 40px rgba(0, 0, 0, .5); transition: transform .25s; }
+  background: #121011; border: 1px solid var(--line); border-radius: 6px; box-shadow: inset 0 0 0 10px #0b0a0a, 0 18px 40px rgba(0, 0, 0, .5); transition: transform .25s; }
 #wbgames .rows li:nth-child(odd) { transform: rotate(-.6deg); } #wbgames .rows li:nth-child(even) { transform: rotate(.5deg); }
 #wbgames .rows li:hover { transform: rotate(0) translateY(-3px); }
 #wbgames .rows span { grid-row: span 2; align-self: start; padding: 6px 10px; background: #ff5a4a; color: #120a09; font-family: var(--vcr); font-size: 26px; line-height: 1; text-shadow: none; }
@@ -331,7 +331,7 @@ html.wbgames-booting, html.wbgames-booting body { overflow: hidden !important; }
 #wbgames .email a { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 8px; }
 #wbgames .rows { gap: clamp(34px, 5vh, 56px) clamp(30px, 5vw, 80px); margin-top: clamp(20px, 4vh, 40px); }
 #wbgames .rows li, #wbgames .rows li:nth-child(odd), #wbgames .rows li:nth-child(even), #wbgames .rows li:hover { transform: none; padding: 0; background: none; border: 0; box-shadow: none; gap: 6px 20px; }
-#wbgames .rows span { padding: 0; background: none; color: var(--dim); font-family: var(--serif); font-style: italic; font-size: 22px; line-height: 1.6; }
+#wbgames .rows span { padding: 0; background: none; color: var(--dim); font-family: var(--vcr); font-size: 21px; line-height: 2; letter-spacing: .04em; white-space: nowrap; }
 #wbgames .rows h3 { padding: 0; background: none; color: var(--bone); font-family: var(--serif); font-weight: 500; font-size: clamp(30px, 3vw, 46px); transform: none; box-shadow: none; text-shadow: var(--glow); }
 #wbgames .rows p { font-size: 18px; }
 #wbgames .spec { justify-content: center; font-family: var(--serif); font-style: italic; font-size: 18px; letter-spacing: 0; }
@@ -380,12 +380,12 @@ html.wbgames-booting #wbgames .vcr, #wbgames .hero .osd { display: none; }
 #wbgames .contact { padding-bottom: calc(var(--frame) + 18px + 1.6 * clamp(20px, 1.8vw, 28px) + 24px); }
 #wbgames .photo { border: 0; border-radius: 0; background: none; }
 #wbgames .controls button { border-color: transparent; }
-#wbgames .controls button:hover { border-color: rgba(243, 235, 225, .4); background: none; }
+#wbgames .controls button:hover { border-color: var(--dim); background: none; }
 
 /* Selected Work filmstrip (after shader.se's project carousel) */
 #wbgames .film { grid-column: 1 / -1; display: flex; gap: 10px; width: fit-content; max-width: 100%; overflow-x: auto; scrollbar-width: none; padding: 16px 12px; background:
   radial-gradient(circle, transparent 3px, #0b090a 3.5px) 0 0 / 16px 12px repeat-x, radial-gradient(circle, transparent 3px, #0b090a 3.5px) 0 100% / 16px 12px repeat-x, #0b090a;
-  background-color: #0b090a; box-shadow: 0 0 0 1px rgba(243, 235, 225, .08), 0 20px 50px rgba(0, 0, 0, .55); transform: rotate(-1.2deg); }
+  background-color: #0b090a; box-shadow: 0 0 0 1px var(--line), 0 20px 50px rgba(0, 0, 0, .55); transform: rotate(-1.2deg); }
 #wbgames .film::-webkit-scrollbar { display: none; }
 #wbgames .film .frame { flex: none; display: grid; gap: 6px; padding: 0; text-align: left; opacity: .5; transition: opacity .25s, transform .25s; }
 #wbgames .film .frame:hover, #wbgames .film .frame:focus-visible { opacity: .85; }
@@ -436,7 +436,7 @@ html.wbgames-booting #wbgames .vcr, #wbgames .hero .osd { display: none; }
   <svg class="sprite" aria-hidden="true" focusable="false"><defs><path id="wbgames-dshape" fill-rule="evenodd" d="M15 17C15 18 15 320 15 320 16 321 274 321 286 320 294 320 304 319 309 318 316 318 321 317 322 317 324 316 326 316 327 316 331 315 336 314 340 313 341 313 342 313 342 313 343 313 344 313 345 313 345 312 347 312 347 312 348 312 350 311 351 311 352 311 353 310 354 310 355 310 356 310 357 309 358 309 359 309 360 308 361 308 363 308 363 307 364 307 365 307 365 307 365 307 366 307 367 306 367 306 368 306 368 306 369 306 369 306 370 306 370 305 371 305 371 305 371 305 372 305 373 304 373 304 374 304 374 304 374 304 375 304 376 304 376 303 377 303 378 303 379 302 380 302 381 301 381 301 383 301 383 300 384 300 385 300 386 299 386 299 387 299 387 299 388 299 388 299 388 298 389 298 389 298 389 298 389 298 390 298 390 298 391 297 391 297 391 297 392 297 392 297 392 296 393 296 393 296 393 296 394 296 394 296 395 295 397 295 397 295 397 294 398 294 399 293 400 293 400 293 401 292 401 292 401 292 402 292 402 292 402 292 403 291 404 291 404 291 405 290 405 290 406 290 407 289 407 289 408 289 408 288 409 288 409 288 410 287 410 287 411 287 411 287 411 287 411 286 412 286 412 286 413 285 413 285 415 284 416 284 416 283 416 283 417 283 417 283 418 282 419 282 420 281 421 280 422 279 424 278 427 276 436 268 448 257 454 248 454 248 455 246 455 246 456 245 457 243 458 242 458 241 459 240 459 240 459 240 460 239 460 238 460 238 461 237 461 237 463 233 467 226 467 225 467 225 467 225 468 224 468 224 468 223 468 223 468 223 468 222 468 222 469 221 469 220 469 220 470 219 470 218 471 217 471 216 471 216 471 216 471 215 471 215 472 214 472 214 472 213 472 213 472 213 472 212 472 211 473 211 473 210 473 210 473 210 473 209 473 208 474 207 475 203 476 200 476 199 476 198 476 197 477 196 477 194 477 193 477 192 478 190 478 189 481 171 479 148 474 131 473 127 473 126 473 125 472 125 472 124 472 123 472 123 472 122 471 121 471 120 470 119 470 118 470 117 469 116 468 114 468 114 468 113 468 113 468 113 468 112 468 112 467 112 467 111 467 110 466 109 466 108 465 108 465 107 465 107 465 107 465 107 465 106 465 106 465 106 464 105 464 104 463 103 461 100 460 98 459 97 458 94 457 93 448 80 439 70 426 61 422 57 419 55 417 54 417 54 416 53 416 53 415 53 414 52 414 52 413 52 413 51 412 51 412 51 411 50 411 50 410 50 410 50 410 50 410 49 409 49 409 49 408 49 408 48 407 48 407 48 406 47 405 47 405 47 404 46 404 46 404 46 404 46 403 46 403 46 402 45 402 45 401 44 396 42 395 41 394 41 393 41 393 41 392 40 392 40 391 40 390 39 389 39 388 38 388 38 387 38 387 38 387 38 386 38 386 38 385 37 384 37 384 37 383 36 382 36 381 35 380 35 380 35 380 35 380 35 379 35 378 34 378 34 377 34 377 34 377 34 376 34 376 34 375 33 373 33 372 32 371 32 370 32 370 31 367 31 367 30 365 30 363 29 361 29 359 28 351 26 340 23 332 22 331 22 329 22 328 21 327 21 326 21 324 21 323 21 322 20 321 20 316 19 306 18 299 18 296 18 294 17 293 17 284 16 16 16 15 17M217 146C217 146 217 156 217 168 217 189 217 190 217 191 218 191 245 191 248 190 251 190 255 189 257 189 258 189 259 188 260 188 260 188 261 188 262 187 262 187 262 187 263 187 263 187 263 187 264 186 264 186 265 186 265 186 265 186 265 186 265 186 266 185 266 185 266 185 269 184 273 180 274 177 275 176 275 175 276 175 276 173 277 168 276 165 275 157 268 150 258 148 258 148 257 148 257 148 256 147 253 147 250 146 245 145 217 145 217 146"/><path id="wbgames-dword" fill-rule="evenodd" d="M418.2 328C414.7 329 413.9 333.7 416.8 336.1 417.8 336.8 418 336.9 419.7 336.9 422.2 336.9 423.4 336.1 424.2 333.8L424.7 332.4 424.1 330.9C423.6 329.5 422.1 328 421.3 328 421.1 328 420.5 327.9 420 327.9 419.5 327.8 418.7 327.9 418.2 328M27.1 332.3C26.8 332.5 26.8 333.2 26.8 335.6 26.8 339.2 26.7 339.4 24.7 338.7 22.5 337.9 20.5 338.2 17.6 339.7 16.7 340.2 14.2 342.5 14.2 342.9 14.2 343.1 14 343.5 13.7 343.8 13.5 344.2 13.2 344.8 13.1 345.3 13 345.8 12.8 346.3 12.7 346.6 12.3 347.3 12.2 350.8 12.5 351.9 12.6 352.5 12.9 353.5 13 354.1 13.2 354.6 13.4 355.3 13.6 355.5 13.8 355.7 14 356.1 14.1 356.4 14.3 357.2 17 359.6 18.5 360.4 20.4 361.4 24.5 361.5 25.7 360.6 26.6 359.9 26.7 359.9 27.3 360.4 27.6 360.7 32.1 360.9 35.8 360.8 36.4 360.7 36.5 332.3 35.9 332.2 33 332.1 27.4 332.2 27.1 332.3M67.2 332.2C66.6 332.3 66.5 360.7 67.1 360.8 67.3 360.8 69.3 360.8 71.5 360.8 73.7 360.8 75.7 360.8 75.9 360.8 76.4 360.7 76.4 332.6 75.9 332.3 75.5 332.2 67.9 332.1 67.2 332.2M50.6 338.3C46.8 338.7 42.6 341.4 41.4 344.1 41.2 344.7 40.8 345.5 40.5 345.9 40.2 346.5 40.1 347.3 40.1 349.8L40.1 352.9 41.1 354.8C46.2 365 61.8 362.6 63.2 351.4 64.2 343.9 58 337.4 50.6 338.3M136 338.2C131.5 338.9 128 341.2 126.5 344.5 125.3 346.8 125.2 347.2 125.2 349.7 125.2 352.3 125.3 352.7 126.7 355.5 129.5 361.2 138.1 363 143.8 359.2 144.8 358.5 144.7 358.3 142.6 355.8 141.5 354.6 140.4 353.3 140.2 352.9 139.6 352.2 139.6 352.2 138.1 352.4 136.2 352.5 134.9 352.2 135 351.4 135.1 350.9 135.2 350.9 141.9 350.8L148.6 350.6 148.6 349.2C148.6 347.6 147.9 345.1 147.3 344.5 147.2 344.3 147 343.9 147 343.8 147 343.4 143.6 340 143.2 340 143.1 340 142.7 339.8 142.5 339.6 142.3 339.5 141.7 339.2 141.1 339 139.9 338.6 136.9 338 136.8 338 136.7 338.1 136.3 338.1 136 338.2M238.2 338.4C235.6 339 235.1 339.2 234 339.9 228.6 342.9 226.6 350.5 229.7 355.5 232.4 359.8 236.7 361.7 242 361 243.1 360.9 244.3 360.6 244.6 360.4 244.9 360.2 245.4 360 245.8 359.9 246.6 359.7 249.2 357.3 250 355.9 253.9 349.7 250.7 340.7 244 339 242.6 338.6 239.9 338 239.8 338 239.7 338.1 239 338.2 238.2 338.4M329.5 338.3C328.9 338.5 328.3 338.7 328.1 338.8 328 338.9 327.5 339 327.1 339.1 325.7 339.4 323.1 342 322.1 344.2 319.1 350.3 321.3 357.4 327 360.4 328.7 361.3 332.7 361.4 334.3 360.6 335.1 360.3 335.4 360.2 335.9 360.5 336.5 360.8 344.4 361 344.6 360.7 344.7 360.6 344.8 343.9 344.8 339.1 344.7 338.6 336.7 338.6 336 339.1 335.6 339.3 335.2 339.2 333.8 338.8 331.6 338.1 330.8 338 329.5 338.3M87.9 338.8C87 339.1 86.1 339.5 86 339.7 85.8 339.9 85.5 340 85.3 340 84.4 340 81.6 343.3 80.6 345.5 79.8 347.4 79.9 352.6 80.8 354.6 83.1 359.3 88.1 361.8 93.5 361 102.9 359.8 106.6 348.2 99.8 341.6 98.9 340.7 98.1 340 97.9 340 97.8 340 97.5 339.9 97.3 339.7 95.7 338.4 90.7 337.9 87.9 338.8M118.8 338.7C115.9 339.9 115.8 340 115.1 339.2 114.6 338.6 107.6 338.5 107 339.1 106.6 339.5 106.6 360.7 107.1 360.8 107.6 360.8 115.4 360.8 115.7 360.8 115.9 360.8 116 359.4 116 355.1 116 349.5 116 349.5 116.6 348.6 117.4 347.7 118.8 347.1 120.2 347.3 121.7 347.5 121.7 347.3 121.7 342.5L121.6 338.4 120.6 338.3C120.1 338.3 119.2 338.4 118.8 338.7M163.8 338.7C163.3 338.9 162.6 339.2 162.2 339.4 161.2 339.9 160.9 339.8 160.4 339.2 159.8 338.6 152.4 338.5 152.2 339.1 151.8 340 152 360.7 152.3 360.8 152.5 360.8 154.7 360.8 157.1 360.8L161.6 360.6 161.7 354.4C161.8 348.1 161.8 347.7 162.8 347.4 164.1 347.1 164.2 347.6 164.3 354.4L164.4 360.6 168.9 360.8C171.3 360.8 173.5 360.8 173.7 360.8 173.9 360.7 174 359.2 174 354.5L174 348.3 174.7 347.8C175.6 347.1 175.8 347.1 176.5 347.8 177 348.4 177 348.6 177 354.6 177 359.2 177.1 360.7 177.3 360.8 177.5 360.8 179.7 360.8 182.1 360.8L186.6 360.6 186.7 353.9C186.8 342.9 185.9 340.1 181.9 338.8 179.2 337.9 175.6 338.4 173.6 339.9 172.6 340.7 172.4 340.6 171.3 339.8 169.5 338.4 165.7 337.9 163.8 338.7M214.1 338.8C208.8 340.3 205.9 344.2 205.9 349.9 205.9 354.5 207.5 357.2 211.6 359.8 215.2 362 221.8 361.5 224.7 358.8 225.8 357.8 225.9 358 222.4 354.5L219.3 351.4 218.4 351.7C216.2 352.5 214.6 350.8 215.6 348.8 216.1 347.9 216.7 347.7 218.2 347.9L219.3 348 222.4 345C224.1 343.3 225.5 341.8 225.5 341.6 225.5 341.2 224.1 340 223.7 340 223.5 340 223.2 339.8 223 339.7 221.6 338.4 216.9 337.9 214.1 338.8M266.8 338.7C266.3 338.9 265.6 339.2 265.2 339.4 264.2 339.9 263.9 339.8 263.4 339.2 262.8 338.6 255.4 338.5 255.2 339.1 254.8 340 255 360.7 255.3 360.8 255.5 360.8 257.6 360.8 260.1 360.8L264.6 360.6 264.7 354.4C264.8 347.8 264.9 347.2 266 347.2 267.1 347.2 267.2 347.8 267.3 354.4L267.4 360.6 271.9 360.8C274.4 360.8 276.5 360.8 276.7 360.8 276.9 360.7 277 359.2 277 354.5 277 348.4 277 348.3 277.6 347.8 278.3 347.1 278.8 347.1 279.5 347.8 280 348.4 280 348.6 280 354.6 280 359.2 280.1 360.7 280.3 360.8 280.5 360.8 282.6 360.8 285.1 360.8L289.6 360.6 289.7 353.9C289.8 342.9 288.9 340.1 284.9 338.8 282.2 337.9 278.6 338.4 276.6 339.9 275.6 340.7 275.4 340.6 274.3 339.8 272.5 338.4 268.7 337.9 266.8 338.7M304.5 338.8C303.2 339.3 302.9 339.3 302.2 339.1 300.7 338.5 293.8 338.6 293.5 339.2 293.4 339.5 293.3 344.6 293.3 353 293.3 361.4 293.4 366.5 293.5 366.8 293.9 367.5 302.7 367.5 302.8 366.8 302.8 366.6 302.8 365.1 302.8 363.6 302.9 360.4 303.1 360 304.2 360.6 308 362.6 314.1 360.1 316.2 355.7 320.7 346.4 313.2 335.6 304.5 338.8M359.6 339C357.7 339.7 357.6 339.7 357.1 339.2 356.5 338.6 349.6 338.5 349.1 339.1 348.6 339.5 348.6 360.7 349.1 360.8 349.6 360.8 357.4 360.8 357.7 360.8 357.9 360.8 358 359.3 358 354.5L358 348.3 358.8 347.7C359.4 347.3 359.6 347.2 360.3 347.5 361.3 347.9 361.3 348.1 361.3 354.8L361.4 360.6 365.9 360.8C368.4 360.8 370.5 360.8 370.6 360.7 371.1 360.3 370.8 344 370.2 342.7 368.7 338.8 364.5 337.3 359.6 339M440.1 338.8C439.3 339 438.3 339.3 438 339.5 437.5 339.8 437.4 339.8 437.1 339.3 436.5 338.5 428.9 338.4 428.5 339.2 428.4 339.5 428.3 343.6 428.3 350.2L428.4 360.6 432.9 360.8C435.4 360.8 437.5 360.8 437.6 360.7 437.7 360.6 437.8 357.9 437.8 354.5L437.7 348.5 438.4 347.9C439.2 347.1 439.7 347.1 440.5 347.8L441.1 348.3 441.2 354.4C441.2 357.8 441.3 360.6 441.4 360.7 441.5 360.8 443.6 360.8 446.1 360.8L450.6 360.6 450.7 353.3C450.7 348.8 450.6 345.6 450.5 344.9 450.3 344.3 450.1 343.4 450 342.9 449.8 341.8 448.2 339.8 447.1 339.3 446.7 339.1 446.2 338.8 445.9 338.7 445 338.2 441.7 338.3 440.1 338.8M462.1 338.8C458.6 340.1 456.4 341.9 455 344.9 454.1 346.6 454.1 346.7 454.1 349.8L454.1 352.9 455.1 354.8C458.3 361.3 467.1 363.3 472.8 358.9 474.1 357.9 474.1 358 470.7 354.5 467.8 351.7 467 351.1 466.6 351.8 466.2 352.5 464.4 351.9 463.9 350.8 462.9 348.9 464 347.6 466.2 347.8L467.6 348 470.7 344.9C474.2 341.4 474.2 341.5 472.2 340.2 469.4 338.4 465.1 337.8 462.1 338.8M373.4 339C373.3 339.1 375 342.6 377 346.7L380.8 354.2 380.4 355.4C379.8 356.9 378.5 358.6 377.5 359.1L376.7 359.5 376.8 363.7 376.9 367.9 378.2 367.9C380.2 367.9 382.3 367 384 365.4 385.5 363.9 386.2 362.8 387.8 359.2 388.7 357.4 389.2 356.3 390.2 353.9 390.5 353.3 391 352.3 391.2 351.7 391.5 351.1 392.2 349.6 392.7 348.4 393.3 347.2 393.8 346.2 393.8 346.1 393.8 345.9 394.9 343.4 396.3 340.6 397.2 338.8 397.1 338.7 391.9 338.8L387.4 338.8 386.8 339.6C386.5 340.1 386.1 340.8 386 341.3 385.6 342.6 384 342.3 384 341 384 340.8 383.7 340.2 383.4 339.7L382.7 338.8 378.1 338.8C375.6 338.8 373.5 338.8 373.4 339M415.2 339.1C414.8 340 415 360.7 415.3 360.8 415.5 360.8 417.6 360.8 420.1 360.8L424.6 360.6 424.7 350.1C424.7 340.9 424.7 339.5 424.3 339.1 423.8 338.6 415.4 338.6 415.2 339.1M135.4 347.6C134.2 348.6 134.6 349 137 349 139.3 349 139.7 348.6 138.3 347.5 137.3 346.8 136.3 346.9 135.4 347.6M24.8 347.7C24.1 347.8 23 349.1 23 349.8 23 350.7 24.4 352 25.2 352 26.3 352 26.8 351.2 26.8 349.6 26.8 348.1 26.1 347.5 24.8 347.7M50.5 348C48.8 349 49.8 352 51.8 352 52.6 352 54 350.6 54 349.9 54 348.5 51.7 347.3 50.5 348M90.4 348C88.5 349.1 89.5 352 91.8 352 92.5 352 94 350.4 94 349.6 94 348.4 91.6 347.3 90.4 348M238.5 348.2C237.6 348.9 237.7 350.6 238.6 351.4 240.1 352.6 242.1 351.7 242.1 349.7 242.1 348.4 241.4 347.8 240 347.8 239.5 347.8 238.8 347.9 238.5 348.2M303.2 348C302.7 348.4 302.7 351.2 303.4 351.7 304.6 352.5 307 351.3 307 349.8 307 348.4 304.5 347.2 303.2 348M332.4 348.1C330.9 349.2 331.9 352 333.8 352 334.7 352 335.1 351.4 335.2 349.9 335.4 348 333.8 347 332.4 348.1M480.1 354.9C477.5 357.8 479.8 361.9 483.6 361.1 486.6 360.6 487.5 356.2 485 354.4 483.8 353.6 481.1 353.8 480.1 354.9"/><clipPath id="wbgames-dclip"><use href="#wbgames-dshape" clip-rule="evenodd"/></clipPath><g id="wbgames-dlines" stroke="#174c6f"><line x1="10.0" y1="39.7" x2="36.4" y2="12.0" stroke-width="20.9"/><line x1="10.0" y1="76.2" x2="71.4" y2="12.0" stroke-width="20.4"/><line x1="10.0" y1="113.3" x2="106.8" y2="12.0" stroke-width="19.6"/><line x1="10.0" y1="150.2" x2="142.1" y2="12.0" stroke-width="18.6"/><line x1="10.0" y1="187.1" x2="177.3" y2="12.0" stroke-width="17.6"/><line x1="10.0" y1="224.2" x2="212.8" y2="12.0" stroke-width="16.9"/><line x1="10.0" y1="261.1" x2="248.1" y2="12.0" stroke-width="15.8"/><line x1="10.0" y1="298.0" x2="283.3" y2="12.0" stroke-width="14.8"/><line x1="20.6" y1="324.0" x2="318.8" y2="12.0" stroke-width="14.1"/><line x1="55.9" y1="324.0" x2="354.0" y2="12.0" stroke-width="13.1"/><line x1="91.3" y1="324.0" x2="389.5" y2="12.0" stroke-width="12.3"/><line x1="126.6" y1="324.0" x2="424.8" y2="12.0" stroke-width="11.3"/><line x1="161.9" y1="324.0" x2="460.0" y2="12.0" stroke-width="10.3"/><line x1="197.1" y1="324.0" x2="492.0" y2="15.5" stroke-width="9.8"/><line x1="232.4" y1="324.0" x2="492.0" y2="52.4" stroke-width="8.8"/><line x1="267.9" y1="324.0" x2="492.0" y2="89.5" stroke-width="8.1"/><line x1="303.1" y1="324.0" x2="492.0" y2="126.4" stroke-width="7.1"/><line x1="338.4" y1="324.0" x2="492.0" y2="163.3" stroke-width="6.1"/><line x1="357.1" y1="341.3" x2="492.0" y2="200.2" stroke-width="5.1"/></g></defs></svg>
   <div class="boot" id="wbgames-boot" role="status" aria-label="Loading">
     <div class="boot-logo" role="img" aria-label="Dolorem Company Inc."><svg class="dc-d" viewBox="12 14 478 310" aria-hidden="true"><use class="dc-plate" href="#wbgames-dshape" fill="#fff"/><g class="dc-stripes" clip-path="url(#wbgames-dclip)" stroke="#174c6f" fill="none"><line pathLength="1" x1="10.0" y1="39.7" x2="36.4" y2="12.0" stroke-width="20.9" style="--i:0"/><line pathLength="1" x1="10.0" y1="76.2" x2="71.4" y2="12.0" stroke-width="20.4" style="--i:1"/><line pathLength="1" x1="10.0" y1="113.3" x2="106.8" y2="12.0" stroke-width="19.6" style="--i:2"/><line pathLength="1" x1="10.0" y1="150.2" x2="142.1" y2="12.0" stroke-width="18.6" style="--i:3"/><line pathLength="1" x1="10.0" y1="187.1" x2="177.3" y2="12.0" stroke-width="17.6" style="--i:4"/><line pathLength="1" x1="10.0" y1="224.2" x2="212.8" y2="12.0" stroke-width="16.9" style="--i:5"/><line pathLength="1" x1="10.0" y1="261.1" x2="248.1" y2="12.0" stroke-width="15.8" style="--i:6"/><line pathLength="1" x1="10.0" y1="298.0" x2="283.3" y2="12.0" stroke-width="14.8" style="--i:7"/><line pathLength="1" x1="20.6" y1="324.0" x2="318.8" y2="12.0" stroke-width="14.1" style="--i:8"/><line pathLength="1" x1="55.9" y1="324.0" x2="354.0" y2="12.0" stroke-width="13.1" style="--i:9"/><line pathLength="1" x1="91.3" y1="324.0" x2="389.5" y2="12.0" stroke-width="12.3" style="--i:10"/><line pathLength="1" x1="126.6" y1="324.0" x2="424.8" y2="12.0" stroke-width="11.3" style="--i:11"/><line pathLength="1" x1="161.9" y1="324.0" x2="460.0" y2="12.0" stroke-width="10.3" style="--i:12"/><line pathLength="1" x1="197.1" y1="324.0" x2="492.0" y2="15.5" stroke-width="9.8" style="--i:13"/><line pathLength="1" x1="232.4" y1="324.0" x2="492.0" y2="52.4" stroke-width="8.8" style="--i:14"/><line pathLength="1" x1="267.9" y1="324.0" x2="492.0" y2="89.5" stroke-width="8.1" style="--i:15"/><line pathLength="1" x1="303.1" y1="324.0" x2="492.0" y2="126.4" stroke-width="7.1" style="--i:16"/><line pathLength="1" x1="338.4" y1="324.0" x2="492.0" y2="163.3" stroke-width="6.1" style="--i:17"/><line pathLength="1" x1="357.1" y1="341.3" x2="492.0" y2="200.2" stroke-width="5.1" style="--i:18"/></g></svg><svg class="dc-word" viewBox="12 326 478 46" aria-hidden="true"><use href="#wbgames-dword" fill="#174c6f"/></svg></div>
-    <p class="boot-meta">Dolorem Company Inc. · Games by Will Boechler<br>PSX Engine Version 0.5.76</p>
+    <p class="boot-meta">Dolorem Company Inc.<br>Games by Will Boechler<br>PSX Engine Version 0.5.76</p>
     <div class="boot-bar" id="wbgames-bar"></div>
     <p class="boot-copy">Copyright (c) Dolorem Company Inc., <span class="wbgames-yr">2026</span>. All Rights Reserved.<br><span class="boot-skip">Press any button</span></p>
     <div class="term" aria-hidden="true"><pre class="term-art"> %%%%%=*%%%%#-*%%%%*-*%%%%=-*%%%#--#%%%*--#%%%+--#%%#--=%%
@@ -521,26 +521,24 @@ html.wbgames-booting #wbgames .vcr, #wbgames .hero .osd { display: none; }
     <div class="wrap">
       <div class="engine-head">
         <div>
-          <p class="kicker"><b>PSX Engine</b>In development, v0.5.76</p>
           <h2>What’s on the Tapes</h2>
         </div>
-        <p>A horror engine and editor, built on three.js. It runs as a desktop app on Windows and Mac, and exports a finished game ready for itch.io.</p>
+        <p>PSX Engine is the horror engine and editor I build my games in, made with three.js. It’s in development, at v0.5.76, runs as a desktop app on Windows and Mac, and exports a finished game ready for itch.io.</p>
       </div>
       <ol class="rows">
-        <li><span>01</span><h3>Render It Like a PS1</h3><p>320×240, vertex snapping, affine textures, 15-bit dithered colour, fog, baked lighting and a flashlight. <a class="watch" href="#work" data-ch="1">▶ Watch it on CH 01</a></p></li>
-        <li><span>02</span><h3>Paint the Map</h3><p>Lay out the level on a grid, then add stairs up to another room, half walls and railings. The engine turns it into a space you can walk. <a class="watch" href="#work" data-ch="2">▶ Watch it on CH 02</a></p></li>
-        <li><span>03</span><h3>Write the Dialogue</h3><p>Type a line once and show it as a dialogue box or a passing thought. NPCs have animated models, and choices branch. <a class="watch" href="#work" data-ch="3">▶ Watch it on CH 03</a></p></li>
-        <li><span>04</span><h3>Direct the Scenes</h3><p>Lay the whole game out as cards in Director mode, write each beat like a walkthrough, and see what ends every stretch of play. <a class="watch" href="#work" data-ch="4">▶ Watch it on CH 04</a></p></li>
-        <li><span>05</span><h3>Build From Inside the Game</h3><p>Press B and a hotbar of pieces comes up: floors, walls, doorways, doors, stairs, roads and props. A see-through ghost shows where each one goes, and props know what they are, so a chair you place can be sat in. <a class="watch" href="#work" data-ch="5">▶ Watch it on CH 05</a></p></li>
-        <li><span>06</span><h3>Cut the Scenes</h3><p>A Cutscene Editor with a timeline for picture, action, props, titles, subtitles, voice, music, sound and blood. Every track has a ＋ that adds at the playhead. <a class="watch" href="#work" data-ch="6">▶ Watch it on CH 06</a></p></li>
-        <li><span>07</span><h3>Film It in Movie Mode</h3><p>Fly the camera, switch between wide, medium and close lenses, set keyframes and record the shot, with VHS tape and cinema bars if you want them. <a class="watch" href="#work" data-ch="7">▶ Watch it on CH 07</a></p></li>
-        <li><span>08</span><h3>Something’s Coming</h3><p>Monsters that hunt you, swing or shoot, with a presence sound that gets louder as they close in and a chase track. Your heart pounds as your health drops. Play it in first person or over the shoulder.</p></li>
-        <li><span>09</span><h3>Out in the Snow</h3><p>Skies, fog and weather. Snow that drifts past the car and takes your footprints. Lay a road, park a car on it and drive it on a loop.</p></li>
-        <li><span>10</span><h3>Light It, Score It, Bleed It</h3><p>Modes of their own for lights, sound and blood. The Audio Studio works like a DAW, with tracks, fades and a PS1 sampler preset.</p></li>
-        <li><span>11</span><h3>Give Them Chores</h3><p>Objectives with counters: carry the trash to the bin, the dishes to the sink, switch the lights off, put a record on.</p></li>
-        <li><span>12</span><h3>Box It Up</h3><p>Design the title screen and the pause menu, including a mantel clock that ticks by firelight. Then the PS1 case art, and one Export Game that leaves out every file the game never uses.</p></li>
+        <li><span>CH 01</span><h3>Render It Like a PS1</h3><p>320×240, vertex snapping, affine textures, 15-bit dithered colour, fog, baked lighting and a flashlight. <a class="watch" href="#work" data-ch="1">▶ Watch it on CH 01</a></p></li>
+        <li><span>CH 02</span><h3>Paint the Map</h3><p>Lay out the level on a grid, then add stairs up to another room, half walls and railings. The engine turns it into a space you can walk. <a class="watch" href="#work" data-ch="2">▶ Watch it on CH 02</a></p></li>
+        <li><span>CH 03</span><h3>Write the Dialogue</h3><p>Type a line once and show it as a dialogue box or a passing thought. NPCs have animated models, and choices branch. <a class="watch" href="#work" data-ch="3">▶ Watch it on CH 03</a></p></li>
+        <li><span>CH 04</span><h3>Direct the Scenes</h3><p>Lay the whole game out as cards in Director mode, write each beat like a walkthrough, and see what ends every stretch of play. <a class="watch" href="#work" data-ch="4">▶ Watch it on CH 04</a></p></li>
+        <li><span>CH 05</span><h3>Build From Inside the Game</h3><p>Press B and a hotbar of pieces comes up: floors, walls, doorways, doors, stairs, roads and props. A see-through ghost shows where each one goes, and props know what they are, so a chair you place can be sat in. <a class="watch" href="#work" data-ch="5">▶ Watch it on CH 05</a></p></li>
+        <li><span>CH 06</span><h3>Cut the Scenes</h3><p>A Cutscene Editor with a timeline for picture, action, props, titles, subtitles, voice, music, sound and blood. Every track has a ＋ that adds at the playhead. <a class="watch" href="#work" data-ch="6">▶ Watch it on CH 06</a></p></li>
+        <li><span>CH 07</span><h3>Film It in Movie Mode</h3><p>Fly the camera, switch between wide, medium and close lenses, set keyframes and record the shot, with VHS tape and cinema bars if you want them. <a class="watch" href="#work" data-ch="7">▶ Watch it on CH 07</a></p></li>
+        <li><span aria-hidden="true"></span><h3>Something’s Coming</h3><p>Monsters that hunt you, swing or shoot, with a presence sound that gets louder as they close in and a chase track. Your heart pounds as your health drops. Play it in first person or over the shoulder.</p></li>
+        <li><span aria-hidden="true"></span><h3>Out in the Snow</h3><p>Skies, fog and weather. Snow that drifts past the car and takes your footprints. Lay a road, park a car on it and drive it on a loop.</p></li>
+        <li><span aria-hidden="true"></span><h3>Light It, Score It, Bleed It</h3><p>Modes of their own for lights, sound and blood. The Audio Studio works like a DAW, with tracks, fades and a PS1 sampler preset.</p></li>
+        <li><span aria-hidden="true"></span><h3>Give Them Chores</h3><p>Objectives with counters: carry the trash to the bin, the dishes to the sink, switch the lights off, put a record on.</p></li>
+        <li><span aria-hidden="true"></span><h3>Box It Up</h3><p>Design the title screen and the pause menu, including a mantel clock that ticks by firelight. Then the PS1 case art, and one Export Game that leaves out every file the game never uses.</p></li>
       </ol>
-      <div class="spec"><span>three.js</span><span>JavaScript</span><span>Python build tools</span><span>Windows and Mac app</span><span>Single-file HTML editor</span></div>
       <a class="cue" href="#games"><i aria-hidden="true">☟</i>Scroll to Games<i aria-hidden="true">☟</i></a>
     </div>
   </section>
@@ -549,7 +547,6 @@ html.wbgames-booting #wbgames .vcr, #wbgames .hero .osd { display: none; }
     <div class="wrap">
       <div class="games-head">
         <div>
-          <p class="kicker">Games</p>
           <h2>Games I’ve Made</h2>
         </div>
         <p class="tagline">Small, strange, and a little scary.</p>
@@ -657,16 +654,15 @@ html.wbgames-booting #wbgames .vcr, #wbgames .hero .osd { display: none; }
 
   <section class="contact" id="contact" data-scene="contact">
     <div class="wrap">
-      <p class="kicker">Contact</p>
       <p class="machine" aria-hidden="true"><span class="led">01</span> NEW MESSAGE</p>
-      <h2>Leave a Message After the Tone.</h2>
+      <h2>Leave a Message After the Tone</h2>
       <div class="contact-row">
         <p class="email"><a href="mailto:conradboechler@gmail.com">Send me an email ✉</a></p>
         <a class="u" href="/">Back to the lab</a>
       </div>
       <div class="foot">
-        <span>© <span class="wbgames-yr">2026</span> Dolorem Company Inc. · Will Boechler</span>
-        <a href="/apps/">App projects ↗</a>
+        <span>© <span class="wbgames-yr">2026</span> Will Boechler, Dolorem Company</span>
+        <a href="/apps/">App projects</a>
         <a href="#top">Back to top ↑</a>
         <a href="https://sketchfab.com/3d-models/playstation-1-43b59dd336a14435b96ebc90935c831e" target="_blank" rel="noopener">PlayStation model by Felipe Vallerino, CC BY 4.0 ↗</a>
         <a href="https://sketchfab.com/3d-models/tv-old-asset-2d6c09b5d14e4dc2b96218c1a86c4f01" target="_blank" rel="noopener">TV model by Anderson Ferreira, CC BY 4.0 ↗</a>
@@ -764,7 +760,7 @@ const CHANNELS = [
   { kind: 'editor', title: 'PSX Engine', mode: 'Map editor', href: '#engine',
     desc: 'Paint the level on a grid. This is the same map you just walked through.' },
   { kind: 'dialogue', title: 'PSX Engine', mode: 'Writing dialogue', href: '#engine',
-    desc: 'Lines and choices on a graph, then the same conversation in the game. The key option stays hidden until you have the key.' },
+    desc: 'Type the line into her Dialogue tab, choices and all, and pick a dialogue box or a passing thought. Then the same conversation in the game.' },
   { kind: 'director', title: 'PSX Engine', mode: 'Director mode', href: '#engine',
     desc: 'Lay out the opening on a corkboard: intro, logo, menu, a text card, a cutscene, then the first room. Then play it.' },
   { kind: 'build', title: 'PSX Engine', mode: 'Build mode', href: '#engine',
@@ -961,7 +957,7 @@ async function start() {
   ], true, 'catmullrom', 0.2);
 
   /* ---------- Channels 2–4: PSX Engine's own editor, redrawn from the real one ----------
-     Win98 chrome, the Map tab, Write mode's dialogue graph and Director Mode's corkboard.
+     Win98 chrome and the v0.5 mode strip, the Map, a thing's Dialogue tab and Director Mode's corkboard.
      One 640×480 canvas, drawn by whichever of them is on. */
   const UW = 640, UH = 480;
   const uiCanvas = document.createElement('canvas'); uiCanvas.width = UW; uiCanvas.height = UH;
@@ -988,9 +984,9 @@ async function start() {
     box(hi, x, y, w, 1); box(hi, x, y, 1, h); box(lo, x, y + h - 1, w, 1); box(lo, x + w - 1, y, 1, h);
     box('#808080', down ? x + 1 : x + w - 2, y + 1, 1, h - 2); box('#808080', x + 1, down ? y + 1 : y + h - 2, w - 2, 1);
   }
-  function button(x, y, label, { w, on, down, size = 14 } = {}) {
+  function button(x, y, label, { w, on, down, size = 14, pad = 16 } = {}) {
     ui.font = `${size}px VT323, monospace`;
-    w = w || Math.round(ui.measureText(label).width + 16);
+    w = w || Math.round(ui.measureText(label).width + pad);
     bevel(x, y, w, 18, down || on);
     if (on) box('#000080', x + 2, y + 2, w - 4, 14);
     say(label, x + w / 2 + (down ? 1 : 0), y + 9.5 + (down ? 1 : 0), { c: on ? '#fff' : '#000', size, align: 'center' });
@@ -1018,19 +1014,22 @@ async function start() {
     ui.globalCompositeOperation = 'multiply'; box('#a4a4a4', 0, 0, UW, UH); ui.globalCompositeOperation = 'source-over';
     uiTex.needsUpdate = true;
   }
-  function chrome() {
+  /* The window, then v0.5's one strip: ☰, the modes you work in inside the level, the ones that open over it, and the room on the right. */
+  const STRIP = ['Walk', 'Build', 'Sky', 'Light', 'Audio', 'Movie', 0, 'Player', 'Map', 'Director', 'Title & box'];
+  const PLAY = { x: UW - 50, y: 57, w: 46 };
+  function chrome(mode, { playDown } = {}) {
     box('#c0c0c0', 0, 0, UW, UH);
     const g = ui.createLinearGradient(0, 0, UW, 0); g.addColorStop(0, '#000080'); g.addColorStop(1, '#1084d0');
     ui.fillStyle = g; ui.fillRect(0, 34, UW, 20);
     box('#fff', 7, 39, 10, 10); box('#000080', 9, 41, 6, 6);
-    say('PSX Engine', 24, 44.5, { c: '#fff', size: 16 }); say('v0.5', 100, 44.5, { c: '#c8d4ff', size: 14 });
+    say('PSX Engine', 24, 44.5, { c: '#fff', size: 16 }); say('v0.5.76', 100, 44.5, { c: '#c8d4ff', size: 14 });
     ['_', '□', '×'].forEach((s, i) => { bevel(UW - 58 + i * 18, 37, 16, 14); say(s, UW - 50 + i * 18, 44, { size: 13, align: 'center' }); });
-    ['File', 'Edit', 'Room', 'Camera', 'Game', 'View', 'Help'].reduce((x, m) => { say(m, x, 64, { size: 14 }); return x + m.length * 7 + 18; }, 12);
-    box('#808080', 0, 73, UW, 1); box('#fff', 0, 74, UW, 1);
-  }
-  function statusBar(parts) {
-    let x = 4;
-    parts.forEach(([s, w]) => { well(x, 446, w, 18, '#c0c0c0'); say(s, x + 6, 455.5, { size: 13, max: w - 10 }); x += w + 3; });
+    const sep = (x) => { box('#808080', x, 58, 1, 18); box('#fff', x + 1, 58, 1, 18); };
+    say('☰', 11, 66.5, { size: 15, align: 'center' }); sep(22);
+    STRIP.reduce((x, m) => (m ? x + button(x, 57, m, { on: m === mode, size: 13, pad: 10 }) + 2 : (sep(x + 1), x + 6)), 27);
+    button(PLAY.x, PLAY.y, '▶ Play', { w: PLAY.w, on: true, down: playDown, size: 13 });
+    well(PLAY.x - 58, 57, 54, 18); say('room 0', PLAY.x - 54, 66.5, { size: 13 }); say('▾', PLAY.x - 11, 66, { size: 12 });
+    box('#808080', 0, 79, UW, 1); box('#fff', 0, 80, UW, 1);
   }
   function corkboard(x, y, w, h, base) {
     box(base, x, y, w, h);
@@ -1091,115 +1090,119 @@ async function start() {
   const paintOrder = []; MAP.forEach((row, z) => [...row].forEach((ch, x) => paintOrder.push([x, z, ch])));
   const speck = (x, z, i) => ((x * 73 + z * 151 + i * 97) % 23) / 23;
   function drawMap(t) {
-    chrome();
-    [['Build', 1], ['Look'], ['Game'], ['Story']].reduce((x, [l, on]) => x + button(x, 80, l, { on }) + 3, 8);
-    ['Map', 'Scene', 'Room', 'Car'].forEach((l, i) => {
-      const x = 204 + i * 64, on = i === 0;
-      box(on ? '#c0c0c0' : '#b4b4b4', x, 80, 62, 20); box('#fff', x, 80, 62, 1); box('#fff', x, 80, 1, 20); box('#000', x + 61, 80, 1, 20);
-      say(l, x + 31, 90.5, { size: 14, align: 'center', c: on ? '#000' : '#555' });
-    });
-    box('#808080', 0, 101, UW, 1); box('#fff', 0, 102, UW, 1);
+    chrome('Map');
     const n = Math.floor((t * 7) % (paintOrder.length + 24));
     const cur = paintOrder[Math.min(n, paintOrder.length - 1)];
     const tool = n >= paintOrder.length ? 'select' : cur[2] === '#' ? 'wall' : cur[2] === 'F' ? 'event' : 'floor';
-    /* tool rail */
-    say('DRAW', 4, 112, { size: 11, c: '#555' });
-    ['wall', 'floor', 'fill', 'erase', 'event', 'select'].forEach((k, i) => {
-      const y = 120 + i * 30; bevel(4, y, 26, 26, k === tool);
-      ui.fillStyle = '#000';
-      if (k === 'wall') ui.fillRect(10, y + 11, 14, 4);
-      if (k === 'floor') ui.fillRect(10, y + 7, 14, 12);
-      if (k === 'fill') { ui.beginPath(); ui.moveTo(17, y + 6); ui.lineTo(24, y + 13); ui.lineTo(17, y + 20); ui.lineTo(10, y + 13); ui.fill(); }
-      if (k === 'erase') { ui.fillRect(10, y + 12, 14, 2); }
-      if (k === 'event') { ui.beginPath(); ui.arc(17, y + 13, 6, 0, Math.PI * 2); ui.lineWidth = 1.5; ui.strokeStyle = '#000'; ui.stroke(); ui.fillRect(16, y + 9, 2, 5); ui.fillRect(16, y + 15, 2, 2); }
-      if (k === 'select') { ui.beginPath(); ui.moveTo(13, y + 6); ui.lineTo(13, y + 19); ui.lineTo(16, y + 16); ui.lineTo(19, y + 21); ui.lineTo(21, y + 20); ui.lineTo(18, y + 15); ui.lineTo(22, y + 15); ui.fill(); }
+    /* the tool rail, in the Map's groups */
+    const RAIL = [['Draw', ['floor', 'fill', 'erase']], ['Walls', ['wall']], ['Place', ['select', 'event']]];
+    let ry = 86;
+    RAIL.forEach(([label, tools]) => {
+      say(label, 4, ry + 5, { size: 11, c: '#555' }); ry += 12;
+      tools.forEach((k) => {
+        const y = ry; bevel(4, y, 24, 24, k === tool); ui.fillStyle = k === tool ? '#000080' : '#000';
+        if (k === 'wall') ui.fillRect(9, y + 10, 14, 4);
+        if (k === 'floor') ui.fillRect(9, y + 6, 14, 12);
+        if (k === 'fill') { ui.beginPath(); ui.moveTo(16, y + 5); ui.lineTo(23, y + 12); ui.lineTo(16, y + 19); ui.lineTo(9, y + 12); ui.fill(); }
+        if (k === 'erase') ui.fillRect(9, y + 11, 14, 2);
+        if (k === 'event') { ui.beginPath(); ui.arc(16, y + 12, 6, 0, Math.PI * 2); ui.lineWidth = 1.5; ui.strokeStyle = ui.fillStyle; ui.stroke(); ui.fillRect(15, y + 8, 2, 5); ui.fillRect(15, y + 14, 2, 2); }
+        if (k === 'select') { ui.beginPath(); ui.moveTo(12, y + 5); ui.lineTo(12, y + 18); ui.lineTo(15, y + 15); ui.lineTo(18, y + 20); ui.lineTo(20, y + 19); ui.lineTo(17, y + 14); ui.lineTo(21, y + 14); ui.fill(); }
+        ry += 27;
+      });
+      ry += 4;
     });
-    /* material panel */
-    box('#808080', 34, 104, 1, 340); box('#fff', 35, 104, 1, 340);
-    say('▾ MATERIAL', 42, 114, { size: 14 });
-    [['wall', 0.55], ['ceiling', 0.35]].forEach(([l, v], i) => {
-      const y = 132 + i * 22; say(l, 42, y, { size: 13, c: '#333' });
-      box('#808080', 92, y, 60, 2); box('#000080', 92 + v * 54, y - 5, 7, 11); well(158, y - 8, 28, 16); say('3.6', 162, y + 0.5, { size: 13 });
+    /* the Material panel */
+    box('#808080', 31, 81, 1, 380); box('#fff', 32, 81, 1, 380);
+    say('▾ Material', 38, 92, { size: 14 });
+    [['wall', 0.45], ['ceiling', 0.35], ['terrain', 0.15]].forEach(([l, v], i) => {
+      const y = 110 + i * 20; say(l, 38, y, { size: 12, c: '#333' });
+      box('#808080', 76, y, 42, 2); box('#000080', 76 + v * 38, y - 5, 6, 11); well(122, y - 8, 26, 16); say(i < 2 ? '3.6' : '0.2', 125, y + 0.5, { size: 12 });
     });
     const sw = [['#3b2a1c', 'wall'], ['#7d7b75', 'floor'], ['#26402a'], ['#1d1d22'], ['#5a3d2a'], ['#0b0a0c']];
     sw.forEach(([c, k], i) => {
-      const x = 42 + (i % 3) * 48, y = 176 + Math.floor(i / 3) * 48;
-      box(c, x, y, 44, 44);
-      if (i === 0) for (let r = 0; r < 4; r++) box('#b8955a', x, y + r * 11, 44, 1);
-      if (i === 1) for (let s = 0; s < 14; s++) box('#5f5d58', x + speck(s, i, 1) * 40, y + speck(i, s, 2) * 40, 3, 2);
-      say(String([2, 3, 9, 13, 6, 21][i]), x + 3, y + 7, { size: 12, c: '#fff' });
-      if ((k === 'wall' && tool === 'wall') || (k === 'floor' && tool === 'floor')) { ui.strokeStyle = '#000080'; ui.lineWidth = 2; ui.strokeRect(x - 1, y - 1, 46, 46); }
+      const x = 38 + (i % 3) * 37, y = 172 + Math.floor(i / 3) * 37;
+      box(c, x, y, 34, 34);
+      if (i === 0) for (let r = 0; r < 4; r++) box('#b8955a', x, y + r * 9, 34, 1);
+      if (i === 1) for (let s = 0; s < 10; s++) box('#5f5d58', x + speck(s, i, 1) * 30, y + speck(i, s, 2) * 30, 3, 2);
+      say(String([2, 3, 9, 13, 6, 21][i]), x + 3, y + 6, { size: 11, c: '#fff' });
+      if ((k === 'wall' && tool === 'wall') || (k === 'floor' && tool === 'floor')) { ui.strokeStyle = '#000080'; ui.lineWidth = 2; ui.strokeRect(x - 1, y - 1, 36, 36); }
     });
+    say('footstep sound for this', 38, 260, { size: 12, c: '#333' }); say('material', 38, 271, { size: 12, c: '#333' });
+    well(38, 278, 110, 16); say('– use the default –', 42, 286.5, { size: 12, max: 100 });
+    button(38, 302, '+ Import texture…', { w: 110, size: 12 });
+    /* the hint over the map */
+    const hint = { wall: ['Wall', 'click and drag. Walls show their height.'], floor: ['Floor', 'click and drag to paint the floor.'], event: ['Event', 'an interactable thing. Its Inspector holds what it says.'], select: ['Select', 'click an event to select it, drag it to move it.'] }[tool];
+    say(hint[0], 160, 92, { size: 14 }); say(hint[1], 160 + hint[0].length * 7 + 10, 92, { size: 13, c: '#333' });
     /* the map */
-    const hint = { wall: ['WALL', 'click and drag. walls show their height.'], floor: ['FLOOR', 'click and drag to paint the floor.'], event: ['EVENT', 'an interactable. the inspector edits its say.'], select: ['SELECT', 'click an event to select it.'] }[tool];
-    say(hint[0], 200, 116, { size: 14 }); say(hint[1], 200 + hint[0].length * 7 + 10, 116, { size: 14, c: '#333' });
-    const cs = 30, ox = 236, oy = 132;
+    const cs = 28, ox = 262, oy = 112;
     well(ox - 3, oy - 3, cs * MAP[0].length + 6, cs * MAP.length + 6, '#a4a4a4');
     paintOrder.forEach(([x, z, ch], i) => {
       const X = ox + x * cs, Y = oy + z * cs, done = i < n;
       if (!done) { box('#9a9a9a', X, Y, cs - 1, cs - 1); return; }
-      if (ch === '#') { box('#3b2a1c', X, Y, cs, cs); box('#b8955a', X, Y, cs, 1); box('#b8955a', X, Y, 1, cs); box('#24180f', X, Y + 14, cs, 1); return; }
+      if (ch === '#') { box('#3b2a1c', X, Y, cs, cs); box('#b8955a', X, Y, cs, 1); box('#b8955a', X, Y, 1, cs); box('#24180f', X, Y + 13, cs, 1); return; }
       box('#7d7b75', X, Y, cs, cs);
-      for (let s = 0; s < 5; s++) box('#66645f', X + 2 + speck(x, z, s) * 24, Y + 2 + speck(z, x, s + 3) * 24, 3, 2);
-      if (ch === 'F') { ui.beginPath(); ui.arc(X + cs / 2, Y + cs / 2, 9, 0, Math.PI * 2); ui.fillStyle = '#f2d9d9'; ui.fill(); ui.lineWidth = 2; ui.strokeStyle = '#b34a4a'; ui.stroke(); say('N', X + cs / 2, Y + cs / 2 + 1, { size: 14, c: '#b34a4a', align: 'center' }); }
+      for (let s = 0; s < 5; s++) box('#66645f', X + 2 + speck(x, z, s) * 22, Y + 2 + speck(z, x, s + 3) * 22, 3, 2);
+      if (ch === 'F') { ui.beginPath(); ui.arc(X + cs / 2, Y + cs / 2, 8, 0, Math.PI * 2); ui.fillStyle = '#f2d9d9'; ui.fill(); ui.lineWidth = 2; ui.strokeStyle = '#b34a4a'; ui.stroke(); say('N', X + cs / 2, Y + cs / 2 + 1, { size: 13, c: '#b34a4a', align: 'center' }); }
     });
-    if (n < paintOrder.length) { ui.strokeStyle = '#000080'; ui.lineWidth = 2; ui.strokeRect(ox + cur[0] * cs - 1, oy + cur[1] * cs - 1, cs + 2, cs + 2); arrow(ox + cur[0] * cs + 18, oy + cur[1] * cs + 18); }
+    if (n < paintOrder.length) { ui.strokeStyle = '#000080'; ui.lineWidth = 2; ui.strokeRect(ox + cur[0] * cs - 1, oy + cur[1] * cs - 1, cs + 2, cs + 2); arrow(ox + cur[0] * cs + 17, oy + cur[1] * cs + 17); }
     uiFocus = ox + cur[0] * cs + cs / 2;
-    const walls = paintOrder.slice(0, n).filter((c) => c[2] === '#').length, evs = paintOrder.slice(0, n).filter((c) => c[2] === 'F').length;
-    statusBar([[`${walls} wall cells · ${evs} events · 2 materials`, 420], [n >= paintOrder.length ? 'saved' : 'Map', 80], ['room 0', 64], ['100%', 56]]);
   }
 
-  /* Channel 3: Write mode's dialogue graph, then that conversation playing in the game.
-     The lines are from the engine's demo project. */
+  /* Channel 3: Mara's Dialogue tab. The line goes in the say box, choices and all (> starts one, the reply goes underneath),
+     shows as a dialogue box, then ▶ Play and the same conversation in the game. The lines are from the engine's demo project. */
   const DLG = { edit: 7.5, loop: 17 };
-  const DN = {
-    line: { x: 106, y: 204, w: 118 }, choice: { x: 244, y: 176, w: 132 }, flag: { x: 394, y: 154, w: 122 }, back: { x: 394, y: 250, w: 122 },
-  };
-  const OPTS = ['open the basement door', 'leave it', 'use the brass key'];
+  const OPTS = ['open the basement door', 'leave it'];
   const PROMPT = 'go downstairs?';
+  const SAY = ['the note is in her handwriting.', '', 'it just says: DON\'T GO DOWNSTAIRS.', '', PROMPT, '> ' + OPTS[0], '> ' + OPTS[1], '  you climb back up.'];
+  const SAY_N = SAY.reduce((a, l) => a + l.length + 1, 0);
+  const dlgShot = document.createElement('canvas'); dlgShot.width = W; dlgShot.height = H; let dlgShotOk = false;
   function drawDialogue(p) {
-    chrome();
-    [['Paint'], ['3D Place'], ['Write', 1]].reduce((x, [l, on]) => x + button(x, 80, l, { on }), 8);
-    button(214, 80, '× Close');
-    [['Script'], ['Dialogue', 1], ['Notes']].reduce((x, [l, on]) => x + button(x, 104, l, { on }) + 3, 8);
-    box('#808080', 0, 126, UW, 1); box('#fff', 0, 127, UW, 1);
-    /* the character's trees */
-    say('character', 8, 138, { size: 12, c: '#4a4a4a' });
-    well(8, 146, 84, 18); say('Mara', 13, 155.5, { size: 14 }); bevel(76, 148, 14, 14); say('▾', 83, 154.5, { size: 12, align: 'center' });
-    button(8, 170, '+ New Tree', { w: 84 });
-    box('#000080', 8, 194, 84, 18); ui.beginPath(); ui.arc(16, 203, 3.5, 0, Math.PI * 2); ui.fillStyle = '#5ac96a'; ui.fill(); say('Night One', 24, 203.5, { size: 14, c: '#fff' });
-    /* toolbar + corkboard + inspector */
-    const B = { line: [100, 132], choice: [176, 132], flag: [262, 132] };
-    const t0 = button(100, 132, '▪ + Line', { down: clicked(p, 0.35) || clicked(p, 5.25) });
-    button(100 + t0 + 4, 132, '◆ + Choice', { down: clicked(p, 1.3) });
-    button(100 + t0 + 4 + 82, 132, '⚑ + Set Flag', { down: clicked(p, 3.95) });
-    corkboard(98, 154, 430, 286, '#c2b280');
-    box('#fff', 528, 128, 1, 316);
-    say('Prompt', 536, 166, { size: 13, c: '#4a4a4a' });
-    const selChoice = p > 1.9 && p < 3.95;
-    well(536, 176, 98, 36);
-    const typed = selChoice ? PROMPT.slice(0, Math.floor(span(p, 2.95, 3.7) * PROMPT.length)) : p >= 3.95 ? PROMPT : '';
-    if (p > 1.9) say(typed + (selChoice && (p * 3 | 0) % 2 ? '|' : ''), 541, 187, { size: 14 });
-    if (p > 1.9) { say('Options', 536, 226, { size: 13, c: '#4a4a4a' }); OPTS.forEach((o, i) => { well(536, 236 + i * 22, 98, 18); say(o, 540, 245.5 + i * 22, { size: 13, max: 90 }); }); }
-    /* the graph */
-    const L = DN.line, C = DN.choice, F = DN.flag, K = DN.back;
-    const optY = (i) => C.y + 18 + i * 16 + 8;
-    wire(L.x + L.w, L.y + 9, C.x, C.y + 9, span(p, 2.3, 2.85));
-    wire(C.x + C.w, optY(0), F.x, F.y + 9, span(p, 4.55, 5.0));
-    wire(C.x + C.w, optY(1), K.x, K.y + 9, span(p, 5.85, 6.35));
-    card(L.x, L.y, L.w, '#8868b3', '▪ Line', ['the note is in', 'her handwriting.'], { a: span(p, 0.6, 0.85) });
-    card(C.x, C.y, C.w, '#c98a3c', '◆ Choice', [OPTS[0], OPTS[1], OPTS[2] + '\u0001'], { a: span(p, 1.6, 1.85), sel: selChoice, body: 'rows' });
-    card(F.x, F.y, F.w, '#2f8f2f', '⚑ Set Flag', ['went-down = true'], { a: span(p, 4.25, 4.5) });
-    card(K.x, K.y, K.w, '#8868b3', '▪ Line', ['you climb back up.'], { a: span(p, 5.55, 5.8) });
-    /* where the pointer goes */
-    const ptr = pointer(p, [
-      [0, 300, 300], [0.35, B.line[0] + 24, B.line[1] + 10], [0.6, L.x + 50, L.y + 10], [1.3, B.choice[0] + 34, B.choice[1] + 10], [1.6, C.x + 60, C.y + 10],
-      [2.3, L.x + L.w, L.y + 9], [2.85, C.x + 2, C.y + 9], [3.2, C.x + 70, C.y + 9], [3.95, B.flag[0] + 40, B.flag[1] + 10], [4.25, F.x + 50, F.y + 10],
-      [4.55, C.x + C.w, optY(0)], [5.0, F.x + 2, F.y + 9], [5.25, B.line[0] + 24, B.line[1] + 10], [5.55, K.x + 50, K.y + 10],
-      [5.85, C.x + C.w, optY(1)], [6.35, K.x + 2, K.y + 9], [7.5, K.x + 40, K.y + 60],
-    ]);
+    if (!dlgShotOk) { dlgShotOk = true; snap(dlgShot, stillPose); }
+    chrome('Walk', { playDown: clicked(p, 7.0) });
+    /* the level, stood in front of Mara */
+    const vx = 4, vy = 84, vw = 382, vh = 356;
+    box('#000', vx, vy, vw, vh);
+    ui.drawImage(dlgShot, vx, vy + 24, vw, Math.round(vw * 0.75));
+    say('click a prop to select it · drag it to move it · Esc frees the mouse', vx + 6, vy + vh - 9, { size: 12, c: '#d8d8d8', max: vw - 12 });
+    /* the Inspector */
+    box('#808080', 390, 84, 1, 356); box('#fff', 391, 84, 1, 356);
+    const ix = 398, iw = 236;
+    box('#808080', ix, 92, iw, 1); box('#808080', ix, 92, 1, 348); box('#808080', ix + iw - 1, 92, 1, 348);
+    box('#c0c0c0', ix + 6, 86, 52, 12); say('Inspector', ix + 9, 92, { size: 12 });
+    bevel(ix + 8, 100, 20, 20); say('◆', ix + 18, 110.5, { size: 13, align: 'center' });
+    say('Mara', ix + 34, 104, { size: 15 }); say('npc #3 · 8,4', ix + 34, 116, { size: 12, c: '#4a4a4a' });
+    const tab = p >= 0.55 ? 'Dialogue' : 'Basics', tabs = {};
+    ['Basics', 'Behaviour', 'Dialogue', 'Story', 'Sound'].reduce((x, l) => { tabs[l] = x; return x + button(x, 126, l, { on: l === tab, down: l === 'Dialogue' && clicked(p, 0.35), size: 12, pad: 8 }) + 2; }, ix + 8);
+    box('#808080', ix + 8, 149, iw - 16, 1);
+    const fx = ix + 8, fw = iw - 16;
+    if (tab === 'Basics') {
+      [['name', 'Mara'], ['model', 'mara.glb'], ['category', 'person']].forEach(([l, v], i) => { say(l, fx, 166 + i * 22, { size: 12, c: '#4a4a4a' }); well(fx + 60, 158 + i * 22, fw - 60, 16); say(v, fx + 64, 166.5 + i * 22, { size: 12 }); });
+    } else {
+      /* the say box: the line, choices and all; the whole thing sits clear of the page's words under it */
+      say('▾ Dialogue · say', fx, 158, { size: 13 });
+      well(fx, 166, fw, 104);
+      let budget = Math.floor(span(p, 0.95, 5.3) * SAY_N), cy = 174, cx = fx + 5;
+      SAY.forEach((l) => {
+        const shown = l.slice(0, Math.max(0, budget)); budget -= l.length + 1;
+        if (budget >= -l.length) { say(shown, fx + 5, cy, { size: 12, c: l.startsWith('>') ? '#000080' : '#000', max: fw - 10 }); ui.font = '12px VT323, monospace'; cx = fx + 5 + ui.measureText(shown).width; }
+        if (budget >= 0) { cy += 12.5; cx = fx + 5; }
+      });
+      if (p < 5.5 && (p * 3 | 0) % 2) box('#000', Math.min(cx + 1, fx + fw - 4), cy - 5, 1, 11);
+      /* shows as: a dialogue box, or a thought */
+      const open = p >= 5.7 && p < 6.45, hot = p >= 5.95 && p < 6.2 ? 1 : p >= 6.2 ? 0 : -1;
+      say('shows as', fx, 283, { size: 12, c: '#4a4a4a' });
+      const dx = fx + 52, dw = fw - 52;
+      well(dx, 275, dw, 16); say('a dialogue box (waits for E)', dx + 4, 283.5, { size: 12, max: dw - 20 }); bevel(dx + dw - 15, 276, 14, 14); say('▾', dx + dw - 8, 282.5, { size: 11, align: 'center' });
+      say('▸ how choices and page breaks work', fx, 304, { size: 12, c: '#4a4a4a', max: fw });
+      say('💭 or a thought, once, when they…', fx, 320, { size: 12, c: '#4a4a4a', max: fw });
+      if (open) {   /* the list opens upward, over the say box */
+        const items = ['a dialogue box (waits for E)', 'a thought (no box, keep walking)'], my = 274 - items.length * 15 - 2;
+        box('#000', dx, my, dw, items.length * 15 + 2); box('#fff', dx + 1, my + 1, dw - 2, items.length * 15);
+        items.forEach((it, i) => { if (i === hot) box('#000080', dx + 1, my + 1 + i * 15, dw - 2, 15); say(it, dx + 4, my + 9 + i * 15, { size: 12, c: i === hot ? '#fff' : '#000', max: dw - 8 }); });
+      }
+    }
+    const ptr = pointer(p, [[0, 300, 240], [0.35, tabs.Dialogue + 24, 135], [0.95, fx + 150, 230], [5.3, fx + 150, 230], [5.7, fx + fw - 8, 283], [5.95, fx + 120, 266], [6.2, fx + 120, 251], [7.0, PLAY.x + PLAY.w / 2, 66], [7.5, PLAY.x + 10, 110]]);
     arrow(ptr.x, ptr.y, ptr.down); uiFocus = ptr.x;
-    statusBar([['Mara · Night One · ' + [0.6, 1.6, 4.25, 5.55].filter((a) => p >= a).length + ' nodes', 420], ['Dialogue', 120], ['', 76]]);
   }
   /* The conversation in the game, drawn the way the engine draws its dialogue box (fp-core.js), on the 320×240 picture. */
   const PAGE = [[['the note is in ', '#ded5c0'], ['her handwriting', '#d9826a'], ['.', '#ded5c0']], [['it just says: DON\'T GO DOWNSTAIRS.', '#ded5c0']]];
@@ -1242,26 +1245,28 @@ async function start() {
   /* Channel 4: Director Mode's corkboard, laying out a game opening, then playing it from the text card. */
   const DIR = { edit: 7.6, card: 11.4, bars: 15.6, loop: 19 };
   const DC = [
-    { head: ['#7a1f1f', '#b84a3a'], title: 'Studio intro', rows: ['intro video', 'skippable'] },
-    { head: ['#1f1f1f', '#5a5a5a'], title: 'Made with PSX Engine', rows: ['PSX Engine logo · 3s'] },
-    { head: ['#6b5a10', '#a8902a'], title: 'Main Menu', rows: ['title screen, waits', 'for New Game'] },
-    { head: ['#5c3d99', '#8f6fcf'], title: 'Opening text', rows: ['It started the night', 'the lights came back…'] },
-    { head: ['#000080', '#1084d0'], title: 'Opening cutscene', rows: ['3 shots · 0:14'] },
-    { head: ['#1a5c1a', '#2f8f2f'], title: 'First room', rows: ['room 0 · player start'] },
-  ].map((c, i) => ({ ...c, x: 18 + (i % 3) * 170, y: 140 + Math.floor(i / 3) * 96, w: 132 }));
+    { head: ['#7a1f1f', '#b84a3a'], title: '📼 Studio intro', rows: ['intro video', 'skippable'] },
+    { head: ['#1f1f1f', '#5a5a5a'], title: '🖼 Made with PSX Engine', rows: ['PSX Engine logo · 3s'] },
+    { head: ['#6b5a10', '#a8902a'], title: '🗂 Main Menu', rows: ['title screen, waits', 'for New Game'] },
+    { head: ['#5c3d99', '#8f6fcf'], title: '📝 Opening text', rows: ['It started the night', 'the lights came back…'] },
+    { head: ['#000080', '#1084d0'], title: '🎬 Opening cutscene', rows: ['3 shots · 0:14'] },
+    { head: ['#1a5c1a', '#2f8f2f'], title: '🎮 First room', rows: ['room 0 · ends: Stairs'] },
+  ].map((c, i) => ({ ...c, x: 18 + (i % 3) * 170, y: 150 + Math.floor(i / 3) * 96, w: 136 }));
   const OPENING = 'It started the night the lights came back on.';  /* the engine's own default for this card */
   function drawDirector(p) {
-    chrome();
+    chrome('Director');
     const menuOpen = p >= 0.2 && p < 0.95;
-    const addW = button(6, 80, '＋ Add card ▾', { down: menuOpen });
-    well(6 + addW + 4, 80, 112, 18); say('find a card…', 6 + addW + 9, 89.5, { size: 13, c: '#808080' });
-    button(6 + addW + 120, 80, '🔄 Arrange');
-    const playX = UW - 6 - 60 - 4 - 116;
-    button(playX, 80, '▶ Play from here', { w: 116, down: clicked(p, 6.6) });
-    button(UW - 6 - 60, 80, '✕ Close', { w: 60 });
-    box('#808080', 0, 101, UW, 1); box('#fff', 0, 102, UW, 1);
-    corkboard(0, 103, 520, 340, '#c8b488');
-    box('#fff', 520, 103, 1, 340);
+    /* Director's own bar: the Board, Objectives and Words tabs, then the board's tools */
+    let bx = ['Board', 'Objectives', 'Words'].reduce((x, l, i) => x + button(x, 84, l, { on: !i, size: 13, pad: 10 }) + 2, 6) + 6;
+    const addX = bx, addW = button(bx, 84, '＋ Add card ▾', { on: true, down: menuOpen, size: 13 }); bx += addW + 4;
+    well(bx, 84, 96, 18); say('find a card…', bx + 5, 93.5, { size: 13, c: '#808080' }); bx += 100;
+    button(bx, 84, '🔄 Arrange', { size: 13 });
+    const playX = UW - 6 - 54 - 4 - 112;
+    button(playX, 84, '▶ Play from here', { w: 112, down: clicked(p, 6.6), size: 13 });
+    button(UW - 6 - 54, 84, '× Close', { w: 54, size: 13 });
+    box('#808080', 0, 105, UW, 1); box('#fff', 0, 106, UW, 1);
+    corkboard(0, 107, 520, 340, '#c8b488');
+    box('#fff', 520, 107, 1, 340);
     const sel = p >= 3.7 ? 3 : -1;
     /* wires, then cards */
     DC.forEach((c, i) => {
@@ -1270,19 +1275,20 @@ async function start() {
       wire(a.x + a.w, a.y + 9, c.x, c.y + 9, span(p, at - 0.05, at + 0.3));
     });
     DC.forEach((c, i) => card(c.x, c.y, c.w, c.head, c.title, c.rows, { a: span(p, 1.0 + i * 0.36, 1.2 + i * 0.36), sel: i === sel }));
-    /* inspector: the text card */
+    /* the card's panel: Card and Script tabs, then the text card's own settings */
     if (sel === 3) {
-      say('Name', 528, 120, { size: 13, c: '#4a4a4a' }); well(528, 128, 106, 18); say('Opening text', 532, 137.5, { size: 14 });
-      say('Text', 528, 160, { size: 13, c: '#4a4a4a' }); well(528, 168, 106, 66);
+      button(526, 112, '🗂 Card', { w: 52, on: true, size: 13 }); button(580, 112, '✎ Script', { w: 54, size: 13 });
+      say('Name', 528, 142, { size: 13, c: '#4a4a4a' }); well(528, 150, 106, 18); say('Opening text', 532, 159.5, { size: 14 });
+      say('Text', 528, 182, { size: 13, c: '#4a4a4a' }); well(528, 190, 106, 66);
       const n = Math.floor(span(p, 3.9, 5.6) * OPENING.length);
-      wrap(OPENING.slice(0, n), 96, 14).forEach((l, i) => say(l, 532, 178 + i * 14, { size: 14 }));
-      well(528, 244, 11, 11); if (p > 5.7) { ui.strokeStyle = '#000'; ui.lineWidth = 1.6; ui.beginPath(); ui.moveTo(530, 249); ui.lineTo(533, 252.5); ui.lineTo(537.5, 246); ui.stroke(); }
-      say('typewriter', 544, 250, { size: 13 });
-      say('duration  5 s', 528, 270, { size: 13 });
-    } else say('Click a card to edit it.', 528, 120, { size: 13, c: '#4a4a4a', max: 106 });
+      wrap(OPENING.slice(0, n), 96, 14).forEach((l, i) => say(l, 532, 200 + i * 14, { size: 14 }));
+      well(528, 266, 11, 11); if (p > 5.7) { ui.strokeStyle = '#000'; ui.lineWidth = 1.6; ui.beginPath(); ui.moveTo(530, 271); ui.lineTo(533, 274.5); ui.lineTo(537.5, 268); ui.stroke(); }
+      say('typewriter', 544, 272, { size: 13 });
+      say('duration  5 s', 528, 292, { size: 13 });
+    } else say('Click a card to edit it', 528, 124, { size: 13, c: '#000', max: 106 });
     /* ＋ Add card's menu: every kind of card, grouped, and the whole opening at the bottom of "Before the game" */
     if (menuOpen) {
-      const mx = 6, my = 99, mw = 170, rows = [['h', 'The story'], ['🎬 Cutscene'], ['🎮 Gameplay'], ['📝 Text card'], ['h', 'Ways it can go'], ['❓ Choice'], ['🔀 Branch'],
+      const mx = addX, my = 103, mw = 170, rows = [['h', 'The story'], ['🎬 Cutscene'], ['🎮 Gameplay'], ['📝 Text card'], ['h', 'Ways it can go'], ['❓ Choice'], ['🔀 Branch'],
         ['h', 'Before the game'], ['📼 Video'], ['🖼 Logo card'], ['🗂 Main menu'], ['✨ Whole game opening…', 1], ['d'], ['📁 Group']];
       const RH = 13, mh = rows.reduce((h, r) => h + (r[0] === 'd' ? 5 : RH), 6);
       box('rgba(0,0,0,.3)', mx + 3, my + 3, mw, mh); bevel(mx, my, mw, mh);
@@ -1296,9 +1302,8 @@ async function start() {
       }, my + 3);
     }
     const T = DC[3];
-    const ptr = pointer(p, [[0, 260, 300], [0.2, 50, 90], [0.8, 100, 251], [2.9, 420, 380], [3.7, T.x + 70, T.y + 9], [4.3, 560, 200], [6.6, playX + 58, 90], [7.6, playX + 40, 140]]);
+    const ptr = pointer(p, [[0, 260, 300], [0.2, addX + addW / 2, 94], [0.8, addX + 60, 255], [2.9, 420, 390], [3.7, T.x + 70, T.y + 9], [4.3, 560, 222], [6.6, playX + 58, 94], [7.6, playX + 40, 150]]);
     arrow(ptr.x, ptr.y, ptr.down); uiFocus = ptr.x;
-    statusBar([[`${Math.min(6, Math.max(0, Math.floor((p - 1.0) / 0.36) + 1))} cards · opening added`, 420], ['Story', 120], ['', 76]]);
   }
   /* A text card, the way the engine plays one: black, centred, typed in at 18 characters a second. */
   function textCard(q) {
@@ -1309,7 +1314,7 @@ async function start() {
     uiTex.needsUpdate = true;
   }
 
-  /* ---------- Channels 5–8: what's new in v0.4 ---------- */
+  /* ---------- Channels 5–7: building, cutting and filming ---------- */
   const bump = (x, a, b) => (x <= a || x >= b ? 0 : Math.sin(Math.PI * (x - a) / (b - a)));
   /* The pose a filmed shot uses: a slow push in on the figure, u 0→1. */
   function filmPose(u) {
@@ -1318,14 +1323,13 @@ async function start() {
 
   /* Channel 5: build mode. B brings up the hotbar and a see-through green ghost where the crosshair is.
      The bar's order, keys and ghost colour are the engine's own (BUILD_ORDER, BUILD_PIECES, BUILD_GHOST_MAT). */
-  const BUILD = [['select', 'Select', 'C'], ['floor', 'Floor', '1'], ['ceiling', 'Ceiling', '2'], ['water', 'Water', '3'], ['roof', 'Roof'], ['wall', 'Wall', '4'],
-    ['thin2', 'Thin wall', '5'], ['edgewall', 'Edge wall', '6'], ['halfwall', 'Half wall'], ['freewall', 'Free wall'], ['doorway', 'Doorway', '7'], ['window', 'Window', '8'],
-    ['door', 'Door', '9'], ['stairs', 'Stairs'], ['prop', 'Prop', '0'], ['scatter', 'Scatter'], ['paint', 'Paint']];
-  const BUILD_LOOP = [1, 5, 6];   /* Floor, Wall, Thin wall: four seconds each */
+  const BUILD = [['hand', 'Hand', 'C'], ['floor', 'Floor', '1'], ['ceiling', 'Ceiling', '2'], ['water', 'Water', '3'], ['wall', 'Wall', '4'], ['thin2', 'Thin wall', '5'],
+    ['edgewall', 'Edge wall', '6'], ['doorway', 'Doorway', '7'], ['window', 'Window', '8'], ['door', 'Door', '9'], ['prop', 'Prop', '0'], ['all', 'All', 'Tab']];
+  const BUILD_LOOP = [1, 4, 5];   /* Floor, Wall, Thin wall: four seconds each */
   const buildPiece = (p) => BUILD_LOOP[Math.floor(p / 4) % BUILD_LOOP.length];
   function glyph(g, k, x, y) {   /* a 10×10 picture of each piece */
     const r = (a, b, c, d) => g.fillRect(x + a, y + b, c, d);
-    if (k === 'select') { g.beginPath(); g.moveTo(x + 3, y); g.lineTo(x + 3, y + 9); g.lineTo(x + 5, y + 7); g.lineTo(x + 7, y + 10); g.lineTo(x + 8, y + 9); g.lineTo(x + 6, y + 6); g.lineTo(x + 9, y + 6); g.fill(); }
+    if (k === 'hand') { g.beginPath(); g.moveTo(x + 3, y); g.lineTo(x + 3, y + 9); g.lineTo(x + 5, y + 7); g.lineTo(x + 7, y + 10); g.lineTo(x + 8, y + 9); g.lineTo(x + 6, y + 6); g.lineTo(x + 9, y + 6); g.fill(); }
     if (k === 'floor') r(0, 6, 10, 3);
     if (k === 'ceiling') r(0, 1, 10, 3);
     if (k === 'water') { r(0, 3, 3, 1); r(3, 2, 4, 1); r(7, 3, 3, 1); r(0, 7, 3, 1); r(3, 6, 4, 1); r(7, 7, 3, 1); }
@@ -1341,11 +1345,11 @@ async function start() {
     if (k === 'stairs') { r(0, 7, 10, 3); r(3, 4, 7, 3); r(6, 1, 4, 3); }
     if (k === 'prop') { r(1, 2, 8, 8); g.clearRect(x + 2, y + 5, 6, 1); }
     if (k === 'scatter') { r(1, 1, 2, 2); r(6, 2, 2, 2); r(3, 6, 2, 2); r(8, 7, 2, 2); }
-    if (k === 'paint') { r(3, 0, 4, 5); r(4, 5, 2, 5); }
+    if (k === 'all') { r(0, 0, 4, 4); r(6, 0, 4, 4); r(0, 6, 4, 4); r(6, 6, 4, 4); }
   }
   function buildHud(g, w, h, on) {
     /* The page's words cover the lower left of the tube, so the bar shows the five pieces around the one in hand, a little right of centre. */
-    const narrow = portrait(), list = [-2, -1, 0, 1, 2].map((d) => (on + d + BUILD.length) % BUILD.length);
+    const narrow = portrait(), first = Math.max(0, Math.min(BUILD.length - 5, on - 2)), list = [0, 1, 2, 3, 4].map((d) => first + d);
     const sw = 17, sh = 21, cx = narrow ? w / 2 : w * 0.58, x0 = Math.round(cx - (list.length * (sw + 1)) / 2), y0 = Math.round(h * (narrow ? 0.3 : 0.55));
     g.textBaseline = 'top';
     list.forEach((i, n) => {
@@ -1356,14 +1360,14 @@ async function start() {
       g.fillStyle = sel ? '#e8e2cf' : '#cfc8b2'; glyph(g, k, x + 4, y0 + 8);
     });
     g.font = '12px VT323, monospace'; g.textAlign = 'center'; g.fillStyle = '#e8e2cf';
-    g.shadowColor = 'rgba(0,0,0,.8)'; g.shadowOffsetY = 1; g.fillText(BUILD[on][1], cx, y0 - 14); g.shadowColor = 'transparent'; g.textAlign = 'left';
+    g.shadowColor = 'rgba(0,0,0,.8)'; g.shadowOffsetY = 1; g.fillText(BUILD[on][1], x0 + list.indexOf(on) * (sw + 1) + sw / 2, y0 - 14); g.shadowColor = 'transparent'; g.textAlign = 'left';
     g.fillStyle = 'rgba(220,215,200,.55)'; g.fillRect(w / 2 - 1, h / 2 - 6, 2, 12); g.fillRect(w / 2 - 6, h / 2 - 1, 12, 2);
   }
   const ghostMat = new THREE.MeshBasicMaterial({ color: 0x7dff9a, transparent: true, opacity: 0.35, depthWrite: false });
   const ghosts = {
     1: new THREE.Mesh(new THREE.BoxGeometry(1, 0.06, 1), ghostMat),
-    5: new THREE.Mesh(new THREE.BoxGeometry(1, 1.25, 1), ghostMat),
-    6: new THREE.Mesh(new THREE.BoxGeometry(1, 1.25, 0.25), ghostMat),
+    4: new THREE.Mesh(new THREE.BoxGeometry(1, 1.25, 1), ghostMat),
+    5: new THREE.Mesh(new THREE.BoxGeometry(1, 1.25, 0.25), ghostMat),
   };
   Object.values(ghosts).forEach((m) => { m.add(new THREE.LineSegments(new THREE.EdgesGeometry(m.geometry), new THREE.LineBasicMaterial({ color: 0xc8ffd2, transparent: true, opacity: 0.8 }))); m.visible = false; level.add(m); });
   /* Standing in the west corridor, aiming a little way up it: the ghost sits where the crosshair meets the floor. */
@@ -1379,24 +1383,28 @@ async function start() {
   /* Channel 6: the Cutscene Editor. Shot, title, subtitle and a blood spatter go on with each track's ＋, then it plays.
      The track names, clip colours and ＋ menus are the engine's own; the subtitle is a line from its demo project. */
   const CE = { edit: 7.4, play: 7.0, len: 5.0, loop: 12.6 };
-  const CE_TRACKS = [['🎥 Picture'], ['🕺 Action'], ['📦 Props'], ['🔤 Titles'], ['💬 Subtitles'], ['🗣 Voice'], ['🎵 Music'], ['🔊 Sound'], ['🩸 Blood']];
+  const CE_TRACKS = [['🎥 Picture'], ['🕺 Action'], ['🔤 Titles'], ['💬 Subtitles'], ['🗣 Voice'], ['🎵 Music'], ['🔊 Sound'], ['🩸 Blood']];   /* Props only shows once a cutscene has props */
   const CE_SUB = 'it hasn\'t moved.', CE_TITLE = 'NIGHT ONE';
   const ceClips = (p) => [
     p >= 1.3 && { tr: 0, a: 0, b: CE.len, c: '#1d4f8f', l: 'Shot 1' },
-    p >= 2.5 && { tr: 3, a: 0, b: 1.5, c: '#5c3d99', l: CE_TITLE },
-    p >= 3.6 && { tr: 4, a: 2.0, b: 4.4, c: '#2f6f6f', l: CE_SUB, sel: p < 5.9 },
-    p >= 6.0 && { tr: 8, a: 3.6, b: 4.2, c: '#8a1218', l: 'spatter', sel: p < 6.6 },
+    p >= 2.5 && { tr: 2, a: 0, b: 1.5, c: '#5c3d99', l: CE_TITLE },
+    p >= 3.6 && { tr: 3, a: 2.0, b: 4.4, c: '#2f6f6f', l: CE_SUB, sel: p < 5.9 },
+    p >= 6.0 && { tr: 7, a: 3.6, b: 4.2, c: '#8a1218', l: 'spatter', sel: p < 6.6 },
   ].filter(Boolean);
   const cePlayhead = (p) => (p < 3.0 ? 0 : p < 5.4 ? 2.0 : p < 6.6 ? 3.6 : p < 7.0 ? 0 : p - 7.0);
-  const ceShot = document.createElement('canvas'); ceShot.width = W; ceShot.height = H; let ceShotOk = false;
-  function shoot() {   /* Shot 1, as filmed, for the editor's preview */
-    ceShotOk = true; hideGhosts(); blood.visible = false;
-    filmPose(0.4); psxUniforms.uLightPos.value.copy(eye.position); eye.getWorldDirection(psxUniforms.uLightDir.value);
+  /* A still of the level from a pose, for the pictures inside the editor. */
+  function snap(canvas, pose) {
+    hideGhosts(); blood.visible = false;
+    pose(); psxUniforms.uLightPos.value.copy(eye.position); eye.getWorldDirection(psxUniforms.uLightDir.value);
     renderer.setRenderTarget(rt); renderer.render(level, eye); renderer.setRenderTarget(null);
     try { renderer.readRenderTargetPixels(rt, 0, 0, W, H, stillBuf); } catch (e) { return; }
     for (let y = 0; y < H; y++) stillImg.data.set(stillBuf.subarray((H - 1 - y) * W * 4, (H - y) * W * 4), y * W * 4);
-    ceShot.getContext('2d').putImageData(stillImg, 0, 0);
+    canvas.getContext('2d').putImageData(stillImg, 0, 0);
   }
+  /* Stood in front of the figure, reading: the dialogue channel's picture. */
+  const stillPose = () => { eye.position.copy(cell(8, 2.2)).setY(0.55); eye.lookAt(tmpV.copy(cell(8, 4)).setY(0.62)); };
+  const ceShot = document.createElement('canvas'); ceShot.width = W; ceShot.height = H; let ceShotOk = false;
+  function shoot() { ceShotOk = true; snap(ceShot, () => filmPose(0.4)); }   /* Shot 1, as filmed, for the editor's preview */
   /* What the cut puts over the picture at time tt: the title, then the subtitle. */
   function ceWords(g, w, h, tt, scale = 1) {
     const narrow = scale === 1 && portrait();   /* on a phone: smaller, and up clear of the page's words */
@@ -1409,50 +1417,58 @@ async function start() {
   /* Laid out like the real one (bin, view and inspector on top, the timeline under them), squeezed up so the page's words don't hide the tracks. */
   function drawCutscene(p) {
     if (!ceShotOk) shoot();
-    chrome();
-    box('#c0c0c0', 0, 56, UW, UH - 56);
+    chrome('Director');
     /* the bar */
-    say('🎞 Cutscene Editor', 8, 69.5, { size: 15 });
-    let x = 152;
-    const backX = x + 14; x += button(x, 60, '⏮', { down: clicked(p, 6.6), w: 28 }) + 3;
-    const playX = x + 31; x += button(x, 60, p >= 7.0 ? '❚❚ Pause' : '▶ Play', { down: clicked(p, 7.0), w: 62 }) + 6;
+    say('🎞 Opening cutscene', 6, 93.5, { size: 15 });
+    let x = 140;
+    const backX = x + 12; x += button(x, 84, '⏮', { down: clicked(p, 6.6), w: 24, size: 13 }) + 3;
+    const playX = x + 26; x += button(x, 84, p >= 7.0 ? '❚❚ Pause' : '▶ Play', { down: clicked(p, 7.0), w: 52, size: 13 }) + 4;
     const ph = cePlayhead(p), tc = (s) => `${Math.floor(s / 60)}:${(s % 60).toFixed(1).padStart(4, '0')}`;
-    say(`${tc(ph)} / ${tc(p >= 1.3 ? CE.len : 0)}`, x, 69.5, { size: 14 }); x += 92;
-    button(x, 60, '✂ Split');
-    button(UW - 6 - 50, 60, '✓ Done', { w: 50 });
-    button(UW - 6 - 50 - 4 - 104, 60, '⏺ Film New Shot', { w: 104 });
-    box('#808080', 0, 81, UW, 1); box('#fff', 0, 82, UW, 1);
+    box('#000', x, 84, 86, 18); say(`${tc(ph)} / ${tc(p >= 1.3 ? CE.len : 0)}`, x + 43, 93.5, { size: 13, c: '#c8ffc8', align: 'center' }); x += 92;
+    x += button(x, 84, '✂ Split', { size: 13, pad: 10 }) + 4;
+    x += button(x, 84, '☰ Shot List', { size: 13, pad: 10 }) + 2;
+    x += button(x, 84, '－', { w: 18, size: 13 }) + 2; button(x, 84, '＋', { w: 18, size: 13 });
+    button(UW - 6 - 44, 84, '✓ Done', { w: 44, size: 13 });
+    button(UW - 6 - 44 - 4 - 98, 84, '● Film New Shot', { w: 98, size: 13 });
+    box('#808080', 0, 105, UW, 1); box('#fff', 0, 106, UW, 1);
     /* the bin, the view, the inspector */
     const pick = p >= 0.9 && p < 1.3;
-    [['🎥 Shots', 1], ['🎵 Sound']].reduce((bx, [l, on]) => bx + button(bx, 86, l, { on, size: 12 }) + 1, 4);
-    well(4, 106, 118, 70);
-    box(pick ? '#000080' : '#fff', 6, 108, 114, 26);
-    if (ceShotOk) ui.drawImage(ceShot, 8, 110, 29, 22);
-    say('Shot 1', 42, 115, { size: 13, c: pick ? '#fff' : '#000' }); say('5.0 s · filmed', 42, 127, { size: 11, c: pick ? '#c8d4ff' : '#606060' });
+    [['🎥 Shots', 1], ['🎵 Sound'], ['🎭']].reduce((bx, [l, on]) => bx + button(bx, 110, l, { on, size: 12, pad: 8 }) + 1, 4);
+    well(4, 130, 118, 70);
+    box(pick ? '#000080' : '#fff', 6, 132, 114, 26);
+    if (ceShotOk) ui.drawImage(ceShot, 8, 134, 29, 22);
+    say('Shot 1', 42, 139, { size: 13, c: pick ? '#fff' : '#000' }); say('5.0 s · filmed', 42, 151, { size: 11, c: pick ? '#c8d4ff' : '#606060' });
     const clips = ceClips(p);
-    const vx = 128, vy = 86, vw = 120, vh = 90;
+    box('#1a1a1a', 126, 108, 126, 94);
+    const vx = 129, vy = 110, vw = 120, vh = 90;
     box('#000', vx, vy, vw, vh);
     if (clips.some((c) => c.tr === 0) && ph < CE.len) {
       ui.drawImage(ceShot, vx, vy, vw, vh);
       ui.save(); ui.translate(vx, vy); ceWords(ui, vw, vh, ph, 0.6); ui.restore();
     }
-    box('#808080', 254, 86, 1, 90); box('#fff', 255, 86, 1, 90);
+    box('#808080', 254, 108, 1, 94); box('#fff', 255, 108, 1, 94);
     if (p >= 3.6 && p < 5.9) {
-      say('💬 Subtitle', 262, 96, { size: 14 }); say('at 0:02.0 · 2.4 s', 360, 96, { size: 13, c: '#4a4a4a' });
-      well(262, 108, 250, 22);
+      say('💬 Subtitle', 262, 118, { size: 14 }); say('at 0:02.0 · 2.4 s', 360, 118, { size: 13, c: '#4a4a4a' });
+      well(262, 130, 250, 22);
       const n = Math.floor(span(p, 3.8, 5.0) * CE_SUB.length);
-      say(CE_SUB.slice(0, n) + ((p * 3 | 0) % 2 && p < 5.2 ? '|' : ''), 267, 119.5, { size: 14 });
-      button(262, 138, '🎙 Record voice', { size: 13 });
+      say(CE_SUB.slice(0, n) + ((p * 3 | 0) % 2 && p < 5.2 ? '|' : ''), 267, 141.5, { size: 14 });
+      button(262, 160, '🎙 Record voice', { size: 13 });
     } else if (p >= 6.0 && p < 6.6) {
-      say('🩸 Blood', 262, 96, { size: 14 }); say('at 0:03.6 · spatter', 340, 96, { size: 13, c: '#4a4a4a' });
+      say('🩸 Blood', 262, 118, { size: 14 }); say('at 0:03.6 · spatter', 340, 118, { size: 13, c: '#4a4a4a' });
+    } else {
+      say('This cutscene', 262, 118, { size: 14 });
+      well(262, 128, 11, 11); ui.strokeStyle = '#000'; ui.lineWidth = 1.6; ui.beginPath(); ui.moveTo(264, 133); ui.lineTo(267, 136.5); ui.lineTo(271.5, 130); ui.stroke();
+      say('cinema bars (subtitles sit in the bottom one)', 278, 134, { size: 12, max: 356 });
+      well(262, 146, 11, 11); ui.beginPath(); ui.moveTo(264, 151); ui.lineTo(267, 154.5); ui.lineTo(271.5, 148); ui.stroke();
+      say('fade the room\'s own music out while this plays', 278, 152, { size: 12, max: 356 });
     }
     /* the timeline */
-    const ty = 180, LW = 120, tx = 6 + LW, pps = (UW - 6 - tx) / 6, rh = 14, top = ty + 13;
+    const ty = 206, LW = 120, tx = 6 + LW, pps = (UW - 6 - tx) / 6, rh = 14, top = ty + 13;
     box('#2b2b2b', 4, ty, UW - 8, 13 + CE_TRACKS.length * rh + 2);
     box('#3a3a3a', tx, ty, UW - 6 - tx, 12);
     for (let s = 0; s <= 6; s++) { box('#8a8a8a', tx + s * pps, ty + 7, 1, 5); say(`0:0${s}`, tx + s * pps + 3, ty + 5.5, { size: 11, c: '#bdbdbd' }); }
     box('#c0c0c0', 4, ty, LW + 2, 12);
-    const plusDown = [[0, 0.5], [3, 1.8], [4, 3.5], [8, 5.9]];
+    const plusDown = [[0, 0.5], [2, 1.8], [3, 3.5], [7, 5.9]];
     CE_TRACKS.forEach(([l], i) => {
       const y = top + i * rh;
       box('#c0c0c0', 4, y, LW + 2, rh - 1); box('#3a3a3a', tx, y + rh - 1, UW - 6 - tx, 1);
@@ -1478,13 +1494,12 @@ async function start() {
       items.forEach((it, i) => { const on = i === hot; if (on) box('#000080', mx + 3, my + 3 + i * 15, mw - 6, 15); say(it, mx + 9, my + 11 + i * 15, { size: 13, c: on ? '#fff' : '#000' }); });
     };
     if (p >= 0.5 && p < 1.3) pop(0, ['🎥 New shot', '🎭 Framed shot on the cast', '⬛ Black', '🎞 Shot 1'], p >= 0.9 ? 3 : -1);
-    if (p >= 1.8 && p < 2.5) pop(3, ['🔤 Title', '📜 Credits roll'], p >= 2.1 ? 0 : -1);
+    if (p >= 1.8 && p < 2.5) pop(2, ['🔤 Title', '📜 Credits roll'], p >= 2.1 ? 0 : -1);
     const plus = (i) => [4 + LW - 10, top + i * rh + 6];
     const item = (row, i) => [menuAt(row)[0] + 70, menuAt(row)[1] + 11 + i * 15];
-    const ptr = pointer(p, [[0, 320, 200], [0.5, ...plus(0)], [1.2, ...item(0, 3)], [1.8, ...plus(3)], [2.4, ...item(3, 0)],
-      [3.0, tx + 2.0 * pps, ty + 5], [3.5, ...plus(4)], [4.2, 400, 119], [5.4, tx + 3.6 * pps, ty + 5], [5.9, ...plus(8)], [6.6, backX, 69], [7.0, playX, 69], [7.4, 300, 150]]);
+    const ptr = pointer(p, [[0, 320, 220], [0.5, ...plus(0)], [1.2, ...item(0, 3)], [1.8, ...plus(2)], [2.4, ...item(2, 0)],
+      [3.0, tx + 2.0 * pps, ty + 5], [3.5, ...plus(3)], [4.2, 400, 141], [5.4, tx + 3.6 * pps, ty + 5], [5.9, ...plus(7)], [6.6, backX, 93], [7.0, playX, 93], [7.4, 300, 172]]);
     arrow(ptr.x, ptr.y, ptr.down); uiFocus = ptr.x;
-    statusBar([[`Cutscene 1 · ${clips.length} clips · ${(clips.length ? CE.len : 0).toFixed(1)} s`, 420], ['Cutscene Editor', 120], ['', 76]]);
   }
   /* The blood track's spatter: a dark stain that splashes onto the wall beside the figure on cue. */
   const bloodTex = pix(64, (g, n) => {
@@ -1526,7 +1541,7 @@ async function start() {
     g.textAlign = 'right'; g.fillStyle = '#c8ffb0'; g.font = '12px VT323, monospace';
     g.fillText(`f/${LENS[m.lens][3].toFixed(1)}  ${LENS[m.lens][2]}mm`, R, 50); g.textAlign = 'left'; g.shadowColor = 'transparent';
     /* the bar: Record and Keyframe, the three lenses, then Grid, Camera, Drawer and Exit */
-    const slots = [['R', '⏺', m.rec], ['K', '◆', m.keyed], 0, ['1', '24', m.lens === 0], ['2', '50', m.lens === 1], ['3', '85', false], 0, ['', '▦', true], ['', '⚙'], ['Tab', '☰'], 0, ['', '✕']];
+    const slots = [['R', '●', m.rec], ['K', '◆', m.keyed], 0, ['1', '24', m.lens === 0], ['2', '50', m.lens === 1], ['3', '85', false], 0, ['', '▦', true], ['', '⚙'], ['Tab', '☰'], 0, ['', '✕']];
     /* Record, Keyframe and the lenses, clear of the page's words over the lower left of the tube */
     const show = narrow ? [slots[0], slots[1], slots[3], slots[4], slots[5]] : slots.slice(0, 6);
     const sw = 19, gap = 5, sh = 22, tw = show.reduce((a, s) => a + (s ? sw + 1 : gap), 0), y0 = Math.round(h * (narrow ? 0.3 : 0.55));
@@ -1537,7 +1552,7 @@ async function start() {
       g.fillStyle = on ? 'rgba(60,48,18,.85)' : 'rgba(10,12,18,.78)'; g.fillRect(x, y0, sw, sh);
       g.strokeStyle = on ? '#ffd56a' : '#3a4258'; g.lineWidth = 1; g.strokeRect(x + 0.5, y0 + 0.5, sw - 1, sh - 1);
       if (key) { g.font = '8px VT323, monospace'; g.fillStyle = on ? '#ffd56a' : '#9aa3b8'; g.fillText(key, x + 2, y0 + 5); }
-      g.textAlign = 'center'; g.fillStyle = ico === '⏺' ? '#ff4b4b' : '#e8e2cf';
+      g.textAlign = 'center'; g.fillStyle = ico === '●' ? '#ff4b4b' : '#e8e2cf';
       g.font = /\d/.test(ico) ? '12px VT323, monospace' : '11px VT323, monospace'; g.fillText(ico, x + sw / 2, y0 + 14); g.textAlign = 'left';
       x += sw + 1;
     });
@@ -1587,13 +1602,13 @@ async function start() {
   const cam = new THREE.PerspectiveCamera(32, innerWidth / innerHeight, 0.03, 60);
   const TAN = Math.tan(THREE.MathUtils.degToRad(cam.fov / 2));
 
-  const fogU = { uTime: { value: 0 }, uRes: { value: new THREE.Vector2() }, uShift: { value: new THREE.Vector2() }, uGlow: { value: new THREE.Vector3(0.7, 0.5, 1) }, uTint: { value: new THREE.Color(1, 1, 1) } };
+  const fogU = { uTime: { value: 0 }, uRes: { value: new THREE.Vector2() }, uShift: { value: new THREE.Vector2() }, uGlow: { value: new THREE.Vector3(0.7, 0.5, 1) }, uTint: { value: new THREE.Color(1, 1, 1) }, uScreen: { value: new THREE.Color(0.95, 0.62, 0.45) } };
   const sky = new THREE.Mesh(new THREE.BufferGeometry().setAttribute('position', new THREE.Float32BufferAttribute([-1, -1, 0, 3, -1, 0, -1, 3, 0], 3)), new THREE.ShaderMaterial({
     uniforms: fogU, depthTest: false, depthWrite: false,
     vertexShader: /* glsl */`void main(){ gl_Position = vec4(position.xy, 1.0, 1.0); }`,
     fragmentShader: /* glsl */`
       precision highp float;
-      uniform float uTime; uniform vec2 uRes; uniform vec2 uShift; uniform vec3 uGlow; uniform vec3 uTint;
+      uniform float uTime; uniform vec2 uRes; uniform vec2 uShift; uniform vec3 uGlow; uniform vec3 uTint; uniform vec3 uScreen;
       float h(vec2 p){ return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
       float n(vec2 p){ vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f);
         return mix(mix(h(i), h(i + vec2(1.0, 0.0)), f.x), mix(h(i + vec2(0.0, 1.0)), h(i + vec2(1.0, 1.0)), f.x), f.y); }
@@ -1608,15 +1623,18 @@ async function start() {
         float band = smoothstep(1.0, 0.18, uv.y) * (0.55 + 0.45 * smoothstep(0.0, 0.5, uv.y));
         float c = smoothstep(0.42, 0.88, d) * band;
         vec2 g = (uv - uGlow.xy) * vec2(asp, 1.0);
-        float glow = uGlow.z * exp(-dot(g, g) * 1.6);
+        /* The only light is the TV: the fog takes the colour of what's on its screen and falls off away from the set. */
+        float glow = uGlow.z * exp(-dot(g, g) * 2.6);
         vec3 base = mix(vec3(0.062, 0.047, 0.052), vec3(0.028, 0.021, 0.025), uv.y);
-        vec3 cloud = mix(vec3(0.33, 0.26, 0.33), vec3(0.88, 0.79, 0.86), clamp(glow * 0.9 + c * 0.3, 0.0, 1.0));
-        vec3 col = base * mix(vec3(1.0), uTint, 0.7) + (cloud * c * (0.42 + glow * 1.15) + vec3(0.18, 0.13, 0.17) * glow * 0.32) * uTint;
+        vec3 lit = mix(vec3(0.88, 0.79, 0.86), uScreen, 0.6);
+        vec3 cloud = mix(vec3(0.2, 0.17, 0.19), lit, clamp(glow * 0.95 + c * 0.15, 0.0, 1.0));
+        vec3 col = base * mix(vec3(1.0), uTint, 0.7) + (cloud * c * (0.16 + glow * 1.3) + uScreen * glow * 0.09) * uTint;
         gl_FragColor = vec4(col, 1.0);
       }`,
   }));
   sky.frustumCulled = false; sky.renderOrder = -10;
   room.add(sky);
+  const onScreen = new THREE.Color(), white = new THREE.Color(1, 1, 1);
 
   room.add(new THREE.HemisphereLight(0x9c8aa8, 0x160f12, 0.75));
   const key = new THREE.DirectionalLight(0xffe2c6, 2.4); key.position.set(-3, 4, 3.5); room.add(key);
@@ -1898,7 +1916,7 @@ async function start() {
         } else {
           path.getPointAt(0.3, v3); path.getPointAt(0.312, ahead);
           eye.position.copy(v3); eye.lookAt(ahead.x, 0.55, ahead.z);
-          if (c.kind === 'build') { buildPose(5, 0); over = (gg, w, h) => buildHud(gg, w, h, 5); }
+          if (c.kind === 'build') { buildPose(4, 0); over = (gg, w, h) => buildHud(gg, w, h, 4); }
         }
         psxUniforms.uLightPos.value.copy(eye.position); eye.getWorldDirection(psxUniforms.uLightDir.value);
         renderer.setRenderTarget(rt); renderer.render(level, eye); renderer.setRenderTarget(null);
@@ -2031,13 +2049,15 @@ async function start() {
     fogU.uShift.value.set(cam.position.x * 0.06, cam.position.y * 0.05);
     fogU.uTime.value = clock;
     fogU.uTint.value.copy(cur.tint);
+    onScreen.set(kind === 'nosignal' ? 0x9c94d8 : view === 'ui' ? 0x9aa4c4 : 0xf09e72);   /* roughly what the picture is: brick, the grey editor, colour bars */
+    fogU.uScreen.value.lerp(onScreen, reduced ? 1 : 1 - Math.pow(0.05, dt));
 
     screenU.uTime.value = clock;
     screenU.uPower.value = cur.power;
     screenU.uOsdOn.value = over ? 1 : cur.osd;
     screenU.uNoise.value = Math.min(1, (kind === 'nosignal' ? 0.6 : cur.noise) + burst) * (reduced ? 0.4 : 1);
     halo.material.opacity = 0.2 * cur.halo * cur.power;
-    screenLight.intensity = 1.6 * cur.power;
+    screenLight.intensity = 1.6 * cur.power; screenLight.color.copy(fogU.uScreen.value).lerp(white, 0.45);
     led.material.color.setHex(cur.power > 0.5 ? 0x7dff9a : 0xff5040);
     dimmer.style.opacity = cur.dim.toFixed(3);
 
