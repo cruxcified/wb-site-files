@@ -189,17 +189,21 @@ html.wbgames-booting, html.wbgames-booting body { overflow: hidden !important; }
 #wbgames .work-top { display: flex; justify-content: space-between; align-items: baseline; }
 #wbgames.osd-on .work-top { visibility: hidden; }
 #wbgames .counter { font-family: var(--vcr); font-size: 28px; letter-spacing: .04em; text-shadow: var(--glow); white-space: nowrap; }
-#wbgames .work-bottom { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 18px 32px; align-items: end; }
-#wbgames .work-bottom h3 { font-size: clamp(36px, 4.8vw, 76px); }
-#wbgames .work-bottom h3 small { display: block; font-style: italic; font-size: 19px; color: var(--dim); margin-bottom: 8px; letter-spacing: 0; }
-#wbgames .work-bottom p { max-width: 50ch; margin-top: 10px; font-size: 18px; }
-#wbgames .work-bottom { position: relative; isolation: isolate; }
-#wbgames .work-bottom h3, #wbgames .work-bottom p, #wbgames .work-bottom small { text-shadow: 0 1px 2px #000, 0 0 14px rgba(0,0,0,.9); }
-#wbgames .work-bottom h3 small { color: #d8d8d8; }
-#wbgames .controls { display: flex; align-items: center; gap: 18px; }
-#wbgames .controls button { width: 52px; height: 52px; border-radius: 50%; border: 1px solid var(--dim); font-size: 20px; display: grid; place-items: center; text-shadow: var(--glow); transition: border-color .2s, background .2s; }
-#wbgames .controls button:hover { border-color: var(--bone); background: rgba(243, 235, 225, .08); }
-#wbgames .controls .u { font-size: 20px; text-shadow: var(--glow); }
+/* No words over the picture any more: just the TV, and a remote's worth of buttons along the bottom. */
+#wbgames .work-sticky { cursor: pointer; touch-action: pan-y; background: linear-gradient(to top, rgba(6, 5, 6, .6), rgba(6, 5, 6, 0) 22%); }
+#wbgames .work-bottom { display: flex; justify-content: center; }
+#wbgames .remote { display: flex; align-items: center; gap: clamp(12px, 3vw, 36px); }
+#wbgames .remote button { flex: none; white-space: nowrap; font-family: var(--vcr); font-size: 24px; line-height: 1; letter-spacing: .04em; padding: 9px 14px 8px; border: 1px solid rgba(243, 235, 225, .3); border-radius: 4px; background: rgba(6, 5, 6, .55);
+  text-shadow: var(--glow); transition: border-color .2s, background .2s; }
+#wbgames .remote button:hover, #wbgames .remote button:focus-visible { border-color: var(--bone); background: rgba(243, 235, 225, .1); }
+#wbgames .remote .hint { font-family: var(--vcr); font-size: 19px; letter-spacing: .03em; color: #d8d8d8; text-align: center; text-shadow: 0 1px 2px #000, 0 0 12px #000; }
+#wbgames .remote .touch { display: none; }
+@media (pointer: coarse) { #wbgames .remote .fine { display: none; } #wbgames .remote .touch { display: inline; } }
+#wbgames .vh { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+#wbgames .nogl { display: none; font-size: 18px; color: var(--dim); }
+#wbgames:not(.webgl) .remote { display: none; }
+#wbgames:not(.webgl) .nogl { display: block; }
+#wbgames:not(.webgl) .work-sticky { cursor: auto; }
 
 /* About */
 #wbgames .statement { padding-block: clamp(120px, 18vh, 210px) clamp(80px, 12vh, 140px); }
@@ -362,7 +366,7 @@ html.wbgames-booting #wbgames .vcr, #wbgames .hero .osd { display: none; }
 @media (max-width: 760px) { #wbgames .vcr { font-size: 18px; } }
 @media (prefers-reduced-motion: reduce) { #wbgames .vcr-tl b { animation: none; } }
 /* The fade behind the channel copy carries on below the sticky screen, so it has no hard edge when the next section scrolls up. */
-#wbgames .work-sticky::after { content: ""; position: absolute; left: 0; right: 0; top: 100%; height: 45vh; pointer-events: none; background: linear-gradient(rgba(6, 5, 6, .9), transparent); }
+#wbgames .work-sticky::after { content: ""; position: absolute; left: 0; right: 0; top: 100%; height: 45vh; pointer-events: none; background: linear-gradient(rgba(6, 5, 6, .6), transparent); }
 /* Game info sits beside the case you pick (below it on phones), not under the shelf. */
 #wbgames.webgl .case-stage.shelf .game-list { position: absolute; z-index: 2; right: 9%; top: 50%; transform: translateY(-50%); width: min(38%, 480px); margin: 0; cursor: auto;
   opacity: 0; visibility: hidden; transition: opacity .35s, visibility 0s .35s; }
@@ -379,22 +383,7 @@ html.wbgames-booting #wbgames .vcr, #wbgames .hero .osd { display: none; }
 /* 2026-11-26: the fade starts below the nav's text, so scrolled copy can't show through it. The footer sits above the fixed REC / PLAY line. */
 #wbgames .contact { padding-bottom: calc(var(--frame) + 18px + 1.6 * clamp(20px, 1.8vw, 28px) + 24px); }
 #wbgames .photo { border: 0; border-radius: 0; background: none; }
-#wbgames .controls button { border-color: transparent; }
-#wbgames .controls button:hover { border-color: var(--dim); background: none; }
 
-/* Selected Work filmstrip (after shader.se's project carousel) */
-#wbgames .film { grid-column: 1 / -1; display: flex; gap: 10px; width: fit-content; max-width: 100%; overflow-x: auto; scrollbar-width: none; padding: 16px 12px; background:
-  radial-gradient(circle, transparent 3px, #0b090a 3.5px) 0 0 / 16px 12px repeat-x, radial-gradient(circle, transparent 3px, #0b090a 3.5px) 0 100% / 16px 12px repeat-x, #0b090a;
-  background-color: #0b090a; box-shadow: 0 0 0 1px var(--line), 0 20px 50px rgba(0, 0, 0, .55); transform: rotate(-1.2deg); }
-#wbgames .film::-webkit-scrollbar { display: none; }
-#wbgames .film .frame { flex: none; display: grid; gap: 6px; padding: 0; text-align: left; opacity: .5; transition: opacity .25s, transform .25s; }
-#wbgames .film .frame:hover, #wbgames .film .frame:focus-visible { opacity: .85; }
-#wbgames .film .frame.on { opacity: 1; transform: translateY(-3px); }
-#wbgames .film canvas { width: clamp(84px, 9vw, 132px); aspect-ratio: 4 / 3; height: auto; display: block; background: repeating-linear-gradient(to bottom, #1a1517 0 2px, #141012 2px 4px); image-rendering: pixelated; outline: 1px solid rgba(243, 235, 225, .18); }
-#wbgames .film .frame.on canvas { outline: 2px solid var(--bone); box-shadow: 0 0 18px rgba(255, 220, 190, .35); }
-#wbgames .film span { font-family: var(--vcr); font-size: 15px; letter-spacing: .04em; color: var(--dim); white-space: nowrap; max-width: clamp(84px, 9vw, 132px); overflow: hidden; text-overflow: ellipsis; }
-#wbgames .film .frame.on span { color: var(--bone); }
-@media (prefers-reduced-motion: reduce) { #wbgames .film .frame.on { transform: none; } }
 
 @media (max-width: 980px) {
   #wbgames .nav-links { display: none; }
@@ -418,8 +407,9 @@ html.wbgames-booting #wbgames .vcr, #wbgames .hero .osd { display: none; }
   #wbgames .hero { align-items: flex-start; padding-top: calc(var(--frame) + 110px); }
   #wbgames .hero .wrap { padding-left: max(var(--gutter), env(safe-area-inset-left, 0px)); }
   #wbgames .hero h1 { font-size: clamp(38px, 10.5vw, 52px); }
-  #wbgames .work-bottom { grid-template-columns: minmax(0, 1fr); }
-  #wbgames .work-sticky { background: linear-gradient(to top, rgba(6, 5, 6, .88), rgba(6, 5, 6, .35) 45%, transparent 68%); }
+  #wbgames .remote { gap: 10px; }
+  #wbgames .remote button { font-size: 20px; padding: 8px 9px 7px; }
+  #wbgames .remote .hint { font-size: 16px; line-height: 1.15; }
 }
 @media (max-width: 430px) {
   #wbgames .nav-right .call span { display: none; }
@@ -499,20 +489,17 @@ html.wbgames-booting #wbgames .vcr, #wbgames .hero .osd { display: none; }
     <div class="work-sticky">
       <div class="wrap work-top">
         <p class="kicker"><b>The Engine</b></p>
-        <span class="counter" id="wbgames-counter">CH 01 / 04</span>
+        <span class="counter" id="wbgames-counter">CH 01 / 14</span>
       </div>
+      <!-- Just the TV: the channel changes with the arrow keys, a click on the picture, or a swipe sideways on a phone. -->
       <div class="wrap work-bottom">
-        <div aria-live="polite">
-          <h3 id="wbgames-ch-title"><small id="wbgames-ch-mode">Explore mode</small>PSX Engine</h3>
-          <p id="wbgames-ch-desc">Walk the map you painted, at 320×240 with fog and a flashlight.</p>
+        <p class="vh" id="wbgames-ch-name" aria-live="polite">Channel 1: Direct the Scenes</p>
+        <p class="nogl">The TV needs WebGL. Every channel is on a tape below.</p>
+        <div class="remote">
+          <button type="button" id="wbgames-prev" aria-label="Previous channel">◀ CH</button>
+          <p class="hint"><span class="fine">Click the TV or press ← → to change the channel</span><span class="touch">Swipe or tap to change channel</span></p>
+          <button type="button" id="wbgames-next" aria-label="Next channel">CH ▶</button>
         </div>
-        <div class="controls">
-          <button type="button" id="wbgames-prev" aria-label="Previous channel">←</button>
-          <a class="u" id="wbgames-view" href="#engine">View Project</a>
-          <button type="button" id="wbgames-next" aria-label="Next channel">→</button>
-        </div>
-        <!-- The channels as a strip of film. Each frame fills with a still from its channel once you've watched it. -->
-        <div class="film" id="wbgames-film" role="group" aria-label="Channels"></div>
       </div>
     </div>
   </section>
@@ -526,18 +513,20 @@ html.wbgames-booting #wbgames .vcr, #wbgames .hero .osd { display: none; }
         <p>PSX Engine is the horror engine and editor I build my games in, made with three.js. It’s in development, at v0.5.76, runs as a desktop app on Windows and Mac, and exports a finished game ready for itch.io.</p>
       </div>
       <ol class="rows">
-        <li><span>CH 01</span><h3>Render It Like a PS1</h3><p>320×240, vertex snapping, affine textures, 15-bit dithered colour, fog, baked lighting and a flashlight. <a class="watch" href="#work" data-ch="1">▶ Watch it on CH 01</a></p></li>
+        <li><span>CH 01</span><h3>Direct the Scenes</h3><p>Lay the whole game out as cards in Director mode, write each beat like a walkthrough, and see what ends every stretch of play. <a class="watch" href="#work" data-ch="1">▶ Watch it on CH 01</a></p></li>
         <li><span>CH 02</span><h3>Paint the Map</h3><p>Lay out the level on a grid, then add stairs up to another room, half walls and railings. The engine turns it into a space you can walk. <a class="watch" href="#work" data-ch="2">▶ Watch it on CH 02</a></p></li>
-        <li><span>CH 03</span><h3>Write the Dialogue</h3><p>Type a line once and show it as a dialogue box or a passing thought. NPCs have animated models, and choices branch. <a class="watch" href="#work" data-ch="3">▶ Watch it on CH 03</a></p></li>
-        <li><span>CH 04</span><h3>Direct the Scenes</h3><p>Lay the whole game out as cards in Director mode, write each beat like a walkthrough, and see what ends every stretch of play. <a class="watch" href="#work" data-ch="4">▶ Watch it on CH 04</a></p></li>
-        <li><span>CH 05</span><h3>Build From Inside the Game</h3><p>Press B and a hotbar of pieces comes up: floors, walls, doorways, doors, stairs, roads and props. A see-through ghost shows where each one goes, and props know what they are, so a chair you place can be sat in. <a class="watch" href="#work" data-ch="5">▶ Watch it on CH 05</a></p></li>
-        <li><span>CH 06</span><h3>Cut the Scenes</h3><p>A Cutscene Editor with a timeline for picture, action, props, titles, subtitles, voice, music, sound and blood. Every track has a ＋ that adds at the playhead. <a class="watch" href="#work" data-ch="6">▶ Watch it on CH 06</a></p></li>
-        <li><span>CH 07</span><h3>Film It in Movie Mode</h3><p>Fly the camera, switch between wide, medium and close lenses, set keyframes and record the shot, with VHS tape and cinema bars if you want them. <a class="watch" href="#work" data-ch="7">▶ Watch it on CH 07</a></p></li>
-        <li><span aria-hidden="true"></span><h3>Something’s Coming</h3><p>Monsters that hunt you, swing or shoot, with a presence sound that gets louder as they close in and a chase track. Your heart pounds as your health drops. Play it in first person or over the shoulder.</p></li>
-        <li><span aria-hidden="true"></span><h3>Out in the Snow</h3><p>Skies, fog and weather. Snow that drifts past the car and takes your footprints. Lay a road, park a car on it and drive it on a loop.</p></li>
-        <li><span aria-hidden="true"></span><h3>Light It, Score It, Bleed It</h3><p>Modes of their own for lights, sound and blood. The Audio Studio works like a DAW, with tracks, fades and a PS1 sampler preset.</p></li>
-        <li><span aria-hidden="true"></span><h3>Give Them Chores</h3><p>Objectives with counters: carry the trash to the bin, the dishes to the sink, switch the lights off, put a record on.</p></li>
-        <li><span aria-hidden="true"></span><h3>Box It Up</h3><p>Design the title screen and the pause menu, including a mantel clock that ticks by firelight. Then the PS1 case art, and one Export Game that leaves out every file the game never uses.</p></li>
+        <li><span>CH 03</span><h3>Build From Inside the Game</h3><p>Press B and a hotbar of pieces comes up: floors, walls, doorways, doors, stairs, roads and props. A see-through ghost shows where each one goes, and props know what they are, so a chair you place can be sat in. <a class="watch" href="#work" data-ch="3">▶ Watch it on CH 03</a></p></li>
+        <li><span>CH 04</span><h3>Light It</h3><p>Light mode has its own bar: bulb, tube, fire, torch, street lamp, TV glow, police lights and headlights, each with its own colour, reach and flicker. Flip a switch group to see the room both ways. <a class="watch" href="#work" data-ch="4">▶ Watch it on CH 04</a></p></li>
+        <li><span>CH 05</span><h3>Weather</h3><p>Skies, fog and weather. Snow that drifts past the car and takes your footprints. Lay a road, park a car on it and drive it on a loop. <a class="watch" href="#work" data-ch="5">▶ Watch it on CH 05</a></p></li>
+        <li><span>CH 06</span><h3>Write the Dialogue</h3><p>Type a line once and show it as a dialogue box or a passing thought. NPCs have animated models, and choices branch. <a class="watch" href="#work" data-ch="6">▶ Watch it on CH 06</a></p></li>
+        <li><span>CH 07</span><h3>Smart Objectives</h3><p>Objectives that watch the game. They count as you switch the lights off, walk into a room, answer yes or put the dishes in the sink, and a finished one can unlock a door or move the story on. <a class="watch" href="#work" data-ch="7">▶ Watch it on CH 07</a></p></li>
+        <li><span>CH 08</span><h3>Something’s Coming</h3><p>Monsters that hunt you, swing or shoot, with a presence sound that gets louder as they close in and a chase track. Your heart pounds as your health drops. Play it in first person or over the shoulder. <a class="watch" href="#work" data-ch="8">▶ Watch it on CH 08</a></p></li>
+        <li><span>CH 09</span><h3>Bleed It</h3><p>Blood mode puts the brush in your hand: splat, spray, drips, pool, smear, handprint and trail, fresh, dark or dried. It goes on walls, floors, doors, props and characters, and moves with whoever it’s on. <a class="watch" href="#work" data-ch="9">▶ Watch it on CH 09</a></p></li>
+        <li><span>CH 10</span><h3>Cut the Scenes</h3><p>A Cutscene Editor with a timeline for picture, action, props, titles, subtitles, voice, music, sound and blood. Every track has a ＋ that adds at the playhead. <a class="watch" href="#work" data-ch="10">▶ Watch it on CH 10</a></p></li>
+        <li><span>CH 11</span><h3>Film It in Movie Mode</h3><p>Fly the camera, switch between wide, medium and close lenses, set keyframes and record the shot, with VHS tape and cinema bars if you want them. <a class="watch" href="#work" data-ch="11">▶ Watch it on CH 11</a></p></li>
+        <li><span>CH 12</span><h3>Score It</h3><p>The Audio Studio works like a DAW: drag sounds onto tracks, trim, loop and fade them, then run the mix through a preset like PS1 sampler, Haunted or Radio. Every room gets its own ambience and music. <a class="watch" href="#work" data-ch="12">▶ Watch it on CH 12</a></p></li>
+        <li><span>CH 13</span><h3>Render It Like a PS1</h3><p>320×240, vertex snapping, affine textures, 15-bit dithered colour, fog, baked lighting and a flashlight. <a class="watch" href="#work" data-ch="13">▶ Watch it on CH 13</a></p></li>
+        <li><span>CH 14</span><h3>Box It Up</h3><p>Design the title screen and the pause menu, including a mantel clock that ticks by firelight. Then the PS1 case art, and one Export Game that leaves out every file the game never uses. <a class="watch" href="#work" data-ch="14">▶ Watch it on CH 14</a></p></li>
       </ol>
       <a class="cue" href="#games"><i aria-hidden="true">☟</i>Scroll to Games<i aria-hidden="true">☟</i></a>
     </div>
@@ -749,26 +738,29 @@ html.wbgames-booting #wbgames .vcr, #wbgames .hero .osd { display: none; }
 </script>
 
 <script type="module">
-/* ---------- Channels for "Selected work" ----------
-   kind: 'walk' (live 3D level), 'editor' (the map being painted), 'dialogue' (a dialogue graph, then it playing),
-   'director' (Director Mode laying out an opening, then it playing), 'build' (build mode's hotbar over the level),
-   'cutscene' (the Cutscene Editor's timeline, then the cut playing), 'movie' (Movie Mode filming a shot)
+/* ---------- Channels for "The Engine" ----------
+   One per tape in "What's on the Tapes", in the same order (the order a game gets made). name is the tape's title.
+   kind: 'director' (Director Mode laying out an opening, then it playing), 'editor' (the map being painted),
+   'build' (build mode's hotbar over the level), 'light' (Light mode placing lamps), 'weather' (Sky mode, then snow),
+   'dialogue' (a thing's Dialogue tab, then it playing), 'objectives' (objectives counting as the lights go off),
+   'monster' (something coming down the corridor), 'blood' (Blood mode's brush), 'cutscene' (the Cutscene Editor, then the cut),
+   'movie' (Movie Mode filming a shot), 'studio' (the Audio Studio), 'walk' (the live 3D level), 'boxed' (title screen, case art, Export Game)
    or 'nosignal' (colour bars + static). */
 const CHANNELS = [
-  { kind: 'walk', title: 'PSX Engine', mode: 'Walk mode', href: '#engine',
-    desc: 'Walk the map you painted, at 320×240 with fog and a flashlight.' },
-  { kind: 'editor', title: 'PSX Engine', mode: 'Map editor', href: '#engine',
-    desc: 'Paint the level on a grid. This is the same map you just walked through.' },
-  { kind: 'dialogue', title: 'PSX Engine', mode: 'Writing dialogue', href: '#engine',
-    desc: 'Type the line into her Dialogue tab, choices and all, and pick a dialogue box or a passing thought. Then the same conversation in the game.' },
-  { kind: 'director', title: 'PSX Engine', mode: 'Director mode', href: '#engine',
-    desc: 'Lay out the opening on a corkboard: intro, logo, menu, a text card, a cutscene, then the first room. Then play it.' },
-  { kind: 'build', title: 'PSX Engine', mode: 'Build mode', href: '#engine',
-    desc: 'Press B and build from inside the game. The hotbar holds the pieces, and a see-through ghost shows where each one lands.' },
-  { kind: 'cutscene', title: 'PSX Engine', mode: 'Cutscene Editor', href: '#engine',
-    desc: 'Every track has a ＋. Drop a shot, a title, a subtitle and a blood spatter at the playhead, then play it.' },
-  { kind: 'movie', title: 'PSX Engine', mode: 'Movie Mode', href: '#engine',
-    desc: 'Pick a lens, frame the shot on the thirds grid, then press R and record the camera as you fly.' },
+  { kind: 'director', name: 'Direct the Scenes' },
+  { kind: 'editor', name: 'Paint the Map' },
+  { kind: 'build', name: 'Build From Inside the Game' },
+  { kind: 'light', name: 'Light It' },
+  { kind: 'weather', name: 'Weather' },
+  { kind: 'dialogue', name: 'Write the Dialogue' },
+  { kind: 'objectives', name: 'Smart Objectives' },
+  { kind: 'monster', name: 'Something’s Coming' },
+  { kind: 'blood', name: 'Bleed It' },
+  { kind: 'cutscene', name: 'Cut the Scenes' },
+  { kind: 'movie', name: 'Film It in Movie Mode' },
+  { kind: 'studio', name: 'Score It' },
+  { kind: 'walk', name: 'Render It Like a PS1' },
+  { kind: 'boxed', name: 'Box It Up' },
 ];
 /* The level both channels use. # wall, . floor, F the figure. */
 const MAP = [
@@ -790,32 +782,38 @@ const bootTo = (p) => { try { window.__wbgamesBoot(p); } catch (e) {} };
 if (root && !window.__wbgamesEditor) start().catch((err) => { console.warn('[wbgames] 3D disabled:', err); root.classList.remove('webgl'); bootTo(1); });
 
 async function start() {
-  let channel = 0, burst = 0;
+  let channel = 0, burst = 0, bannerAt = -1e9;
   const $ = (id) => document.getElementById(id);
-  let setChannelText = () => {
-    const c = CHANNELS[channel];
-    $('wbgames-ch-mode').textContent = c.mode;
-    $('wbgames-ch-title').lastChild.textContent = c.title;
-    $('wbgames-ch-desc').innerHTML = c.ph ? `<mark class="ph">${c.desc}</mark>` : c.desc;
-    $('wbgames-view').setAttribute('href', c.href);
-    $('wbgames-counter').textContent = `CH ${String(channel + 1).padStart(2, '0')} / ${String(CHANNELS.length).padStart(2, '0')}`;
+  const pad2 = (n) => String(n).padStart(2, '0');
+  const setChannelText = () => {
+    $('wbgames-counter').textContent = `CH ${pad2(channel + 1)} / ${pad2(CHANNELS.length)}`;
+    $('wbgames-ch-name').textContent = `Channel ${channel + 1}: ${CHANNELS[channel].name}`;
   };
-  const go = (d) => { channel = (channel + d + CHANNELS.length) % CHANNELS.length; burst = 1; setChannelText(); requestRender(); };
+  const tune = (i) => { channel = (i + CHANNELS.length) % CHANNELS.length; burst = 1; bannerAt = performance.now(); setChannelText(); requestRender(); };
+  const go = (d) => tune(channel + d);
   /* "Watch it on CH 0x" in the engine list jumps back up to the TV on that channel. */
-  root.querySelectorAll('.rows .watch[data-ch]').forEach((a) => a.addEventListener('click', () => { channel = Math.min(CHANNELS.length, Math.max(1, +a.dataset.ch)) - 1; burst = 1; setChannelText(); requestRender(); }));
-  $('wbgames-prev').addEventListener('click', () => go(-1));
-  $('wbgames-next').addEventListener('click', () => go(1));
-  document.getElementById('work').addEventListener('keydown', (e) => { if (e.key === 'ArrowLeft') go(-1); if (e.key === 'ArrowRight') go(1); });
-  /* Filmstrip: one frame per channel, clicking a frame tunes the TV to it. */
-  const film = $('wbgames-film'), filmFrames = CHANNELS.map((c, i) => {
-    const b = document.createElement('button'); b.type = 'button'; b.className = 'frame';
-    b.setAttribute('aria-label', `Channel ${i + 1}: ${c.mode}`);
-    b.innerHTML = `<canvas width="160" height="120" aria-hidden="true"></canvas><span>CH ${String(i + 1).padStart(2, '0')} · ${c.mode}</span>`;
-    b.addEventListener('click', () => { if (channel !== i) { channel = i; burst = 1; setChannelText(); requestRender(); } });
-    film.appendChild(b); return b;
+  root.querySelectorAll('.rows .watch[data-ch]').forEach((a) => a.addEventListener('click', () => tune(Math.min(CHANNELS.length, Math.max(1, +a.dataset.ch)) - 1)));
+  $('wbgames-prev').addEventListener('click', (e) => { e.stopPropagation(); go(-1); });
+  $('wbgames-next').addEventListener('click', (e) => { e.stopPropagation(); go(1); });
+  /* Like sitting at the TV: the arrow keys, a click on the picture, or a swipe sideways on a phone changes the channel. */
+  const workSec = $('work'), sticky = workSec.querySelector('.work-sticky');
+  const watching = () => { const r = workSec.getBoundingClientRect(); return r.top <= innerHeight * 0.5 && r.bottom >= innerHeight * 0.5; };
+  addEventListener('keydown', (e) => {
+    if (e.defaultPrevented || e.altKey || e.ctrlKey || e.metaKey || (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight')) return;
+    if (!root.classList.contains('webgl') || e.target.closest?.('input, textarea, select, [contenteditable], .case-stage') || !watching()) return;
+    e.preventDefault(); go(e.key === 'ArrowLeft' ? -1 : 1);
   });
-  const setChannelTextBase = setChannelText;
-  setChannelText = () => { setChannelTextBase(); filmFrames.forEach((f, i) => { f.classList.toggle('on', i === channel); f.setAttribute('aria-pressed', String(i === channel)); }); };
+  let sx = 0, sy = 0, swiped = false;
+  sticky.addEventListener('pointerdown', (e) => { sx = e.clientX; sy = e.clientY; swiped = false; });
+  sticky.addEventListener('pointerup', (e) => {
+    const dx = e.clientX - sx, dy = e.clientY - sy;
+    if (e.pointerType !== 'mouse' && Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy) * 1.2) { swiped = true; go(dx < 0 ? 1 : -1); }
+  });
+  sticky.addEventListener('click', (e) => {
+    if (swiped) { swiped = false; return; }
+    if (!root.classList.contains('webgl') || e.target.closest('a, button')) return;
+    go(1);
+  });
   setChannelText();
 
   /* CRT toggle (remembered per visitor): page scanlines and grain, plus the TV's own tube effect. */
@@ -855,6 +853,12 @@ async function start() {
   renderer.toneMappingExposure = 1.05;
   stage.appendChild(renderer.domElement);
 
+  /* VT323 draws ff, fi and fl as one glyph that comes out as a block, so a zero-width non-joiner keeps the letters apart. */
+  function apart(c) {
+    const fill = c.fillText.bind(c), measure = c.measureText.bind(c), fix = (s) => String(s).replace(/f(?=[fil])/g, 'f\u200c');
+    c.fillText = (s, ...a) => fill(fix(s), ...a); c.measureText = (s) => measure(fix(s));
+  }
+
   /* ---------- Channel 1: the level, rendered the way PSX Engine draws it ---------- */
   const W = 320, H = 240;
   const rt = new THREE.WebGLRenderTarget(W, H, { minFilter: THREE.NearestFilter, magFilter: THREE.NearestFilter, depthBuffer: true });
@@ -886,12 +890,15 @@ async function start() {
   const figTex = pix(16, (g, n) => { g.fillStyle = '#0b0a0c'; g.fillRect(0, 0, n, n); g.fillStyle = '#d8d2c4'; g.fillRect(5, 4, 2, 2); g.fillRect(9, 4, 2, 2); });
   const coatTex = pix(16, (g, n) => { g.fillStyle = '#0b0a0c'; g.fillRect(0, 0, n, n); g.fillStyle = '#16131a'; for (let i = 0; i < 12; i++) g.fillRect(rnd() * n | 0, rnd() * n | 0, 1, 2); });   /* the eyes go on the head only */
 
-  const psxUniforms = { uSnap: { value: new THREE.Vector2(W / 2, H / 2) }, uLightPos: { value: new THREE.Vector3() }, uLightDir: { value: new THREE.Vector3() }, uFog: { value: new THREE.Color(0x07070a) } };
+  const psxUniforms = { uSnap: { value: new THREE.Vector2(W / 2, H / 2) }, uLightPos: { value: new THREE.Vector3() }, uLightDir: { value: new THREE.Vector3() }, uFog: { value: new THREE.Color(0x07070a) },
+    uAmb: { value: 0.14 }, uFlash: { value: 1 }, uFogK: { value: 1 },   /* ambient, the flashlight, and how thick the fog is */
+    uLampP: { value: [new THREE.Vector3(), new THREE.Vector3(), new THREE.Vector3()] }, uLampC: { value: [new THREE.Vector3(), new THREE.Vector3(), new THREE.Vector3()] } };   /* up to three placed lights */
   const psxMat = (map) => new THREE.ShaderMaterial({
     uniforms: { ...psxUniforms, uMap: { value: map } },
     vertexShader: /* glsl */`
-      uniform vec2 uSnap; uniform vec3 uLightPos; uniform vec3 uLightDir;
-      varying vec3 vUvw; varying float vLight; varying float vFog;
+      uniform vec2 uSnap; uniform vec3 uLightPos; uniform vec3 uLightDir; uniform float uAmb; uniform float uFlash; uniform float uFogK;
+      uniform vec3 uLampP[3]; uniform vec3 uLampC[3];
+      varying vec3 vUvw; varying float vLight; varying float vFog; varying vec3 vLamp;
       void main(){
         mat4 m = modelMatrix;
         #ifdef USE_INSTANCING
@@ -902,8 +909,13 @@ async function start() {
         vec3 L = uLightPos - wp.xyz; float d = length(L); L /= d;
         float spot = smoothstep(0.80, 0.97, dot(-L, uLightDir));
         float lam = max(dot(n, L), 0.0);
-        vLight = 0.14 + lam * (0.42 + spot * 2.2) / (1.0 + 0.12 * d * d);
-        vFog = smoothstep(2.2, 9.0, d);
+        vLight = uAmb + lam * (0.42 + spot * 2.2) * uFlash / (1.0 + 0.12 * d * d);
+        vLamp = vec3(0.0);
+        for (int i = 0; i < 3; i++) {
+          vec3 Lq = uLampP[i] - wp.xyz; float dq = max(length(Lq), 0.001);
+          vLamp += uLampC[i] * (0.3 + 0.7 * max(dot(n, Lq / dq), 0.0)) / (1.0 + 1.4 * dq * dq);
+        }
+        vFog = smoothstep(2.2, 9.0, d * uFogK);
         vec4 clip = projectionMatrix * viewMatrix * wp;
         clip.xy = floor(clip.xy / clip.w * uSnap + 0.5) / uSnap * clip.w;   // vertex snapping
         vUvw = vec3(uv * clip.w, clip.w);                                    // affine texture warp
@@ -912,13 +924,13 @@ async function start() {
     fragmentShader: /* glsl */`
       precision highp float;
       uniform sampler2D uMap; uniform vec3 uFog;
-      varying vec3 vUvw; varying float vLight; varying float vFog;
+      varying vec3 vUvw; varying float vLight; varying float vFog; varying vec3 vLamp;
       float bayer(vec2 p){ int x=int(mod(p.x,4.0)), y=int(mod(p.y,4.0)), i=x+y*4; float m[16];
         m[0]=0.;m[1]=8.;m[2]=2.;m[3]=10.;m[4]=12.;m[5]=4.;m[6]=14.;m[7]=6.;m[8]=3.;m[9]=11.;m[10]=1.;m[11]=9.;m[12]=15.;m[13]=7.;m[14]=13.;m[15]=5.;
         float v=0.; for(int k=0;k<16;k++){ if(k==i) v=m[k]; } return v/16.0-0.5; }
       void main(){
         vec3 tex = texture2D(uMap, vUvw.xy / vUvw.z).rgb;
-        vec3 col = tex * vLight * vec3(1.15, 1.0, 0.82);
+        vec3 col = tex * (vLight * vec3(1.15, 1.0, 0.82) + vLamp);
         col = mix(col, uFog, vFog);
         col = floor(col * 31.0 + bayer(gl_FragCoord.xy) + 0.5) / 31.0;    // 15-bit colour with ordered dither
         gl_FragColor = vec4(col, 1.0);
@@ -938,8 +950,10 @@ async function start() {
     const uv = g.attributes.uv; for (let i = 0; i < uv.count; i++) uv.setXY(i, uv.getX(i) * cols, uv.getY(i) * rows);
     const m = new THREE.Mesh(g, psxMat(tex)); m.rotation.x = flip ? Math.PI / 2 : -Math.PI / 2; m.position.y = y; return m;
   };
-  level.add(plane(floorTex, 0, false), plane(ceilTex, 1.25, true));
-  /* Something is standing in the east corridor. */
+  const ceiling = plane(ceilTex, 1.25, true);   /* the weather channel takes it off to see the sky */
+  level.add(plane(floorTex, 0, false), ceiling);
+  /* Something is standing in the east corridor. The monster channel walks it toward you. */
+  let figure = null; const figHome = new THREE.Vector3();
   MAP.forEach((row, z) => [...row].forEach((ch, x) => {
     if (ch !== 'F') return;
     const fig = new THREE.Group();
@@ -948,7 +962,7 @@ async function start() {
     const head = new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.2, 0.16), psxMat(figTex));
     head.position.y = 0.93;
     fig.add(body, head); fig.position.copy(cell(x, z)); fig.rotation.y = Math.PI / 2;
-    level.add(fig);
+    level.add(fig); figure = fig; figHome.copy(fig.position);
   }));
   /* Walk the ring corridor on a loop. */
   const ring = [[1, 1], [8, 1], [8, 7], [1, 7]].map(([x, z]) => cell(x, z).setY(0.55));
@@ -962,6 +976,7 @@ async function start() {
   const UW = 640, UH = 480;
   const uiCanvas = document.createElement('canvas'); uiCanvas.width = UW; uiCanvas.height = UH;
   const ui = uiCanvas.getContext('2d');
+  apart(ui);
   const uiTex = new THREE.CanvasTexture(uiCanvas); uiTex.magFilter = THREE.NearestFilter; uiTex.minFilter = THREE.LinearFilter; uiTex.generateMipmaps = false;
   const smooth = (x) => (x <= 0 ? 0 : x >= 1 ? 1 : x * x * (3 - 2 * x));
   const span = (p, a, b) => smooth((p - a) / (b - a));
@@ -1325,6 +1340,7 @@ async function start() {
      The bar's order, keys and ghost colour are the engine's own (BUILD_ORDER, BUILD_PIECES, BUILD_GHOST_MAT). */
   const BUILD = [['hand', 'Hand', 'C'], ['floor', 'Floor', '1'], ['ceiling', 'Ceiling', '2'], ['water', 'Water', '3'], ['wall', 'Wall', '4'], ['thin2', 'Thin wall', '5'],
     ['edgewall', 'Edge wall', '6'], ['doorway', 'Doorway', '7'], ['window', 'Window', '8'], ['door', 'Door', '9'], ['prop', 'Prop', '0'], ['all', 'All', 'Tab']];
+  const HUD_Y = 0.66;   /* where the engine's bars sit on the picture */
   const BUILD_LOOP = [1, 4, 5];   /* Floor, Wall, Thin wall: four seconds each */
   const buildPiece = (p) => BUILD_LOOP[Math.floor(p / 4) % BUILD_LOOP.length];
   function glyph(g, k, x, y) {   /* a 10×10 picture of each piece */
@@ -1348,9 +1364,9 @@ async function start() {
     if (k === 'all') { r(0, 0, 4, 4); r(6, 0, 4, 4); r(0, 6, 4, 4); r(6, 6, 4, 4); }
   }
   function buildHud(g, w, h, on) {
-    /* The page's words cover the lower left of the tube, so the bar shows the five pieces around the one in hand, a little right of centre. */
+    /* The bar shows the five pieces around the one in hand. */
     const narrow = portrait(), first = Math.max(0, Math.min(BUILD.length - 5, on - 2)), list = [0, 1, 2, 3, 4].map((d) => first + d);
-    const sw = 17, sh = 21, cx = narrow ? w / 2 : w * 0.58, x0 = Math.round(cx - (list.length * (sw + 1)) / 2), y0 = Math.round(h * (narrow ? 0.3 : 0.55));
+    const sw = 17, sh = 21, cx = w / 2, x0 = Math.round(cx - (list.length * (sw + 1)) / 2), y0 = Math.round(h * HUD_Y);
     g.textBaseline = 'top';
     list.forEach((i, n) => {
       const [k, , key] = BUILD[i], x = x0 + n * (sw + 1), sel = i === on;
@@ -1393,8 +1409,9 @@ async function start() {
   ].filter(Boolean);
   const cePlayhead = (p) => (p < 3.0 ? 0 : p < 5.4 ? 2.0 : p < 6.6 ? 3.6 : p < 7.0 ? 0 : p - 7.0);
   /* A still of the level from a pose, for the pictures inside the editor. */
+  const stillBuf = new Uint8Array(W * H * 4), stillImg = new ImageData(W, H);
   function snap(canvas, pose) {
-    hideGhosts(); blood.visible = false;
+    hideGhosts(); blood.visible = false; resetLook();
     pose(); psxUniforms.uLightPos.value.copy(eye.position); eye.getWorldDirection(psxUniforms.uLightDir.value);
     renderer.setRenderTarget(rt); renderer.render(level, eye); renderer.setRenderTarget(null);
     try { renderer.readRenderTargetPixels(rt, 0, 0, W, H, stillBuf); } catch (e) { return; }
@@ -1535,17 +1552,17 @@ async function start() {
     const narrow = portrait(), L = narrow ? Math.round(w * 0.34) : 30, R = narrow ? w - Math.round(w * 0.34) : w - 30;
     /* REC / STANDBY, and the lens */
     g.font = '13px VT323, monospace'; g.shadowColor = m.rec ? 'rgba(255,0,0,.6)' : 'rgba(0,0,0,.8)'; g.shadowBlur = m.rec ? 4 : 0; g.shadowOffsetY = m.rec ? 0 : 1;
-    g.fillStyle = m.rec && (m.p * 2 | 0) % 2 ? '#ff3131' : m.rec ? '#a01818' : '#808080'; g.beginPath(); g.arc(L + 4, 50, 3.5, 0, Math.PI * 2); g.fill();
-    g.fillStyle = '#ff4141'; g.fillText(m.rec ? `00:${String(Math.floor(m.recT)).padStart(2, '0')}` : 'STANDBY', L + 12, 50);
+    g.fillStyle = m.rec && (m.p * 2 | 0) % 2 ? '#ff3131' : m.rec ? '#a01818' : '#808080'; g.beginPath(); g.arc(L + 4, 82, 3.5, 0, Math.PI * 2); g.fill();
+    g.fillStyle = '#ff4141'; g.fillText(m.rec ? `00:${String(Math.floor(m.recT)).padStart(2, '0')}` : 'STANDBY', L + 12, 82);
     g.shadowColor = 'rgba(0,0,0,.8)'; g.shadowBlur = 0; g.shadowOffsetY = 1;
     g.textAlign = 'right'; g.fillStyle = '#c8ffb0'; g.font = '12px VT323, monospace';
-    g.fillText(`f/${LENS[m.lens][3].toFixed(1)}  ${LENS[m.lens][2]}mm`, R, 50); g.textAlign = 'left'; g.shadowColor = 'transparent';
+    g.fillText(`f/${LENS[m.lens][3].toFixed(1)}  ${LENS[m.lens][2]}mm`, R, 82); g.textAlign = 'left'; g.shadowColor = 'transparent';
     /* the bar: Record and Keyframe, the three lenses, then Grid, Camera, Drawer and Exit */
     const slots = [['R', '●', m.rec], ['K', '◆', m.keyed], 0, ['1', '24', m.lens === 0], ['2', '50', m.lens === 1], ['3', '85', false], 0, ['', '▦', true], ['', '⚙'], ['Tab', '☰'], 0, ['', '✕']];
-    /* Record, Keyframe and the lenses, clear of the page's words over the lower left of the tube */
+    /* Record, Keyframe and the lenses */
     const show = narrow ? [slots[0], slots[1], slots[3], slots[4], slots[5]] : slots.slice(0, 6);
-    const sw = 19, gap = 5, sh = 22, tw = show.reduce((a, s) => a + (s ? sw + 1 : gap), 0), y0 = Math.round(h * (narrow ? 0.3 : 0.55));
-    let x = Math.round((narrow ? w / 2 : w * 0.58) - tw / 2);
+    const sw = 19, gap = 5, sh = 22, tw = show.reduce((a, s) => a + (s ? sw + 1 : gap), 0), y0 = Math.round(h * HUD_Y);
+    let x = Math.round(w / 2 - tw / 2);
     show.forEach((s) => {
       if (!s) { x += gap; return; }
       const [key, ico, on] = s;
@@ -1556,6 +1573,542 @@ async function start() {
       g.font = /\d/.test(ico) ? '12px VT323, monospace' : '11px VT323, monospace'; g.fillText(ico, x + sw / 2, y0 + 14); g.textAlign = 'left';
       x += sw + 1;
     });
+  }
+
+  /* ---------- Lights, weather, objectives, the monster, blood, the Audio Studio and boxing it up ----------
+     The in-level ones (Light, Sky, Blood) use the engine's own kind of bar: numbered slots, the one in hand lit gold, its name over it. */
+  const hash = (n) => { const x = Math.sin(n * 127.1 + 311.7) * 43758.5453; return x - Math.floor(x); };
+  const pv = new THREE.Vector3(), aimV = new THREE.Vector3();
+  const at = (mx, y, mz) => cell(mx, mz).setY(y);   /* map coords (fractional) and a height, to a point in the level */
+  /* Where something in the level lands on the 320×240 picture, or null when it's behind you. */
+  const toScreen = (p, w, h) => { pv.copy(p).project(eye); return pv.z < 1 ? [(pv.x * 0.5 + 0.5) * w, (0.5 - pv.y * 0.5) * h] : null; };
+  /* Aim the crosshair from stop to stop ([time, point]); it gets to each stop just before that stop's time. */
+  function aim(stops, q) {
+    let i = 0; while (i < stops.length - 1 && q >= stops[i + 1][0]) i++;
+    const a = stops[i], b = stops[Math.min(i + 1, stops.length - 1)];
+    const k = b === a ? 0 : span(q, b[0] - 1.1, b[0] - 0.25);
+    return aimV.copy(a[1]).lerp(b[1], k);
+  }
+  const cross = (g, w, h) => { g.fillStyle = 'rgba(220,215,200,.55)'; g.fillRect(w / 2 - 1, h / 2 - 6, 2, 12); g.fillRect(w / 2 - 6, h / 2 - 1, 12, 2); };
+  const hudText = (g) => { g.shadowColor = 'rgba(0,0,0,.85)'; g.shadowOffsetX = 1; g.shadowOffsetY = 1; g.shadowBlur = 0; };
+  const noShadow = (g) => { g.shadowColor = 'transparent'; g.shadowOffsetX = g.shadowOffsetY = 0; };
+  function wrapOsd(g, s, max) {
+    const out = [''];
+    s.split(' ').forEach((wd) => { const l = out[out.length - 1]; if (l && g.measureText(l + ' ' + wd).width > max) out.push(wd); else out[out.length - 1] = l ? l + ' ' + wd : wd; });
+    return out;
+  }
+  /* A bar of slots: [key, draw(g, x, y, on)]. On a phone only the five around the one in hand fit. */
+  function slotBar(g, w, h, slots, on, name, { y = HUD_Y } = {}) {
+    const narrow = portrait(), sw = 17, sh = 21;
+    let list = slots.map((_, i) => i);
+    if (narrow && list.length > 5) { const first = Math.max(0, Math.min(list.length - 5, on - 2)); list = list.slice(first, first + 5); }
+    const x0 = Math.round(w / 2 - (list.length * (sw + 1)) / 2), y0 = Math.round(h * y);
+    g.textBaseline = 'top'; g.lineWidth = 1;
+    list.forEach((i, n) => {
+      const [key, draw] = slots[i], x = x0 + n * (sw + 1), sel = i === on;
+      g.fillStyle = sel ? 'rgba(60,48,18,.85)' : 'rgba(10,12,18,.78)'; g.fillRect(x, y0, sw, sh);
+      g.strokeStyle = sel ? '#ffd56a' : '#3a4258'; g.strokeRect(x + 0.5, y0 + 0.5, sw - 1, sh - 1);
+      g.font = '8px VT323, monospace'; g.fillStyle = sel ? '#ffd56a' : '#9aa3b8'; g.fillText(key, x + 2, y0 + 1);
+      draw(g, x + 3, y0 + 8, sel);
+    });
+    if (name && list.includes(on)) {
+      g.font = '12px VT323, monospace'; g.textAlign = 'center'; g.fillStyle = '#e8e2cf'; hudText(g);
+      g.fillText(name, x0 + list.indexOf(on) * (sw + 1) + sw / 2, y0 - 14); noShadow(g); g.textAlign = 'left';
+    }
+    return { x0, y0, w: list.length * (sw + 1) };
+  }
+  const glow = (g, x, y, r, c, a = 1) => {
+    const gr = g.createRadialGradient(x, y, 0, x, y, r); gr.addColorStop(0, c); gr.addColorStop(1, 'rgba(0,0,0,0)');
+    g.save(); g.globalAlpha = a; g.globalCompositeOperation = 'lighter'; g.fillStyle = gr; g.fillRect(x - r, y - r, r * 2, r * 2); g.restore();
+  };
+  /* The plain look every 3D channel starts from; each channel then sets its own. */
+  function resetLook() {
+    const u = psxUniforms;
+    u.uAmb.value = 0.14; u.uFlash.value = 1; u.uFogK.value = 1; u.uFog.value.setHex(0x07070a); level.background.setHex(0x07070a);
+    u.uLampC.value.forEach((c) => c.set(0, 0, 0));
+    ceiling.visible = true;
+    if (figure) { figure.position.copy(figHome); figure.rotation.set(0, Math.PI / 2, 0); }
+    stains.forEach((m) => { m.visible = false; });
+  }
+
+  /* Channel 4: Light mode. 1–8 pick a kind of light; click and it lands with that kind's colour, reach and flicker.
+     The switch group over the bar turns them all off and on again. */
+  const LIGHTS = [['Bulb', '1', '#ffd49a'], ['Tube', '2', '#d8f0ff'], ['Fire', '3', '#ff8a3a'], ['Torch', '4', '#ffb060'], ['Street lamp', '5', '#ffc070'],
+    ['TV glow', '6', '#7f9cff'], ['Police', '7', '#ff3040'], ['Headlight', '8', '#fff4d8'], ['Plain', '0', '#ffffff']];
+  const LIT = { off: 10.6, on: 12.0, loop: 14 };
+  /* [when it's placed, which kind, where] down the north corridor */
+  const LIT_PUT = [[1.6, 0, at(3.1, 1.05, 0.64)], [4.8, 2, at(5.5, 0.12, 0.66)], [8.0, 5, at(4.3, 0.48, 1.36)]];
+  const LIT_AIM = [[0, LIT_PUT[0][2]], ...LIT_PUT.map(([t, , p]) => [t, p]), [9.6, at(4.6, 0.5, 1)]];
+  const litHand = (q) => (q < 3.8 ? 0 : q < 7.0 ? 2 : 5);
+  const litCol = LIGHTS.map(([, , c]) => new THREE.Color(c));
+  function lampLevel(k, t) {   /* how bright a kind of light is right now, with its flicker */
+    if (k === 2) return 0.8 + 0.2 * Math.sin(t * 13) * Math.sin(t * 7.7 + 1);
+    if (k === 5) return 0.55 + 0.45 * hash(Math.floor(t * 7));
+    return 1;
+  }
+  function lightPose(q) {
+    const u = psxUniforms; u.uAmb.value = 0.06; u.uFlash.value = 0.16;
+    const off = q >= LIT.off && q < LIT.on;
+    LIT_PUT.forEach(([t, k, p], i) => {
+      u.uLampP.value[i].copy(p);
+      const f = q < t || off ? 0 : smooth((q - t) / 0.2) * lampLevel(k, clock) * 3, c = litCol[k];
+      u.uLampC.value[i].set(c.r * f, c.g * f, c.b * f);
+    });
+    eye.position.copy(at(1.25, 0.58 + Math.sin(clock * 1.3) * 0.004 * (reduced ? 0 : 1), 1.0));
+    eye.lookAt(aim(LIT_AIM, q));
+  }
+  function lightHud(g, w, h, q) {
+    const off = q >= LIT.off && q < LIT.on;
+    LIT_PUT.forEach(([t, k, p]) => {   /* the lights themselves */
+      if (q < t || off) return;
+      const xy = toScreen(p, w, h); if (!xy) return;
+      const f = lampLevel(k, clock);
+      glow(g, xy[0], xy[1], 14 + 6 * f, LIGHTS[k][2], 0.5 * f); g.fillStyle = '#fff8e8'; g.fillRect(Math.round(xy[0]) - 1, Math.round(xy[1]) - 1, 3, 3);
+    });
+    const on = litHand(q);
+    const bar = slotBar(g, w, h, LIGHTS.map(([, key, c]) => [key, (gg, x, y, sel) => {
+      gg.fillStyle = c; gg.beginPath(); gg.arc(x + 5.5, y + 5.5, sel ? 4 : 3.2, 0, Math.PI * 2); gg.fill();
+      if (sel) { gg.strokeStyle = c; gg.globalAlpha = 0.5; gg.beginPath(); gg.arc(x + 5.5, y + 5.5, 6, 0, Math.PI * 2); gg.stroke(); gg.globalAlpha = 1; }
+    }]), on, LIGHTS[on][0]);
+    /* the switch group, over the bar */
+    const gy = bar.y0 - 31, label = `hall lights  ${off ? 'OFF' : 'ON'}`;
+    g.font = '11px VT323, monospace'; const gw = g.measureText(label).width + 22, gx = Math.round(w / 2 - gw / 2);
+    g.fillStyle = 'rgba(10,12,18,.8)'; g.fillRect(gx, gy, gw, 14); g.strokeStyle = off ? '#3a4258' : '#ffd56a'; g.strokeRect(gx + 0.5, gy + 0.5, gw - 1, 13);
+    g.fillStyle = off ? '#55607a' : '#ffd56a'; g.fillRect(gx + 5, gy + 4, 8, 6);
+    g.fillStyle = '#e8e2cf'; g.textBaseline = 'top'; g.fillText(label, gx + 17, gy + 2);
+    cross(g, w, h);
+  }
+
+  /* Channel 5: Sky mode. Skies on the bar (1–9), a compass along the top, and weather: here it turns to snow. */
+  const SKY = { night: 3.2, snow: 5.4, loop: 15 };
+  const SKY_BAR = ['#8fb6e8', '#c9ccd2', '#d98a5a', '#1e2a44', '#0c0f1a', '#5a1014', '#7d838c', '#b8692c', '#000000'];
+  const SKY_NAME = { 2: 'Sunset', 3: 'Moonlit night' };
+  const skyOn = (q) => (q < SKY.night ? 2 : 3);
+  const snowAmt = (q) => span(q, SKY.snow, SKY.snow + 2.2);
+  const skyA = new THREE.Color(), skyB = new THREE.Color();
+  function skyPose(q) {
+    const u = psxUniforms, n = span(q, SKY.night - 0.3, SKY.night + 0.6), sn = snowAmt(q);
+    ceiling.visible = false;
+    skyA.setHex(0x8a4a48).lerp(skyB.setHex(0x1a2236), n).lerp(skyB.setHex(0x59627a), sn * 0.85);
+    level.background.copy(skyA);
+    u.uFog.value.setHex(0x6a3a3a).lerp(skyB.setHex(0x161c2c), n).lerp(skyB.setHex(0x8790a4), sn);
+    u.uFogK.value = 1 + sn * 0.7; u.uAmb.value = 0.3 - 0.1 * n + 0.06 * sn; u.uFlash.value = 0.35;
+    const k = (q / SKY.loop) * (reduced ? 0 : 1);
+    eye.position.copy(at(1.4 + k * 3.2, 0.52 + Math.sin(clock * 5.5) * 0.008 * (reduced ? 0 : 1), 1.0));
+    eye.lookAt(at(1.4 + k * 3.2 + 3, 0.95, 1.0 + Math.sin(q * 0.5) * 0.4));
+  }
+  const FLAKES = Array.from({ length: 160 }, (_, i) => [hash(i), hash(i + 0.37), 0.5 + hash(i + 0.71) * 0.9, hash(i + 0.13) * 6.3]);
+  const COMPASS = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
+  function skyHud(g, w, h, q) {
+    const narrow = portrait(), sn = snowAmt(q), tt = clock;
+    /* snow */
+    const n = Math.floor(FLAKES.length * sn);
+    g.fillStyle = '#eef2fa';
+    for (let i = 0; i < n; i++) {
+      const [fx, fy, sp, ph] = FLAKES[i];
+      const x = ((fx * w + Math.sin(tt * 0.9 + ph) * 7 - tt * 9 * sp) % w + w) % w, y = (fy * h + tt * 26 * sp) % h, r = sp > 1.1 ? 2 : 1;
+      g.globalAlpha = 0.55 + 0.45 * (sp - 0.5); g.fillRect(Math.round(x), Math.round(y), r, r);
+    }
+    g.globalAlpha = 1;
+    /* the compass: which way you're facing */
+    eye.getWorldDirection(pv); const head = (Math.atan2(pv.x, -pv.z) * 180 / Math.PI + 360) % 360;
+    const cw = narrow ? Math.round(w * 0.3) : 150, cx0 = Math.round(w / 2 - cw / 2), cy = 26;
+    g.fillStyle = 'rgba(10,12,18,.7)'; g.fillRect(cx0, cy, cw, 15);
+    g.save(); g.beginPath(); g.rect(cx0, cy, cw, 15); g.clip();
+    g.textAlign = 'center'; g.textBaseline = 'top'; g.font = '10px VT323, monospace';
+    for (let d = -180; d <= 180; d += 15) {
+      const deg = Math.round(head / 15) * 15 + d, x = w / 2 + (deg - head) * (cw / 140);
+      const nd = ((deg % 360) + 360) % 360;
+      if (nd % 45 === 0) { g.fillStyle = nd === 0 ? '#ff6b5a' : '#e8e2cf'; g.fillText(COMPASS[nd / 45], x, cy + 2); }
+      else { g.fillStyle = '#7a8296'; g.fillRect(Math.round(x), cy + 9, 1, 4); }
+    }
+    g.restore(); g.fillStyle = '#ffd56a'; g.fillRect(Math.round(w / 2), cy + 13, 1, 4);
+    /* over the bar: outdoor, fog and the weather with its amount */
+    const on = skyOn(q);
+    const bar = slotBar(g, w, h, SKY_BAR.map((c, i) => [String(i + 1), (gg, x, y) => {
+      gg.fillStyle = c; gg.fillRect(x, y, 11, 10); gg.strokeStyle = 'rgba(255,255,255,.25)'; gg.strokeRect(x + 0.5, y + 0.5, 10, 9);
+    }]), on, SKY_NAME[on]);
+    const chips = [['outdoor', true], ['fog', true], [`weather: ${q >= SKY.snow ? 'snow' : 'none'}`, q >= SKY.snow]];
+    g.font = '11px VT323, monospace'; g.textBaseline = 'top';
+    const cws = chips.map(([t]) => g.measureText(t).width + 16), total = cws.reduce((a, b) => a + b + 4, -4);
+    let x = Math.round(w / 2 - total / 2); const y = bar.y0 - 31;
+    if (narrow) { x = Math.round(w / 2 - cws[2] / 2); }
+    chips.forEach(([t, lit], i) => {
+      if (narrow && i < 2) return;
+      g.fillStyle = 'rgba(10,12,18,.8)'; g.fillRect(x, y, cws[i], 14); g.strokeStyle = lit ? '#ffd56a' : '#3a4258'; g.strokeRect(x + 0.5, y + 0.5, cws[i] - 1, 13);
+      g.fillStyle = lit ? '#ffd56a' : '#55607a'; g.fillRect(x + 4, y + 5, 5, 5);
+      g.fillStyle = '#e8e2cf'; g.fillText(t, x + 12, y + 2); x += cws[i] + 4;
+    });
+    if (q >= SKY.snow) {   /* the amount slider */
+      const ax = Math.round(w / 2 - 30), ay = y - 8;
+      g.fillStyle = 'rgba(10,12,18,.8)'; g.fillRect(ax, ay, 60, 5); g.fillStyle = '#ffd56a'; g.fillRect(ax + 1, ay + 1, 58 * (0.15 + 0.5 * sn), 3);
+    }
+  }
+
+  /* Channel 7: smart objectives. They fade in after the room's opening thought, count as you go, and a finished one opens the next. */
+  const OBJ = { show: 2.4, offs: [4.6, 6.8, 9.0], next: 11.6, loop: 16.5 };
+  const objCount = (q) => OBJ.offs.filter((t) => q >= t).length;
+  function objLook(q) { psxUniforms.uAmb.value = [0.44, 0.29, 0.16, 0.05][objCount(q)]; psxUniforms.uFlash.value = 0.55; }
+  function objHud(g, w, h, q) {
+    const narrow = portrait(), L = narrow ? Math.round(w * 0.35) : 30, max = narrow ? Math.round(w * 0.3) : 210, n = objCount(q);
+    hudText(g); g.textBaseline = 'top';
+    /* the opening thought */
+    const ta = Math.min(span(q, 0.1, 0.5), 1 - span(q, 1.9, 2.3));
+    if (ta > 0.01) {
+      g.globalAlpha = ta; g.font = '13px VT323, monospace'; g.textAlign = 'center'; g.fillStyle = '#ded5c0';
+      wrapOsd(g, 'Last one up again. Lock the house down.', narrow ? Math.round(w * 0.3) : 220).forEach((l, i) => g.fillText(l, w / 2, h * 0.64 + i * 14));
+      g.textAlign = 'left'; g.globalAlpha = 1;
+    }
+    /* the list, top left */
+    const line = (s, y, { a = 1, c = '#e8e2cf', size = 12, strike = false } = {}) => {
+      g.globalAlpha = a; g.font = `${size}px VT323, monospace`; g.fillStyle = c;
+      const rows = wrapOsd(g, s, max); rows.forEach((r, i) => { g.fillText(r, L, y + i * (size + 1)); if (strike) g.fillRect(L, y + i * (size + 1) + size / 2, g.measureText(r).width, 1); });
+      g.globalAlpha = 1; return y + rows.length * (size + 1);
+    };
+    let y = 80;
+    const a1 = span(q, OBJ.show, OBJ.show + 0.5) * (1 - span(q, OBJ.offs[2] + 0.3, OBJ.offs[2] + 0.6));
+    if (a1 > 0.01) {
+      const fresh = n > 0 && q - OBJ.offs[n - 1] < 0.5;
+      y = line(`Turn off all the lights (${n}/3)`, y, { a: a1, c: fresh ? '#ffd98a' : '#e8e2cf', strike: n === 3 });
+    }
+    if (q >= OBJ.next) {
+      const a2 = span(q, OBJ.next, OBJ.next + 0.6);
+      y = line('Go upstairs', 80, { a: a2 });
+      line('the door at the top of the stairs is open now', y + 1, { a: a2, c: '#9aa3b8', size: 10 });
+    }
+    /* "E switch off", just before each light goes */
+    const near = OBJ.offs.find((t) => q >= t - 0.9 && q < t);
+    if (near !== undefined) {
+      g.font = '12px VT323, monospace'; g.textAlign = 'center'; const tw = g.measureText('switch off').width;
+      g.fillStyle = 'rgba(10,12,18,.8)'; g.fillRect(w / 2 - tw / 2 - 14, h / 2 + 14, tw + 24, 15);
+      g.fillStyle = '#ffd56a'; g.fillText('E', w / 2 - tw / 2 - 6, h / 2 + 16); g.fillStyle = '#e8e2cf'; g.fillText('switch off', w / 2 + 6, h / 2 + 16); g.textAlign = 'left';
+    }
+    /* OBJECTIVE COMPLETE */
+    const ca = Math.min(span(q, OBJ.offs[2] + 0.5, OBJ.offs[2] + 0.8), 1 - span(q, OBJ.next - 0.5, OBJ.next - 0.1));
+    if (ca > 0.01) {
+      g.globalAlpha = ca; g.textAlign = 'center';
+      const big = narrow ? ['OBJECTIVE', 'COMPLETE'] : ['OBJECTIVE COMPLETE'], bs = narrow ? 16 : 19;
+      g.font = `${bs}px VT323, monospace`; g.fillStyle = '#ffd98a'; big.forEach((l, i) => g.fillText(l, w / 2, h * 0.3 + i * (bs + 1)));
+      g.font = '12px VT323, monospace'; g.fillStyle = '#cfc8b2'; wrapOsd(g, 'Turn off all the lights', narrow ? Math.round(w * 0.3) : 200).forEach((l, i) => g.fillText(l, w / 2, h * 0.3 + big.length * (bs + 1) + 3 + i * 13));
+      g.textAlign = 'left'; g.globalAlpha = 1;
+    }
+    noShadow(g); cross(g, w, h);
+  }
+
+  /* Channel 8: something's coming. It walks out of the fog, the edges go red as your health drops and your heart speeds up. */
+  const MON = { walk: 6.4, hits: [6.8, 8.1, 9.2], dead: 9.5, loop: 13.5 };
+  const monHp = (q) => [100, 64, 32, 0][MON.hits.filter((t) => q >= t).length];
+  function monsterPose(q) {
+    const u = psxUniforms, dead = smooth((q - MON.dead) / 0.8);
+    u.uFlash.value = reduced ? 0.9 : 0.82 + 0.18 * Math.sin(clock * 29) * Math.sin(clock * 6.1);
+    const lf = (reduced ? 1 : 0.75 + 0.25 * hash(Math.floor(clock * 9))) * 4.2 * (1 - dead);   /* a bad bulb at the far end */
+    u.uLampP.value[0].copy(at(8.25, 0.8, 6.3)); u.uLampC.value[0].set(1.0 * lf, 0.48 * lf, 0.34 * lf); u.uFogK.value = 0.62;
+    let z = 6.9 - 4.5 * smooth(Math.min(1, q / MON.walk));
+    MON.hits.forEach((t) => { z -= 0.28 * bump(q, t - 0.25, t + 0.2); });
+    figure.position.copy(cell(8, z)); figure.position.y = Math.abs(Math.sin(q * 4.2)) * 0.03 * (q < MON.walk ? 1 : 0);
+    figure.rotation.set(0, Math.PI / 2, 0);
+    let shake = 0; MON.hits.forEach((t) => { if (q >= t && q < t + 0.35) shake = (1 - (q - t) / 0.35) * 0.035; });
+    eye.position.copy(at(8 + (hash(clock * 60) - 0.5) * shake * 2, 0.56 - 0.42 * dead + (hash(clock * 60 + 3) - 0.5) * shake, 0.85));
+    eye.lookAt(tmpV.copy(cell(8, 4)).setY(0.7 - 0.3 * dead)); eye.rotateZ(dead * 1.15);
+  }
+  function splatScreen(g, w, h, i, f) {
+    const [cx, cy, r] = [[0.72, 0.28, 30], [0.22, 0.56, 24], [0.5, 0.74, 34]][i];
+    g.save(); g.globalAlpha = f;
+    for (let k = 0; k < 22; k++) {
+      const a = hash(i * 31 + k) * Math.PI * 2, d = (k < 4 ? 0.15 : 0.35 + hash(i * 17 + k) * 0.75) * r, rr = k < 4 ? r * 0.45 : 1 + hash(i * 7 + k) * 3.5;
+      g.fillStyle = `rgba(${90 + (hash(k + i) * 40 | 0)},0,4,.85)`; g.beginPath(); g.arc(cx * w + Math.cos(a) * d, cy * h + Math.sin(a) * d * 0.8, rr, 0, Math.PI * 2); g.fill();
+    }
+    for (let k = 0; k < 4; k++) { g.fillStyle = 'rgba(95,0,6,.8)'; g.fillRect(Math.round(cx * w - r * 0.3 + hash(i + k * 3) * r * 0.6), Math.round(cy * h), 2, Math.round((6 + hash(k * 9 + i) * 18) * Math.min(1, f * 2))); }
+    g.restore();
+  }
+  function monsterHud(g, w, h, q) {
+    const hp = monHp(q), narrow = portrait(), L = narrow ? Math.round(w * 0.35) : 30, dead = q >= MON.dead;
+    const rate = hp < 40 ? 2.3 : 1.3, ph = (q * rate) % 1;
+    const beat = Math.exp(-ph * 12) + (ph > 0.2 ? 0.6 * Math.exp(-(ph - 0.2) * 12) : 0);
+    const a = dead ? 0 : (hp < 40 ? 0.55 : 0.2 * smooth(q / MON.walk) + (hp < 100 ? 0.16 : 0)) * (0.6 + 0.4 * Math.min(1, beat));
+    if (a > 0.01) {
+      const gr = g.createRadialGradient(w / 2, h / 2, h * 0.3, w / 2, h / 2, h * 0.85);
+      gr.addColorStop(0, 'rgba(140,0,0,0)'); gr.addColorStop(1, `rgba(160,0,0,${a.toFixed(3)})`); g.fillStyle = gr; g.fillRect(0, 0, w, h);
+    }
+    MON.hits.forEach((t, i) => { if (q >= t) { const f = dead ? 1 : 1 - span(q, t + 1.4, t + 3.4); if (f > 0) splatScreen(g, w, h, i, f); } });
+    if (!dead) {   /* health, top left under the channel number */
+      const y = 82; hudText(g);
+      g.font = '10px VT323, monospace'; g.textBaseline = 'top'; g.fillStyle = hp < 40 && (q * rate) % 1 < 0.3 ? '#ff4040' : '#c8c0b0'; g.fillText('♥', L, y - 3);
+      noShadow(g); g.fillStyle = 'rgba(0,0,0,.65)'; g.fillRect(L + 10, y, 64, 6); g.fillStyle = hp < 40 ? '#e02828' : '#b8c8b0'; g.fillRect(L + 11, y + 1, 62 * hp / 100, 4);
+      cross(g, w, h);
+    } else {
+      const d = span(q, MON.dead + 0.4, MON.dead + 1.6);
+      g.fillStyle = `rgba(0,0,0,${(0.78 * d).toFixed(3)})`; g.fillRect(0, 0, w, h);
+      g.globalAlpha = d; g.textAlign = 'center'; g.textBaseline = 'middle'; g.font = `${narrow ? 22 : 30}px VT323, monospace`; g.fillStyle = '#b81414';
+      g.fillText('YOU ARE DEAD', w / 2, h / 2); g.textAlign = 'left'; g.globalAlpha = 1;
+    }
+  }
+
+  /* Channel 9: Blood mode. The brush is in your hand: 1–7 pick a stain, click to put it down, on walls or the floor. */
+  const STAINS = [['Splat', '1'], ['Spray', '2'], ['Drips', '3'], ['Pool', '4'], ['Smear', '5'], ['Handprint', '6'], ['Trail', '7']];
+  const stainTex = (draw) => { const t = pix(64, (g, n) => { g.clearRect(0, 0, n, n); draw(g, n); }); t.wrapS = t.wrapT = THREE.ClampToEdgeWrapping; return t; };
+  const drop = (g, x, y, r, a = 0.9) => { g.fillStyle = `rgba(${120 + (hash(x * 3 + y) * 40 | 0)},6,12,${a})`; g.beginPath(); g.arc(x, y, r, 0, Math.PI * 2); g.fill(); };
+  const dripsTex = stainTex((g) => {
+    g.fillStyle = 'rgba(128,6,12,.92)'; g.fillRect(10, 8, 44, 7); for (let i = 0; i < 8; i++) drop(g, 12 + i * 6, 10, 3.5);
+    for (let i = 0; i < 7; i++) { const x = 12 + i * 6.4 + hash(i) * 3, l = 14 + hash(i + 4) * 38; g.fillStyle = 'rgba(122,5,12,.92)'; g.fillRect(x | 0, 12, 2, l | 0); drop(g, x + 1, 12 + l, 2); }
+  });
+  const handTex = stainTex((g) => {
+    g.save(); g.translate(32, 36); g.rotate(-0.25); g.fillStyle = 'rgba(132,6,12,.9)';
+    g.beginPath(); g.ellipse(0, 6, 11, 13, 0, 0, Math.PI * 2); g.fill();
+    [[-9, -10, 3, 9, -0.3], [-3, -15, 3, 11, -0.1], [3, -15, 3, 11, 0.05], [9, -11, 3, 9, 0.25], [-14, 4, 3, 8, -1.1]].forEach(([x, y, rx, ry, r]) => { g.beginPath(); g.ellipse(x, y, rx, ry, r, 0, Math.PI * 2); g.fill(); });
+    g.restore();
+    for (let i = 0; i < 3; i++) { g.fillStyle = 'rgba(122,5,12,.85)'; g.fillRect(24 + i * 7, 50, 2, 6 + hash(i) * 10 | 0); }
+  });
+  const poolTex = stainTex((g) => {
+    g.fillStyle = 'rgba(104,4,10,.94)'; g.beginPath(); g.ellipse(32, 32, 24, 17, 0.2, 0, Math.PI * 2); g.fill();
+    for (let i = 0; i < 9; i++) { const a = hash(i) * 6.3; drop(g, 32 + Math.cos(a) * 22, 32 + Math.sin(a) * 15, 4 + hash(i + 2) * 5, 0.92); }
+    g.fillStyle = 'rgba(150,30,30,.35)'; g.beginPath(); g.ellipse(26, 27, 7, 3, 0.2, 0, Math.PI * 2); g.fill();
+  });
+  const splatTex = stainTex((g) => {
+    drop(g, 32, 30, 12, 0.95);
+    for (let i = 0; i < 26; i++) { const a = hash(i * 1.7) * Math.PI * 2, d = 10 + hash(i * 2.3) * 20; drop(g, 32 + Math.cos(a) * d, 30 + Math.sin(a) * d * 0.8, 1 + hash(i * 3.1) * 3.5, 0.9); }
+    for (let i = 0; i < 5; i++) { const x = 22 + hash(i * 5.3) * 20; g.fillStyle = 'rgba(120,5,12,.9)'; g.fillRect(x | 0, 34, 2, 8 + hash(i * 4.1) * 22 | 0); }
+  });
+  const stainMesh = (tex, size, floor) => {
+    const m = new THREE.Mesh(new THREE.PlaneGeometry(size, size), new THREE.MeshBasicMaterial({ map: tex, transparent: true, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -2 }));
+    if (floor) m.rotation.x = -Math.PI / 2; m.visible = false; level.add(m); return m;
+  };
+  /* [when, which stain, mesh, where]: on the north wall (its face is at map z 0.5), and a pool on the floor in front of it */
+  const BLD_PUT = [
+    [1.4, 0, stainMesh(splatTex, 0.5), at(3.95, 0.74, 0.505)],
+    [3.8, 2, stainMesh(dripsTex, 0.5), at(4.6, 0.62, 0.505)],
+    [6.2, 5, stainMesh(handTex, 0.26), at(5.2, 0.55, 0.505)],
+    [8.6, 3, stainMesh(poolTex, 0.62, true), at(4.75, 0.004, 0.92)],
+  ];
+  const stains = BLD_PUT.map(([, , m]) => m);
+  const BLD = { loop: 13 };
+  const BLD_AIM = [[0, BLD_PUT[0][3]], ...BLD_PUT.map(([t, , , p]) => [t, p]), [11.2, at(4.6, 0.45, 0.5)]];
+  const bldHand = (q) => (q < 2.6 ? 0 : q < 5.0 ? 2 : q < 7.4 ? 5 : 3);
+  function bloodPose(q) {
+    psxUniforms.uAmb.value = 0.2; psxUniforms.uFlash.value = 0.9;
+    BLD_PUT.forEach(([t, , m, p]) => { m.visible = q >= t; m.position.copy(p); m.scale.setScalar(0.3 + 0.7 * smooth((q - t) / 0.14)); });
+    eye.position.copy(at(4.55, 0.64 + Math.sin(clock * 1.3) * 0.004 * (reduced ? 0 : 1), 1.42));
+    eye.lookAt(aim(BLD_AIM, q));
+  }
+  const stainGlyph = (k) => (g, x, y) => {
+    g.fillStyle = '#b0141c';
+    if (k === 0) { g.beginPath(); g.arc(x + 5, y + 5, 3.5, 0, 7); g.fill(); [[1, 1], [9, 2], [2, 9], [9, 9]].forEach(([a, b]) => g.fillRect(x + a, y + b, 1.5, 1.5)); }
+    if (k === 1) for (let i = 0; i < 9; i++) g.fillRect(x + hash(i) * 10, y + hash(i + 9) * 10, 1.5, 1.5);
+    if (k === 2) { g.fillRect(x, y, 11, 2); [1, 4, 7, 9].forEach((a, i) => g.fillRect(x + a, y + 2, 1.5, 3 + i * 2 % 7)); }
+    if (k === 3) { g.beginPath(); g.ellipse(x + 5.5, y + 6, 5.5, 3.5, 0, 0, 7); g.fill(); }
+    if (k === 4) { g.save(); g.translate(x + 5.5, y + 5.5); g.rotate(-0.6); g.fillRect(-6, -2, 12, 4); g.restore(); }
+    if (k === 5) { g.fillRect(x + 3, y + 5, 6, 5); [2, 4.5, 7, 9.5].forEach((a) => g.fillRect(x + a, y + 1, 1.5, 4)); }
+    if (k === 6) [0, 3, 6, 9].forEach((a) => { g.beginPath(); g.arc(x + a + 1, y + 9 - a * 0.8, 1.3, 0, 7); g.fill(); });
+  };
+  function bloodHud(g, w, h, q) {
+    const on = bldHand(q), bar = slotBar(g, w, h, STAINS.map(([, key], i) => [key, stainGlyph(i)]), on, STAINS[on][0]);
+    /* over the bar: the size and the three shades */
+    const shades = [['fresh', '#8a0a12'], ['dark', '#4a0408'], ['dried', '#5a2a1a']];
+    g.font = '10px VT323, monospace'; g.textBaseline = 'top';
+    let x = Math.round(w / 2 - 66); const y = bar.y0 - 31;
+    hudText(g); g.fillStyle = '#e8e2cf'; g.fillText('size', x, y + 2); noShadow(g);
+    g.fillStyle = 'rgba(10,12,18,.8)'; g.fillRect(x + 20, y + 5, 30, 4); g.fillStyle = '#ffd56a'; g.fillRect(x + 21, y + 6, 14, 2);
+    x += 58;
+    shades.forEach(([name, c], i) => {
+      g.fillStyle = c; g.fillRect(x, y, 22, 13); g.strokeStyle = i === 0 ? '#ffd56a' : '#3a4258'; g.strokeRect(x + 0.5, y + 0.5, 21, 12);
+      x += 25;
+    });
+    cross(g, w, h);
+  }
+
+  /* Channel 12: the Audio Studio, which works like a DAW. A sound goes from the bin onto a track, the PS1 sampler preset goes on, and it plays. */
+  const STU = { grab: 1.2, drop: 2.6, menu: 3.6, preset: 4.4, play: 5.4, loop: 13 };
+  const BIN = ['room-tone', 'heartbeat', 'music-box', 'static-hum', 'footsteps', 'door-creak', 'radio-voice'];
+  const PRESETS = ['PS1 sampler', 'Haunted', 'Next room', 'Tape', 'Radio', 'Clean'];
+  const S_LANE = { x: 186, y: 132, h: 54, pps: 47 }, S_INS = { x: 478 };
+  function waveform(x, y, w, h, seed, c, step = 2) {
+    ui.fillStyle = c;
+    for (let i = 0; i < w; i += step) {
+      const v = Math.abs(Math.sin(i * 0.37 + seed) * 0.5 + Math.sin(i * 1.71 + seed * 2.1) * 0.3 + Math.sin(i * 0.09 + seed) * 0.2);
+      const a = Math.max(1, v * h * 0.9); ui.fillRect(x + i, y + h / 2 - a / 2, 1, a);
+    }
+  }
+  function clipBlock(lane, t0, t1, name, c, seed, { sel, ghost, fadeIn = 0 } = {}) {
+    const x = S_LANE.x + t0 * S_LANE.pps, w = (t1 - t0) * S_LANE.pps, y = S_LANE.y + lane * (S_LANE.h + 4) + 3, h = S_LANE.h - 6;
+    ui.save(); if (ghost) ui.globalAlpha = 0.55;
+    box(c, x, y, w, h); box('rgba(0,0,0,.25)', x, y, w, 12);
+    say(name, x + 4, y + 6.5, { c: '#fff', size: 12, max: w - 8 });
+    waveform(x + 2, y + 14, w - 4, h - 16, seed, 'rgba(255,255,255,.55)');
+    if (fadeIn) { ui.fillStyle = 'rgba(0,0,0,.35)'; ui.beginPath(); ui.moveTo(x, y + 12); ui.lineTo(x + fadeIn * S_LANE.pps, y + 12); ui.lineTo(x, y + h); ui.fill(); }
+    if (sel) { ui.strokeStyle = '#ffd56a'; ui.lineWidth = 2; ui.strokeRect(x + 1, y + 1, w - 2, h - 2); }
+    ui.restore();
+  }
+  function drawStudio(p) {
+    chrome('Audio');
+    const by = 84, playing = p >= STU.play, ph = playing ? ((p - STU.play) * 1.0) % 6 : 0;
+    const dropped = p >= STU.drop, preset = p >= STU.preset;
+    /* the studio's bar */
+    box('#c0c0c0', 0, by, UW, 24); box('#808080', 0, by + 24, UW, 1); box('#fff', 0, by + 25, UW, 1);
+    say('Audio Studio', 8, by + 12, { size: 15 });
+    let x = 92; const sep = () => { box('#808080', x, by + 4, 1, 16); box('#fff', x + 1, by + 4, 1, 16); x += 6; };
+    sep();
+    x += button(x, by + 3, '|◀', { size: 13, pad: 10 }) + 2;
+    const playX = x; x += button(x, by + 3, playing ? '■ Stop' : '▶ Play', { size: 13, w: 52, on: playing }) + 2;
+    x += button(x, by + 3, '⟳', { size: 13, pad: 10 }) + 4;
+    well(x, by + 3, 58, 18); say(`00:0${Math.floor(ph)}.${Math.floor((ph % 1) * 10)}`, x + 5, by + 12.5, { size: 14 }); x += 64;
+    sep();
+    well(x, by + 7, 10, 10); say('✓', x + 1, by + 12, { size: 11 }); say('snap', x + 14, by + 12, { size: 13 }); x += 46;
+    x += button(x, by + 3, '+', { size: 13, w: 20 }) + 2; x += button(x, by + 3, '−', { size: 13, w: 20 }) + 2; x += button(x, by + 3, 'Fit', { size: 13, pad: 10 }) + 4;
+    sep();
+    say('save as', x, by + 12, { size: 13 }); x += 40; well(x, by + 3, 70, 18); say('heartbeat-ps1', x + 4, by + 12.5, { size: 13, max: 62 }); x += 74;
+    x += button(x, by + 3, 'Save', { size: 13, pad: 12 }) + 2;
+    button(UW - 26, by + 3, '✕', { size: 13, w: 20 });
+    /* the sounds bin */
+    const bx = 4, bw = 120, top = 114;
+    box('#808080', bx, top, bw, 16); say('Sounds', bx + 5, top + 8.5, { c: '#fff', size: 13 });
+    well(bx, top + 16, bw, 200);
+    BIN.forEach((n, i) => {
+      const ry = top + 18 + i * 18, hot = n === 'heartbeat' && p >= STU.grab - 0.3 && p < STU.drop;
+      if (hot) box('#000080', bx + 2, ry, bw - 4, 17);
+      say('▶', bx + 7, ry + 8.5, { size: 12, c: hot ? '#fff' : '#000080' }); say(n, bx + 20, ry + 8.5, { size: 13, c: hot ? '#fff' : '#000' });
+    });
+    wrap('drag a sound onto a track, or double-click it for a new one', bw - 10, 12).forEach((l, i) => say(l, bx + 5, top + 160 + i * 12, { size: 12, c: '#606060' }));
+    button(bx, top + 222, '+ Add media…', { size: 13, w: bw });
+    /* the ruler and the tracks */
+    const lx = 128, lw = S_INS.x - 6 - lx;
+    box('#e8e8e8', lx, 114, lw, 16); box('#808080', lx, 129, lw, 1);
+    for (let s = 0; s <= 6; s++) { const tx = S_LANE.x + s * S_LANE.pps; box('#606060', tx, 122, 1, 7); say(`${s}s`, tx + 2, 119, { size: 11, c: '#404040' }); }
+    for (let i = 0; i < 3; i++) {
+      const y = S_LANE.y + i * (S_LANE.h + 4);
+      box('#1d1d24', lx, y, lw, S_LANE.h); box('#2a2a33', lx, y, S_LANE.x - lx - 2, S_LANE.h);
+      say(`Track ${i + 1}`, lx + 5, y + 10, { size: 13, c: '#e8e8e8' });
+      ['M', 'S'].forEach((t, k) => { box('#3a3a46', lx + 5 + k * 18, y + 24, 15, 14); say(t, lx + 12.5 + k * 18, y + 31, { size: 12, c: '#c8c8c8', align: 'center' }); });
+    }
+    clipBlock(0, 0, 6, 'room-tone', '#2f6680', 1.3);
+    clipBlock(1, 1.4, 5.6, 'music-box', '#6a4a8a', 4.1, { fadeIn: 0.9 });
+    if (dropped) clipBlock(2, 2.0, 4.4, 'heartbeat', preset ? '#8a2a2a' : '#7a3a3a', 7.7, { sel: true });
+    /* the master waveform underneath */
+    const my = S_LANE.y + 3 * (S_LANE.h + 4) + 4;
+    say('Master', lx + 2, my + 6, { size: 13 });
+    well(lx, my + 14, lw, 46, '#06140a'); waveform(lx + 2, my + 16, lw - 4, 42, 2.2, '#3fd46a', 1);
+    ['Cut', 'Copy', 'Paste', 'Fade in', 'Fade out', 'Reverse'].reduce((xx, t) => xx + button(xx, my + 66, t, { size: 13, pad: 10 }) + 3, lx);
+    /* the playhead */
+    const hx = S_LANE.x + ph * S_LANE.pps;
+    box('#ff3030', hx, 114, 1, my + 60 - 114); ui.fillStyle = '#ff3030'; ui.beginPath(); ui.moveTo(hx - 4, 114); ui.lineTo(hx + 5, 114); ui.lineTo(hx + 0.5, 120); ui.fill();
+    /* the inspector: the track, then the effects */
+    const ix = S_INS.x, iw = UW - ix - 4;
+    box('#808080', ix, 114, iw, 16); say(dropped ? 'Track 3 · heartbeat' : 'Track 1 · room-tone', ix + 5, 122.5, { c: '#fff', size: 13, max: iw - 10 });
+    const props = dropped ? [['start', '2.00 s'], ['volume', '100%'], ['pan', 'centre'], ['speed', '1.00×'], ['pitch', '0 st'], ['loop', 'once'], ['fade in', '0.00 s'], ['fade out', '0.40 s']]
+      : [['start', '0.00 s'], ['volume', '80%'], ['pan', 'centre'], ['speed', '1.00×'], ['pitch', '0 st'], ['loop', '×4'], ['fade in', '1.50 s'], ['fade out', '1.50 s']];
+    props.forEach(([k, v], i) => { const y = 134 + i * 17; say(k, ix + 4, y + 7, { size: 13 }); well(ix + 62, y, iw - 64, 15); say(v, ix + 66, y + 7.5, { size: 13 }); });
+    const ey = 276;
+    box('#808080', ix, ey, iw, 16); say('Effects', ix + 5, ey + 8.5, { c: '#fff', size: 13 });
+    say('preset', ix + 4, ey + 28, { size: 13 }); well(ix + 46, ey + 20, iw - 48, 16, '#fff');
+    say(preset ? 'PS1 sampler' : 'Clean', ix + 50, ey + 28.5, { size: 13 }); bevel(UW - 20, ey + 21, 14, 14); say('▾', UW - 13, ey + 28, { size: 11, align: 'center' });
+    const k = span(p, STU.preset, STU.preset + 0.4);
+    const FX = [['Distortion', 0, '0%'], ['Crunch', 0.7 * k, `${Math.round(70 * k)}%`], ['Tone', 1 - 0.6 * k, k > 0.5 ? '8000 Hz' : 'open'], ['Reverb', 0, '0%'], ['Room size', 0.12, '1.0 s'], ['Volume', 0.5, '100%']];
+    FX.forEach(([n, v, t], i) => {
+      const y = ey + 42 + i * 18, live = n === 'Crunch' || n === 'Tone' ? k > 0.5 : n === 'Volume';
+      well(ix + 4, y + 2, 10, 10); if (live) say('✓', ix + 5, y + 7, { size: 11 });
+      say(n, ix + 18, y + 7, { size: 13, c: live ? '#000' : '#606060' });
+      box('#808080', ix + 78, y + 6, 46, 2); bevel(ix + 76 + 44 * v, y, 6, 13);
+      say(t, UW - 6, y + 7, { size: 12, align: 'right', c: live ? '#000' : '#606060' });
+    });
+    if (p >= STU.menu && p < STU.preset) {   /* the preset list, open */
+      const mx = ix + 46, mw = iw - 48;
+      box('#000', mx + 1, ey + 37, mw, PRESETS.length * 16 + 2); box('#fff', mx, ey + 36, mw, PRESETS.length * 16 + 2);
+      PRESETS.forEach((n, i) => { const sel = i === 0 && p > STU.preset - 0.45; if (sel) box('#000080', mx + 1, ey + 37 + i * 16, mw - 2, 16); say(n, mx + 4, ey + 45 + i * 16, { size: 13, c: sel ? '#fff' : '#000' }); });
+    }
+    /* the pointer: drag heartbeat onto track 3, open the presets, pick PS1 sampler, press play */
+    const grabXY = [bx + 50, top + 18 + 18 + 8], dropXY = [S_LANE.x + 2.0 * S_LANE.pps + 20, S_LANE.y + 2 * (S_LANE.h + 4) + 24];
+    const ptr = pointer(p, [[0, 330, 420], [STU.grab, ...grabXY], [STU.drop, ...dropXY], [STU.menu, UW - 13, ey + 28], [STU.preset, ix + 90, ey + 45], [STU.play, playX + 26, by + 12], [STU.play + 1.2, 420, 330]]);
+    if (p > STU.grab + 0.1 && p < STU.drop) clipBlock(2, (ptr.x - 20 - S_LANE.x) / S_LANE.pps, (ptr.x - 20 - S_LANE.x) / S_LANE.pps + 2.4, 'heartbeat', '#7a3a3a', 7.7, { ghost: true });
+    arrow(ptr.x, ptr.y, ptr.down || (p > STU.grab && p < STU.drop)); uiFocus = ptr.x;
+  }
+
+  /* Channel 14: box it up. The title screen by firelight, the case art, then one Export Game. */
+  const BOX = { title: 4.6, exp: 9.8, done: 13.6, loop: 17.5 };
+  let caseImg = null;
+  const caseArt = () => {
+    if (!caseImg) { caseImg = new Image(); caseImg.decoding = 'async'; caseImg.src = '../alice-monroe-cover.webp'; }
+    return caseImg.complete && caseImg.naturalWidth ? caseImg : null;
+  };
+  function titleScreen(q) {
+    ui.setTransform(1, 0, 0, 1, 0, 0); box('#050304', 0, 0, UW, UH);
+    const f = reduced ? 1 : 0.78 + 0.22 * Math.sin(clock * 11) * Math.sin(clock * 4.3 + 1);
+    const gr = ui.createRadialGradient(UW / 2, UH + 60, 10, UW / 2, UH + 60, 420);
+    gr.addColorStop(0, `rgba(255,140,50,${(0.6 * f).toFixed(3)})`); gr.addColorStop(0.45, `rgba(150,45,15,${(0.28 * f).toFixed(3)})`); gr.addColorStop(1, 'rgba(0,0,0,0)');
+    ui.fillStyle = gr; ui.fillRect(0, 0, UW, UH);
+    const narrow = portrait(), a = span(q, 0.2, 1.2), sel = q < 2.8 ? 0 : 1;
+    ui.globalAlpha = a;
+    if (narrow) {
+      say('THE DISAPPEARANCE OF', UW / 2, 130, { c: '#cfc6b8', size: 20, align: 'center' });
+      say('ALICE', UW / 2, 172, { c: '#efe6d6', size: 50, align: 'center' }); say('MONROE', UW / 2, 216, { c: '#efe6d6', size: 50, align: 'center' });
+    } else {
+      say('THE DISAPPEARANCE OF', UW / 2, 132, { c: '#cfc6b8', size: 26, align: 'center' });
+      say('ALICE MONROE', UW / 2, 180, { c: '#efe6d6', size: 66, align: 'center' });
+    }
+    ui.globalAlpha = span(q, 1.0, 1.8);
+    ['New Game', 'Continue', 'Settings', 'Quit'].forEach((m, i) => say((i === sel ? '> ' : '  ') + m, UW / 2 - 52, 258 + i * 28, { c: i === sel ? '#ffd98a' : '#9a8f80', size: 26 }));
+    ui.globalAlpha = 1;
+    uiTex.needsUpdate = true;
+  }
+  function drawBoxed(q) {
+    chrome('Title & box');
+    /* its tabs */
+    ['Title screen', 'Case art', 'Pause menu'].reduce((x, t) => x + button(x, 86, t, { on: t === 'Case art', size: 13, pad: 14 }) + 2, 8);
+    box('#808080', 0, 107, UW, 1);
+    /* the case: spine and front */
+    const cy = 118, ch = 300, cw = Math.round(ch * 1016 / 1200), cx = 74;
+    box('rgba(0,0,0,.35)', cx - 26 + 4, cy + 5, cw + 26, ch);
+    box('#0a0a0b', cx - 26, cy, 26, ch);
+    ui.save(); ui.translate(cx - 13, cy + ch / 2); ui.rotate(-Math.PI / 2); say('THE DISAPPEARANCE OF ALICE MONROE', 0, 0, { c: '#e8e2cf', size: 13, align: 'center' }); ui.restore();
+    const img = caseArt();
+    if (img) ui.drawImage(img, cx, cy, cw, ch); else { box('#1a1612', cx, cy, cw, ch); say('ALICE MONROE', cx + cw / 2, cy + ch * 0.8, { c: '#e8e2cf', size: 28, align: 'center' }); }
+    box('rgba(255,255,255,.08)', cx, cy, 3, ch);
+    say('spine', cx - 13, cy + ch + 12, { size: 12, c: '#404040', align: 'center' }); say('front', cx + cw / 2, cy + ch + 12, { size: 12, c: '#404040', align: 'center' });
+    /* what goes on it */
+    const px = 368, pw = UW - px - 10;
+    say('Title', px + 4, 124, { size: 13 }); well(px + 4, 132, pw - 4, 18); say('The Disappearance Of Alice Monroe', px + 8, 141.5, { size: 13, max: pw - 14 });
+    say('Cover art', px + 4, 164, { size: 13 }); well(px + 4, 172, pw - 74, 18); say('alice-monroe-cover.webp', px + 8, 181.5, { size: 13, max: pw - 84 });
+    button(UW - 74, 172, 'Change…', { size: 13, w: 64 });
+    box('#808080', px + 4, 200, pw - 4, 16); say('On the case', px + 9, 208.5, { c: '#fff', size: 13 });
+    ['the black strip', 'Dolorem Company logo', 'NTSC U/C', 'rating box', 'serial number'].forEach((t, i) => {
+      const y = 222 + i * 17; well(px + 6, y + 1, 11, 11); say('✓', px + 7, y + 6.5, { size: 11 }); say(t, px + 22, y + 6.5, { size: 13 });
+    });
+    button(px + 4, 312, '🎨 Design case', { size: 13, w: 110 });
+    /* ☰ ▸ Export ▸ Export Game (.exe)… */
+    const M = { open: BOX.title + 3.4, exp: BOX.title + 4.3, pick: BOX.exp - 0.25 };
+    if (q >= M.open && q < BOX.exp) {
+      const mx = 6, my = 77, mw = 150, items = ['📚 Game Library…', 'New Project', 'Open Project…', 'Project Folder…', 'Export', '⚙ Game Settings…'];
+      box('#000', mx + 2, my + 2, mw, items.length * 18 + 6); bevel(mx, my, mw, items.length * 18 + 6);
+      items.forEach((t, i) => { const on = t === 'Export' && q >= M.exp; if (on) box('#000080', mx + 3, my + 3 + i * 18, mw - 6, 18); say(t, mx + 10, my + 12 + i * 18, { size: 13, c: on ? '#fff' : '#000' }); if (t === 'Export') say('▸', mx + mw - 12, my + 12 + i * 18, { size: 12, c: on ? '#fff' : '#000' }); });
+      if (q >= M.exp) {
+        const sx = mx + mw - 4, sy = my + 3 + 4 * 18, sw = 176, sub = ['Export Game (.html)…', 'Export Game (.exe)…', '✓ Leave Out Unused Files'];
+        box('#000', sx + 2, sy + 2, sw, sub.length * 18 + 6); bevel(sx, sy, sw, sub.length * 18 + 6);
+        sub.forEach((t, i) => { const on = i === 1 && q >= M.pick - 0.5; if (on) box('#000080', sx + 3, sy + 3 + i * 18, sw - 6, 18); say(t, sx + 10, sy + 12 + i * 18, { size: 13, c: on ? '#fff' : '#000' }); });
+      }
+    }
+    /* the export */
+    if (q >= BOX.exp) {
+      box('rgba(0,0,0,.25)', 0, 80, UW, UH - 80);
+      const wx = 150, wy = 160, ww = 340, wh = 190;
+      bevel(wx, wy, ww, wh);
+      const g2 = ui.createLinearGradient(wx, 0, wx + ww, 0); g2.addColorStop(0, '#000080'); g2.addColorStop(1, '#1084d0');
+      ui.fillStyle = g2; ui.fillRect(wx + 3, wy + 3, ww - 6, 18); say('Export Game (.exe)', wx + 8, wy + 12.5, { c: '#fff', size: 14 });
+      bevel(wx + ww - 21, wy + 5, 16, 14); say('×', wx + ww - 13, wy + 12, { size: 13, align: 'center' });
+      if (q < BOX.done) {
+        const k = span(q, BOX.exp + 0.3, BOX.done - 0.3);
+        say('Building The Disappearance Of Alice Monroe…', wx + 14, wy + 42, { size: 14, max: ww - 28 });
+        well(wx + 14, wy + 60, ww - 28, 20);
+        for (let i = 0; i < Math.floor((ww - 34) / 10 * k); i++) box('#000080', wx + 17 + i * 10, wy + 63, 8, 14);
+        say(k < 0.45 ? 'leaving out files the game never uses' : k < 0.85 ? 'putting the game folder together' : 'zipping it for itch.io', wx + 14, wy + 96, { size: 13, c: '#404040' });
+      } else {
+        say('Your game is ready.', wx + 14, wy + 42, { size: 16 });
+        well(wx + 14, wy + 58, ww - 28, 74);
+        [['▸', 'Alice Monroe', 'the game folder'], [' ', 'Alice Monroe.exe', 'inside it'], ['▸', 'Alice Monroe.zip', 'ready for itch.io']].forEach(([i, n, d], r) => {
+          say(i, wx + 20, wy + 70 + r * 20, { size: 13 }); say(n, wx + (i === ' ' ? 44 : 32), wy + 70 + r * 20, { size: 14 }); say(d, wx + ww - 20, wy + 70 + r * 20, { size: 12, c: '#606060', align: 'right' });
+        });
+        button(wx + ww - 182, wy + wh - 30, 'Show in folder', { size: 13, w: 100 }); button(wx + ww - 76, wy + wh - 30, 'OK', { size: 13, w: 62 });
+      }
+    }
+    const ptr = pointer(q, [[BOX.title, 470, 360], [BOX.title + 1.8, cx + cw / 2, cy + ch / 2], [M.open, 11, 66], [M.exp, 60, 77 + 3 + 4 * 18 + 9], [M.pick, 230, 77 + 3 + 4 * 18 + 3 + 18 + 9], [BOX.done + 0.4, 150 + 340 - 45, 160 + 190 - 21]]);
+    arrow(ptr.x, ptr.y, ptr.down); uiFocus = ptr.x;
   }
 
   /* ---------- No signal: colour bars ---------- */
@@ -1571,11 +2124,13 @@ async function start() {
   /* ---------- On-screen display, drawn into the picture so the tube bends it too ---------- */
   const osdCanvas = document.createElement('canvas'); osdCanvas.width = W; osdCanvas.height = H;
   const osd = osdCanvas.getContext('2d');
+  apart(osd);
   const osdTex = new THREE.CanvasTexture(osdCanvas); osdTex.magFilter = osdTex.minFilter = THREE.NearestFilter; osdTex.generateMipmaps = false;
   let osdKey = '';
   /* label: show the channel number (a fraction, as it fades); over: something the channel draws over the picture */
-  function drawOsd(t, label, over) {
-    const s = Math.floor(t), key = `${s}|${channel}|${label.toFixed(1)}|${over ? Math.floor(t * 30) : ''}`;
+  function drawOsd(t, label, over, onUi) {
+    const banner = Math.max(0, Math.min(1, 1 - (performance.now() - bannerAt - 2400) / 500));
+    const s = Math.floor(t), key = `${s}|${channel}|${label.toFixed(1)}|${over ? Math.floor(t * 30) : ''}|${banner.toFixed(2)}|${onUi}`;
     if (key === osdKey) return;
     osdKey = key;
     const c = CHANNELS[channel];
@@ -1589,8 +2144,14 @@ async function start() {
     if (c.kind === 'nosignal') {
       osd.textAlign = 'center'; osd.font = '28px VT323, monospace'; osd.shadowColor = 'transparent';
       osd.fillStyle = '#000000'; osd.fillRect(W / 2 - 66, 96, 132, 34); osd.fillStyle = '#ffffff'; osd.fillText('NO SIGNAL', W / 2, 100);
-    } else if (label > 0.01 && c.kind !== 'movie' && (c.kind === 'walk' || over)) {
-      osd.fillText(`CH ${String(channel + 1).padStart(2, '0')} / ${String(CHANNELS.length).padStart(2, '0')}`, 30, 46); osd.fillText('PLAY ▶', 30, 59);
+    } else if (label > 0.01) {
+      const l1 = `CH ${pad2(channel + 1)} / ${pad2(CHANNELS.length)}`, l2 = banner > 0.01 ? c.name.toUpperCase() : 'PLAY ▶';
+      if (onUi) {   /* over the editor's grey, a black box like a real TV's */
+        osd.save(); osd.shadowColor = 'transparent'; osd.fillStyle = 'rgba(0,0,0,.78)';
+        osd.fillRect(26, 44, Math.max(osd.measureText(l1).width, osd.measureText(l2).width) + 9, 29); osd.fillRect(W - 30 - osd.measureText(clock).width - 5, 44, osd.measureText(clock).width + 9, 16); osd.restore();
+      }
+      osd.fillText(l1, 30, 46);
+      if (banner > 0.01) { osd.save(); osd.globalAlpha *= banner; osd.fillStyle = '#e8e2cf'; osd.fillText(l2, 30, 59); osd.restore(); } else osd.fillText(l2, 30, 59);
       osd.textAlign = 'right'; osd.fillText(clock, W - 30, 46);
     }
     osd.restore();
@@ -1890,57 +2451,12 @@ async function start() {
         #include <colorspace_fragment>
       }`,
   })));
-  let split = 0, stillT = -1;
-  const stillBuf = new Uint8Array(W * H * 4), stillC = document.createElement('canvas'); stillC.width = W; stillC.height = H;
-  const stillG = stillC.getContext('2d'), stillImg = stillG.createImageData(W, H);
-  function grabStill(view, over) {
-    const g = filmFrames[channel]?.querySelector('canvas')?.getContext('2d'); if (!g) return;
-    if (view === 'ui') { g.drawImage(uiTex.image, 0, 0, 160, 120); }
-    else {
-      try { renderer.readRenderTargetPixels(rt, 0, 0, W, H, stillBuf); } catch (e) { return; }
-      for (let y = 0; y < H; y++) stillImg.data.set(stillBuf.subarray((H - 1 - y) * W * 4, (H - y) * W * 4), y * W * 4);
-      stillG.putImageData(stillImg, 0, 0); g.drawImage(stillC, 0, 0, 160, 120);
-      if (over) { g.save(); g.scale(160 / W, 120 / H); over(g, W, H); g.restore(); }
-    }
-    filmFrames[channel].classList.add('has');
-  }
-  /* Fill every frame of the filmstrip up front, so the strip is never blank when you land on it. */
-  function prefillFilm() {
-    CHANNELS.forEach((c, i) => {
-      const g = filmFrames[i]?.querySelector('canvas')?.getContext('2d'); if (!g) return;
-      if (c.kind === 'walk' || c.kind === 'build' || c.kind === 'movie') {
-        let over = null;
-        hideGhosts(); blood.visible = false;
-        if (c.kind === 'movie') {
-          const m = movieState(6); moviePose(m); eye.fov = focalFov(LENS[m.lens][2]); eye.updateProjectionMatrix(); over = (gg, w, h) => movieHud(gg, w, h, m);
-        } else {
-          path.getPointAt(0.3, v3); path.getPointAt(0.312, ahead);
-          eye.position.copy(v3); eye.lookAt(ahead.x, 0.55, ahead.z);
-          if (c.kind === 'build') { buildPose(4, 0); over = (gg, w, h) => buildHud(gg, w, h, 4); }
-        }
-        psxUniforms.uLightPos.value.copy(eye.position); eye.getWorldDirection(psxUniforms.uLightDir.value);
-        renderer.setRenderTarget(rt); renderer.render(level, eye); renderer.setRenderTarget(null);
-        hideGhosts(); eye.fov = 68; eye.updateProjectionMatrix();
-        try { renderer.readRenderTargetPixels(rt, 0, 0, W, H, stillBuf); } catch (e) { return; }
-        for (let y = 0; y < H; y++) stillImg.data.set(stillBuf.subarray((H - 1 - y) * W * 4, (H - y) * W * 4), y * W * 4);
-        stillG.putImageData(stillImg, 0, 0); g.drawImage(stillC, 0, 0, 160, 120);
-        if (over) { g.save(); g.scale(160 / W, 120 / H); over(g, W, H); g.restore(); }
-      } else {
-        if (c.kind === 'editor') paintUi(drawMap, 3, [250, 520]);
-        else if (c.kind === 'dialogue') paintUi(drawDialogue, DLG.edit * 0.8);
-        else if (c.kind === 'director') paintUi(drawDirector, DIR.edit * 0.85, [150, 470]);
-        else if (c.kind === 'cutscene') paintUi(drawCutscene, 6.3, [130, 520]);
-        focusS = -1;
-        g.drawImage(uiTex.image, 0, 0, 160, 120);
-      }
-      filmFrames[i].classList.add('has');
-    });
-    uiT = -1;
-  }
-  let filled = false;
+  let split = 0;
   let ceT = 0, movieNow = movieState(0);
   let last = performance.now(), clock = 0, frames = 0, fpsT = 0, slow = 0, uiT = -1, lastScene = '', lastKind = '', lastView = '', enteredWork = false, chT = 0, filmU = 0;
   const v3 = new THREE.Vector3(), ahead = new THREE.Vector3(), tmpV = new THREE.Vector3(), topV = new THREE.Vector3(), botV = new THREE.Vector3();
+  const VIEW3D = new Set(['walk', 'still', 'film', 'play', 'movie', 'build', 'light', 'weather', 'monster', 'blood']);
+  const SCREEN_TINT = { light: 0xffa860, weather: 0xb4c0dc, monster: 0xe07060, blood: 0xd05050 };
 
   frame = function () {
     raf = 0;
@@ -1990,9 +2506,28 @@ async function start() {
       }
     } else if (kind === 'movie') {
       const m = movieState(reduced ? 6 : p % MOVIE.loop); view = 'movie'; movieNow = m; over = (g, w, h) => movieHud(g, w, h, m);
+    } else if (kind === 'light') {
+      const q = p % LIT.loop; view = 'light'; over = (g, w, h) => lightHud(g, w, h, q);
+    } else if (kind === 'weather') {
+      const q = (reduced ? 9 : p) % SKY.loop; view = 'weather'; over = (g, w, h) => skyHud(g, w, h, q);
+    } else if (kind === 'objectives') {
+      const q = (reduced ? 9.6 : p) % OBJ.loop; view = 'walk'; over = (g, w, h) => objHud(g, w, h, q);
+    } else if (kind === 'monster') {
+      const q = p % MON.loop; view = 'monster'; over = (g, w, h) => monsterHud(g, w, h, q);
+    } else if (kind === 'blood') {
+      const q = (reduced ? 9 : p) % BLD.loop; view = 'blood'; over = (g, w, h) => bloodHud(g, w, h, q);
+    } else if (kind === 'studio') {
+      const q = p % STU.loop;
+      if (Math.floor(clock * 20) !== uiT) { uiT = Math.floor(clock * 20); paintUi(drawStudio, q, [150, 500]); }
+      view = 'ui';
+    } else if (kind === 'boxed') {
+      const q = (reduced ? 14 : p) % BOX.loop;
+      if (Math.floor(clock * 20) !== uiT) { uiT = Math.floor(clock * 20); if (q < BOX.title) titleScreen(q); else paintUi(drawBoxed, q, [150, 500]); }
+      view = 'ui';
     }
     if (view !== lastView) { if (lastView && scene === 'work' && (view === 'still' || view === 'film' || (view === 'ui' && over))) burst = Math.max(burst, 0.5); lastView = view; }
-    if ((view === 'walk' || view === 'still' || view === 'film' || view === 'play' || view === 'movie' || view === 'build') && cur.power > 0.01) {
+    if (VIEW3D.has(view) && cur.power > 0.01) {
+      resetLook();
       const fov = view === 'movie' ? focalFov(LENS[movieNow.lens][2]) : 68;
       if (eye.fov !== fov) { eye.fov = fov; eye.updateProjectionMatrix(); }
       blood.visible = kind === 'cutscene' && view === 'film' && ceT >= 3.6;
@@ -2005,6 +2540,14 @@ async function start() {
         moviePose(movieNow);
       } else if (view === 'build') {
         buildPose(buildPiece(p), p);
+      } else if (view === 'light') {
+        lightPose(p % LIT.loop);
+      } else if (view === 'weather') {
+        skyPose((reduced ? 9 : p) % SKY.loop);
+      } else if (view === 'monster') {
+        monsterPose(p % MON.loop);
+      } else if (view === 'blood') {
+        bloodPose((reduced ? 9 : p) % BLD.loop);
       } else if (view === 'play') {    /* control handed back: walking again from where the shot ended */
         const w = Math.min(1, (p % DIR.loop - DIR.bars - 0.7) / 2.7);
         eye.position.copy(cell(8, 2.5)).lerp(cell(8, 2.95), w).setY(0.58 + Math.sin(clock * 6.5) * 0.012); eye.lookAt(tmpV.copy(cell(8, 4)).setY(0.6));
@@ -2015,6 +2558,7 @@ async function start() {
         eye.lookAt(ahead.x, 0.55, ahead.z);
       }
       if (kind !== 'build') hideGhosts();
+      if (kind === 'objectives') objLook((reduced ? 9.6 : p) % OBJ.loop);
       if (t.zoom > 0.5 && view !== 'film' && view !== 'movie') { eye.rotateY(-lookS.x * (view === 'walk' ? 0.35 : 0.12)); eye.rotateX(-lookS.y * (view === 'walk' ? 0.18 : 0.06)); }
       psxUniforms.uLightPos.value.copy(eye.position);
       eye.getWorldDirection(psxUniforms.uLightDir.value);
@@ -2025,9 +2569,7 @@ async function start() {
     } else {
       screenU.uTex.value = barsTex;
     }
-    if (cur.osd > 0.01 || over) drawOsd(clock, cur.osd, over);
-    if (!filled && (clock > 0.4 || reduced)) { filled = true; prefillFilm(); }
-    if (scene === 'work' && clock - stillT > 0.6 && cur.power > 0.5) { stillT = clock; grabStill(view, over); }
+    if (cur.osd > 0.01 || over) drawOsd(clock, cur.osd, over, view === 'ui');
 
     /* Camera, with a little drift toward the pointer (less when you're inside the TV). */
     const drift = (1 - t.zoom) * (reduced ? 0 : 1);
@@ -2049,7 +2591,7 @@ async function start() {
     fogU.uShift.value.set(cam.position.x * 0.06, cam.position.y * 0.05);
     fogU.uTime.value = clock;
     fogU.uTint.value.copy(cur.tint);
-    onScreen.set(kind === 'nosignal' ? 0x9c94d8 : view === 'ui' ? 0x9aa4c4 : 0xf09e72);   /* roughly what the picture is: brick, the grey editor, colour bars */
+    onScreen.set(kind === 'nosignal' ? 0x9c94d8 : kind === 'boxed' && (p % BOX.loop) < BOX.title ? 0xf0a060 : view === 'ui' ? 0x9aa4c4 : SCREEN_TINT[view] || 0xf09e72);   /* roughly what the picture is: brick, the grey editor, colour bars */
     fogU.uScreen.value.lerp(onScreen, reduced ? 1 : 1 - Math.pow(0.05, dt));
 
     screenU.uTime.value = clock;
